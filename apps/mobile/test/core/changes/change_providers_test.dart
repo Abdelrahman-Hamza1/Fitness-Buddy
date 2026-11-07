@@ -102,6 +102,7 @@ void main() {
           MeasurementOp.familyName,
           ChatMessageOp.familyName,
           BuddySummaryOp.familyName,
+          MemoryItemOp.familyName,
           ProposalOp.familyName,
           WorkoutOp.familyName,
           RestoreVersionOp.familyName,

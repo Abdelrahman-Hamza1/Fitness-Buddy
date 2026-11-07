@@ -8,13 +8,15 @@ part of 'proposal_persistence_contributor.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The registered contributors, in order: durable proposals (A23).
+/// The registered contributors, in order: durable proposals (A23), learned
+/// habits (A67).
 
 @ProviderFor(proposalPersistenceContributors)
 final proposalPersistenceContributorsProvider =
     ProposalPersistenceContributorsProvider._();
 
-/// The registered contributors, in order: durable proposals (A23).
+/// The registered contributors, in order: durable proposals (A23), learned
+/// habits (A67).
 
 final class ProposalPersistenceContributorsProvider
     extends
@@ -24,7 +26,8 @@ final class ProposalPersistenceContributorsProvider
           List<ProposalPersistenceContributor>
         >
     with $Provider<List<ProposalPersistenceContributor>> {
-  /// The registered contributors, in order: durable proposals (A23).
+  /// The registered contributors, in order: durable proposals (A23), learned
+  /// habits (A67).
   ProposalPersistenceContributorsProvider._()
     : super(
         from: null,
@@ -61,4 +64,4 @@ final class ProposalPersistenceContributorsProvider
 }
 
 String _$proposalPersistenceContributorsHash() =>
-    r'433a3172beed33d7ed2d9a5699161fa28e7a7428';
+    r'fc67672d9ce24183dc2a8ec9fc8202f7c038bbeb';

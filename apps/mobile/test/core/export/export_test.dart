@@ -165,6 +165,7 @@ Future<void> _seed(AppDatabase db, {int diaryRows = 1}) async {
             'interpretation_json': '[[0,null,null,null,[],null]]',
           });
         }
+        if (spec.entity == 'memoryItem') values['created_from'] = 'explicit';
         if (spec.entity == 'personalFood') {
           values.addAll({
             'entry_serving_unit': null,

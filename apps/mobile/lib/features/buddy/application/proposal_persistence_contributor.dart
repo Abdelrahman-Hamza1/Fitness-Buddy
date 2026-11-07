@@ -56,7 +56,34 @@ abstract class ProposalPersistenceContributor {
   ) => const [];
 }
 
-/// The registered contributors, in order: durable proposals (A23).
+/// Learned habits (A67 D12, AI-081): confirming a food card remembers, in
+/// the same change set (so its Undo forgets it again), each state or fat
+/// choice the user made on it as a `learned` habit.
+final class LearnedHabits extends ProposalPersistenceContributor {
+  /// The contributor.
+  const new();
+
+  @override
+  List<ChangeOp> onConfirm(
+    ProposalCard card,
+    ProposalSession resolved,
+    SessionMembership membership,
+  ) => [
+    for (final h in learnedHabitsOf(card))
+      SaveMemoryItem(
+        kind: MemoryKinds.habit,
+        key: h.key,
+        value: h.value,
+        origin: MemoryOrigin.learned,
+      ),
+  ];
+
+  @override
+  String toString() => 'LearnedHabits';
+}
+
+/// The registered contributors, in order: durable proposals (A23), learned
+/// habits (A67).
 @Riverpod(keepAlive: true)
 List<ProposalPersistenceContributor> proposalPersistenceContributors(Ref ref) =>
-    const [DurableProposals()];
+    const [DurableProposals(), LearnedHabits()];

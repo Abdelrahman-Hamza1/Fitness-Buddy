@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fb_api_client/fb_api_client.dart' hide LocalDate;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_phone_reads.dart';
+import 'package:fb_mobile/features/buddy/data/memory_slice.dart';
 import 'package:fb_mobile/features/buddy/data/personal_slice.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -162,11 +163,14 @@ final class PhoneTools {
   ) async {
     switch (call) {
       case BuddyPhoneToolCallFindMyFoods(:final args):
-        final kinds = args.kinds;
-        final items =
-            kinds.isNotEmpty && !kinds.contains(BuddyPersonalKind.personalFood)
-            ? const <BuddyPersonalItem>[]
-            : PersonalSlice.match(args.query, await _reads.personalFoods());
+        final foods = await _reads.personalFoods();
+        final items = PersonalSlice.match(
+          args.query,
+          foods,
+          kinds: args.kinds.toSet(),
+          savedMeals: await _reads.savedMeals(),
+          batches: await _reads.openBatches(foods, today),
+        );
         return (_json(BuddyFindMyFoodsData(items: items)), items.length);
       case BuddyPhoneToolCallReadDiary(:final args):
         return await _diary(args, today);
@@ -174,9 +178,9 @@ final class PhoneTools {
         return await _body(args, today);
       case BuddyPhoneToolCallReadWorkouts(:final args):
         return await _workouts(args, today);
-      case BuddyPhoneToolCallReadMemory():
-        // Memory items come with A67's table.
-        return (_json(const BuddyReadMemoryData(items: [])), 0);
+      case BuddyPhoneToolCallReadMemory(:final args):
+        final items = MemorySlice.read(await _reads.memory(), args.topic);
+        return (_json(BuddyReadMemoryData(items: items)), items.length);
       case BuddyPhoneToolCallQueryData():
       // The QueryEngine is A68's.
       case BuddyPhoneToolCallUnrecognized():

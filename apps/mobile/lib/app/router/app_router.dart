@@ -13,6 +13,7 @@ import 'package:fb_mobile/core/errors/navigation_observer.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart' show BuddyRemembersScreen;
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -143,6 +144,7 @@ final class AppRouter implements AppNavigator {
                     if (route is TodayRoute) ...[
                       _foodSearchRoute(),
                       _barcodeScanRoute(),
+                      _goRoute(const NewFoodFromBuddyRoute(), nested: true),
                       _sessionRoute(
                         TodayWorkoutSessionRoute.path,
                         TodayRoute.path,
@@ -184,6 +186,7 @@ final class AppRouter implements AppNavigator {
                       _goRoute(const MeWorkoutsRoute(), nested: true),
                       _goRoute(const MePreferencesRoute(), nested: true),
                       _goRoute(const MeAccountRoute(), nested: true),
+                      _goRoute(const BuddyRemembersRoute(), nested: true),
                       _personalFoodsRoute(),
                       _savedMealsRoute(),
                       _goRoute(const MealSlotsRoute(), nested: true),
@@ -646,6 +649,8 @@ final class AppRouter implements AppNavigator {
       date: date,
       slotId: slotId,
     ),
+    NewFoodFromBuddyRoute() => const PersonalFoodFormScreen(prepared: true),
+    BuddyRemembersRoute() => const BuddyRemembersScreen(),
     NewFoodFromScanRoute(:final date, :final slotId) => PersonalFoodFormScreen(
       addTo: (date: date, slotId: slotId),
       fromScan: true,

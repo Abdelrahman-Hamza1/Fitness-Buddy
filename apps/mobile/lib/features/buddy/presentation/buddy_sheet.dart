@@ -144,6 +144,13 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     navigator.push(FoodSearchRoute(date: widget.date));
   }
 
+  /// A personal-food card's "Review and save" (A67 D8): the prepared form.
+  void _reviewFood() {
+    final navigator = ref.read(appNavigatorProvider);
+    Navigator.of(context).pop();
+    navigator.push(const NewFoodFromBuddyRoute());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -213,6 +220,7 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
                     controller: scroll,
                     sheet: _sheet,
                     onSearch: _search,
+                    onReviewFood: _reviewFood,
                     revealPending: widget.revealPending,
                   ),
                 ),

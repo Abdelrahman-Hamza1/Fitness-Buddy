@@ -13,6 +13,7 @@ export 'application/saved_meals.dart';
 export 'application/slot_actions.dart';
 export 'application/slot_editor_state.dart';
 export 'application/slot_providers.dart';
+export 'data/diary_mappers.dart' show diaryEntryOf;
 export 'data/diary_op_handler.dart' show DiaryOpHandler;
 export 'data/diary_reads.dart' show DiaryReads;
 export 'data/diary_repository.dart';

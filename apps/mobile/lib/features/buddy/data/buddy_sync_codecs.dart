@@ -198,10 +198,58 @@ final class BuddySummarySyncCodec implements SyncEntityCodec {
   Map<String, Expression<Object>> get tombstoneLocalColumns => const {};
 }
 
+/// `memoryItem` v1 (A67 D10): the wire's `key` and `value` are the
+/// `memory_key` / `memory_value` columns.
+final class MemoryItemSyncCodec implements SyncEntityCodec {
+  /// The codec over [db]'s `memory_items`.
+  new(AppDatabase db)
+    : _columns = ColumnSyncCodec(
+        SyncedTable<$MemoryItemsTable, MemoryItemRow>(
+          db.memoryItems,
+          memoryItemEntity,
+        ),
+      );
+
+  final ColumnSyncCodec _columns;
+
+  static const _wire = {'memoryKey': 'key', 'memoryValue': 'value'};
+  static const _local = {'key': 'memoryKey', 'value': 'memoryValue'};
+
+  @override
+  String get entity => memoryItemEntity;
+
+  @override
+  int get uploadVersion => 1;
+
+  @override
+  Map<String, Object?> encode(Map<String, Object?> sqlRow) => {
+    for (final MapEntry(:key, :value) in _columns.encode(sqlRow).entries)
+      _wire[key] ?? key: value,
+  };
+
+  @override
+  Map<String, Expression<Object>> decode(
+    Map<String, Object?> payload, {
+    required String id,
+    required bool deleted,
+  }) => _columns.decode(
+    {
+      for (final MapEntry(:key, :value) in payload.entries)
+        if (!_wire.containsKey(key)) _local[key] ?? key: value,
+    },
+    id: id,
+    deleted: deleted,
+  );
+
+  @override
+  Map<String, Expression<Object>> get tombstoneLocalColumns => const {};
+}
+
 /// The Buddy feature's sync codecs, by entity (composed by
 /// `app/app_scope.dart`).
 Map<String, SyncEntityCodec> buddySyncCodecs(AppDatabase db) => {
   chatMessageEntity: ChatMessageSyncCodec(db),
   proposalEntity: ProposalSyncCodec(db),
   buddySummaryEntity: BuddySummarySyncCodec(db),
+  memoryItemEntity: MemoryItemSyncCodec(db),
 };

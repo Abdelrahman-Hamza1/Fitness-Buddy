@@ -8,7 +8,9 @@ import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dar
 import 'package:fb_mobile/features/buddy/application/buddy_thread_messages.dart';
 import 'package:fb_mobile/features/buddy/application/food_card_view.dart';
 import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
+import 'package:fb_mobile/features/buddy/presentation/cards/buddy_notice_row.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/food_proposal_card.dart';
+import 'package:fb_mobile/features/buddy/presentation/cards/record_proposal_card.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_direction.dart';
 import 'package:fb_mobile/features/buddy/presentation/trace_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +48,7 @@ class BuddyMessageList extends ConsumerStatefulWidget {
   const new({
     required this.controller,
     required this.onSearch,
+    this.onReviewFood,
     this.sheet,
     this.revealPending = false,
     super.key,
@@ -59,6 +62,9 @@ class BuddyMessageList extends ConsumerStatefulWidget {
 
   /// Closes the sheet and opens food search.
   final VoidCallback onSearch;
+
+  /// Closes the sheet and opens the prepared new-food form (A67 D8).
+  final VoidCallback? onReviewFood;
 
   /// Whether the list opens at the oldest open card (D-094).
   final bool revealPending;
@@ -342,7 +348,7 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
     final controller = ref.read(buddyThreadControllerProvider.notifier);
     final thread = ref.read(buddyThreadControllerProvider);
     final last = thread.turns.lastOrNull?.userMessageId == turn.userMessageId;
-    final applicable = turn.applicable;
+    final applicable = turn.applicableCount;
     final trace = ref.watch(buddyTraceEnabledProvider);
     Widget buddyBubble(String text) => FbMessageBubble(
       text: text,
@@ -415,14 +421,37 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
             ),
           ),
       ],
+      // Record cards (A67): edits, copies, saved meals, batches, foods,
+      // memory and weigh-ins.
+      for (final record in turn.records)
+        (
+          'record:${record.id}',
+          RecordProposalCard(
+            card: record,
+            referenceDate: turn.message.time.localDate,
+            onReviewFood: widget.onReviewFood == null
+                ? null
+                : () {
+                    if (controller.prepareFoodForm(record.id)) {
+                      widget.onReviewFood!();
+                    }
+                  },
+          ),
+        ),
+      // Offers and tips after a logged card (AI-065, AI-084).
+      for (final notice in turn.notices)
+        (
+          'notice:${turn.userMessageId}:${notice.id}',
+          BuddyNoticeRow(turnId: turn.userMessageId, notice: notice),
+        ),
       // Several open cards: log them all, one Undo (AI-162).
-      if (applicable.length >= 2)
+      if (applicable >= 2)
         (
           'all:${turn.userMessageId}',
           Align(
             alignment: AlignmentDirectional.centerEnd,
             child: FbButton.primary(
-              label: l10n.buddyApplyAll(applicable.length),
+              label: l10n.buddyApplyAll(applicable),
               icon: FbIcons.check,
               onPressed: () =>
                   unawaited(controller.applyAll(turn.userMessageId)),

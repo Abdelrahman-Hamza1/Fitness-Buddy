@@ -10,6 +10,7 @@ import 'package:fb_mobile/core/settings/settings_store.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart' show BuddyRemembersScreen;
 import 'package:fb_mobile/features/buddy/presentation/buddy_sheet.dart';
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
@@ -264,6 +265,8 @@ List<AppRoute> everyRoute(SeededProfile s) => [
   const NewFoodFromSearchRoute(),
   const BarcodeScanRoute(),
   const NewFoodFromScanRoute(),
+  const NewFoodFromBuddyRoute(),
+  const BuddyRemembersRoute(),
   const PersonalFoodsRoute(),
   PersonalFoodRoute(id: s.personalFood),
   const PersonalFoodRoute(),
@@ -316,6 +319,8 @@ Type screenOf(AppRoute route) => switch (route) {
   NewFoodFromSearchRoute() => PersonalFoodFormScreen,
   BarcodeScanRoute() => BarcodeScanScreen,
   NewFoodFromScanRoute() => PersonalFoodFormScreen,
+  NewFoodFromBuddyRoute() => PersonalFoodFormScreen,
+  BuddyRemembersRoute() => BuddyRemembersScreen,
   PersonalFoodsRoute() => PersonalFoodsScreen,
   PersonalFoodRoute() => PersonalFoodFormScreen,
   SavedMealsRoute() => SavedMealsScreen,

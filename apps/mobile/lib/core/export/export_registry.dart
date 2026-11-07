@@ -150,6 +150,17 @@ const exportRegistryV1 = <ExportTableSpec>[
     ExportColumn('version', ExportKind.integer),
     ExportColumn('origin', ExportKind.text),
   ]),
+  ExportTableSpec('memoryItem', 'memory-items', 'memory_items', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('kind', ExportKind.text),
+    ExportColumn('memory_key', ExportKind.text),
+    ExportColumn('memory_value', ExportKind.text),
+    ExportColumn('created_from', ExportKind.text),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
   ExportTableSpec('dishGroup', 'dish-groups', 'dish_groups', [
     ExportColumn('id', ExportKind.text),
     ExportColumn('name', ExportKind.text),

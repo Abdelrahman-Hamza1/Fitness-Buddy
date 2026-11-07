@@ -83,7 +83,7 @@ void main() {
               as Map<String, Object?>;
       // Admitted by the server (B25 contract) before the app stores them:
       // A66 adds the buddySummary table, A67 memoryItem; each removes its name.
-      const pendingAppTables = {'memoryItem'};
+      const pendingAppTables = <String>{};
       final fixtures = _fixtures()
         ..removeWhere((entity, _) => pendingAppTables.contains(entity));
       expect(fixtures.keys.toSet(), {

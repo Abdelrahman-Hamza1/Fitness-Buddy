@@ -23,6 +23,7 @@ abstract final class SyncIssueCodes {
     'chatMessage',
     'proposal',
     'buddySummary',
+    'memoryItem',
     'profile',
     'goalPhase',
     'targetSettings',

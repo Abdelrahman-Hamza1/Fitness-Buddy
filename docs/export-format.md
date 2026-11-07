@@ -159,6 +159,22 @@ Buddy's short summary of your older chat (A66, AI-165): what Buddy keeps of a lo
 | `buddy-summaries.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `buddy-summaries.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
 
+## memory-items (`memoryItem`, `memory_items`)
+
+What Buddy remembers (A67, AI-080–AI-082): defaults, usual portions, names and brands you told it, choices it learned from cards you confirmed, and the weighing tips it showed. Shown, editable and deletable under "Buddy remembers".
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `memory-items.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `memory-items.kind` | text | `default`, `portion`, `alias`, `brand`, `nickname`, `habit` (a learned choice) or `nudge` (a weighing tip shown). |
+| `memory-items.memory_key` | text | What it's about (a food, a name, or a question kind such as `state:rice`). User content. |
+| `memory-items.memory_value` | text | What is remembered (`raw`, `350 g`, a name, a day). User content. |
+| `memory-items.created_from` | text | `explicit` (you said or confirmed it) or `learned` (from data you confirmed). |
+| `memory-items.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `memory-items.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `memory-items.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `memory-items.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
 ## dish-groups (`dishGroup`, `dish_groups`)
 
 | Column | Type / unit | Meaning |

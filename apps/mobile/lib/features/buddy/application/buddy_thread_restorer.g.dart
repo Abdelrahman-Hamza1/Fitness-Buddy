@@ -59,4 +59,4 @@ final class BuddyThreadRestorerProvider
 }
 
 String _$buddyThreadRestorerHash() =>
-    r'5d4c3b88435a6b523ddb2fe3780aa8b814347342';
+    r'a664f0808c22d74a1b5e85d3b91b41fdae4fabb9';

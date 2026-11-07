@@ -137,16 +137,22 @@ final class PersonalFoodFormKey {
   /// A form for the food [id], or for a new food when null. [fromScan]: a
   /// new food opened from the barcode scanner, prefilled from the scan
   /// (A28a D9).
-  new([this.id]) : fromScan = false;
+  new([this.id]) : fromScan = false, prepared = false;
 
   /// A new-food form opened from the barcode scanner.
-  new scan() : id = null, fromScan = true;
+  new scan() : id = null, fromScan = true, prepared = false;
+
+  /// A new-food form opened with a prepared food (A67 D8).
+  new prepared() : id = null, fromScan = false, prepared = true;
 
   /// The food being edited; null for a new one.
   final String? id;
 
   /// Opened by "Add it yourself" / "Add the missing values".
   final bool fromScan;
+
+  /// Opened with a [FoodFormPrefill].
+  final bool prepared;
 
   @override
   String toString() => 'PersonalFoodFormKey';
@@ -619,6 +625,52 @@ PersonalFoodFormState _initial(PersonalFood? food, {String? name}) {
   );
 }
 
+/// A new food opened with a prepared draft (A67 D8): its figures shown on
+/// their own basis, per 100 or per its entry serving.
+PersonalFoodFormState _initialFromDraft(
+  PersonalFoodDraft d, {
+  bool sizeUnknown = false,
+}) => sizeUnknown
+    ? PersonalFoodFormState(
+        // Per serving, size to enter: the numbers are the serving's.
+        basis: d.basis,
+        foodState: d.state,
+        mode: PersonalFoodMode.perServing,
+        configurationTouched: true,
+        fields: {
+          PersonalFoodField.name: d.names.en,
+          PersonalFoodField.nameAr: d.names.ar ?? '',
+          PersonalFoodField.brand: d.brand ?? '',
+          PersonalFoodField.aliases: d.aliases.join(', '),
+          PersonalFoodField.barcodes: '',
+          PersonalFoodField.servingSize: '',
+          ..._nutrientTexts(d.per100),
+        },
+        touched: const {PersonalFoodField.servingSize},
+      )
+    : PersonalFoodFormState(
+        basis: d.basis,
+        foodState: d.state,
+        mode: d.entryServing == null
+            ? PersonalFoodMode.per100
+            : PersonalFoodMode.perServing,
+        servingUnit: d.entryServing?.unit ?? 'serving',
+        servings: [
+          for (final row in d.servings)
+            PersonalFoodServingInput(row.unit, row.amount.toString()),
+        ],
+        fields: {
+          PersonalFoodField.name: d.names.en,
+          PersonalFoodField.nameAr: d.names.ar ?? '',
+          PersonalFoodField.brand: d.brand ?? '',
+          PersonalFoodField.aliases: d.aliases.join(', '),
+          PersonalFoodField.barcodes: '',
+          PersonalFoodField.servingSize:
+              d.entryServing?.amount.toString() ?? '',
+          ..._nutrientTexts(d.perServing()),
+        },
+      );
+
 /// A new food prefilled from a scan (A28a D9): the barcode, and the name,
 /// brand, per-100 values and serving Open Food Facts has; the rest is typed.
 /// "More details" opens because a barcode is set.
@@ -705,6 +757,9 @@ String _createdFrom(
 /// Each open form passes its own [PersonalFoodFormKey].
 @riverpod
 class PersonalFoodFormController extends _$PersonalFoodFormController {
+  /// The prepared food this form opened with (A67 D8), if any.
+  FoodFormPrefill? _prepared;
+
   @override
   Future<PersonalFoodFormState> build(PersonalFoodFormKey key) async {
     final id = key.id;
@@ -720,9 +775,18 @@ class PersonalFoodFormController extends _$PersonalFoodFormController {
       final scan = key.fromScan
           ? ref.read(scanFoodPrefillProvider.notifier).take()
           : null;
+      final prepared = key.prepared
+          ? ref.read(preparedFoodPrefillProvider.notifier).take()
+          : null;
+      _prepared = prepared;
       return _duplicate(
         scan != null
             ? _initialFromScan(scan)
+            : prepared != null
+            ? _initialFromDraft(
+                prepared.draft,
+                sizeUnknown: prepared.perServingWithoutSize,
+              )
             : _initial(
                 null,
                 name: ref.read(newFoodPrefillProvider.notifier).take(),
@@ -923,6 +987,16 @@ class PersonalFoodFormController extends _$PersonalFoodFormController {
     state = AsyncData(current.copyWith(submitting: true));
     try {
       final actions = ref.read(personalFoodActionsProvider);
+      final prepared = _prepared;
+      if (current.original == null && prepared != null) {
+        final outcome = await actions.create(
+          draft,
+          also: prepared.also(adjusted: draft != prepared.draft),
+          origin: prepared.origin,
+        );
+        if (outcome is PersonalFoodDone) _prepared = null;
+        return outcome;
+      }
       return current.original == null
           ? await actions.create(draft)
           : await actions.update(current.original!, draft);

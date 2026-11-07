@@ -30,3 +30,52 @@ class NewFoodPrefill extends _$NewFoodPrefill {
     return value;
   }
 }
+
+/// A new food prepared somewhere else (A67 D8: a Buddy card): the [draft]
+/// the form opens with, and the ops its save adds to the same change set
+/// ([also], given whether the user changed the draft) with [origin]. The
+/// foods feature doesn't know who made it.
+final class FoodFormPrefill {
+  /// The prefill.
+  const new({
+    required this.draft,
+    required this.also,
+    required this.origin,
+    this.perServingWithoutSize = false,
+  });
+
+  /// The draft's figures are per serving and its size is unknown: the form
+  /// opens per serving with the size empty and can't save without it.
+  final bool perServingWithoutSize;
+
+  /// What the form opens with.
+  final PersonalFoodDraft draft;
+
+  /// The extra ops of the save.
+  final List<ChangeOp> Function({required bool adjusted}) also;
+
+  /// The save's origin.
+  final Origin origin;
+
+  @override
+  String toString() => 'FoodFormPrefill';
+}
+
+/// One-shot handoff of a [FoodFormPrefill] to the next new-food form.
+@Riverpod(keepAlive: true)
+class PreparedFoodPrefill extends _$PreparedFoodPrefill {
+  @override
+  FoodFormPrefill? build() => null;
+
+  /// Sets the prefill for the next form.
+  // A command on the notifier, like NewFoodPrefill.put.
+  // ignore: use_setters_to_change_properties
+  void put(FoodFormPrefill prefill) => state = prefill;
+
+  /// Consumes the prefill.
+  FoodFormPrefill? take() {
+    final value = state;
+    state = null;
+    return value;
+  }
+}

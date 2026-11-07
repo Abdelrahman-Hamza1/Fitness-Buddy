@@ -11548,6 +11548,432 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Day estimate removed'**
   String get dayEstimateRemoved;
+
+  /// Record card header: a diary edit by chat (AI-050).
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get recordKindEdit;
+
+  /// Record card header: a diary deletion by chat (AI-051).
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get recordKindDelete;
+
+  /// Record card header: copy a meal (AI-090).
+  ///
+  /// In en, this message translates to:
+  /// **'Copy meal'**
+  String get recordKindCopy;
+
+  /// Record card header: log a saved meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved meal'**
+  String get recordKindSavedMeal;
+
+  /// Record card header: save entries as a saved meal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save as a meal'**
+  String get recordKindSaveMeal;
+
+  /// Record card header: a home-cooked batch (AI-100).
+  ///
+  /// In en, this message translates to:
+  /// **'Batch'**
+  String get recordKindBatch;
+
+  /// Record card header: a portion of an open batch (AI-102).
+  ///
+  /// In en, this message translates to:
+  /// **'From your batch'**
+  String get recordKindBatchPortion;
+
+  /// Record card header: close a batch (DY-044).
+  ///
+  /// In en, this message translates to:
+  /// **'Close batch'**
+  String get recordKindBatchClose;
+
+  /// Record card header: a new personal food (AI-054).
+  ///
+  /// In en, this message translates to:
+  /// **'Your food'**
+  String get recordKindFood;
+
+  /// Record card header: Buddy remembers something (AI-055).
+  ///
+  /// In en, this message translates to:
+  /// **'Remember'**
+  String get recordKindRemember;
+
+  /// Record card header: Buddy forgets something (AI-055).
+  ///
+  /// In en, this message translates to:
+  /// **'Forget'**
+  String get recordKindForget;
+
+  /// Record card header: a weigh-in (AI-052).
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh-in'**
+  String get recordKindWeighIn;
+
+  /// Primary action of an edit card.
+  ///
+  /// In en, this message translates to:
+  /// **'Save change'**
+  String get recordConfirmEdit;
+
+  /// Primary action of a delete card.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get recordConfirmDelete;
+
+  /// Primary action of a copy card.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get recordConfirmCopy;
+
+  /// Primary action of a save card (saved meal, batch, weigh-in).
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get recordConfirmSave;
+
+  /// Primary action of a close-batch card.
+  ///
+  /// In en, this message translates to:
+  /// **'Close it'**
+  String get recordConfirmClose;
+
+  /// Primary action of a personal-food card: opens the form.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and save'**
+  String get recordConfirmReview;
+
+  /// Primary action of a remember card.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember'**
+  String get recordConfirmRemember;
+
+  /// Primary action of a forget card.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget'**
+  String get recordConfirmForget;
+
+  /// Record card: the user picks the entry Buddy meant (AI-091).
+  ///
+  /// In en, this message translates to:
+  /// **'Which one?'**
+  String get recordWhichOne;
+
+  /// Record card line: this entry is deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed'**
+  String get recordRemoved;
+
+  /// Record card: the confirm was refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save this card.'**
+  String get recordCouldNotSave;
+
+  /// Resolved record card row.
+  ///
+  /// In en, this message translates to:
+  /// **'Done.'**
+  String get recordDone;
+
+  /// Record card note: a time Buddy heard isn't used.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps its time of day.'**
+  String get recordNoteTimeIgnored;
+
+  /// Batch card note (DY-041).
+  ///
+  /// In en, this message translates to:
+  /// **'No cooked weight given: counted on the ingredients\' raw weight.'**
+  String get recordNoteRawWeight;
+
+  /// Batch portion card note.
+  ///
+  /// In en, this message translates to:
+  /// **'This finishes the batch.'**
+  String get recordNoteClosesBatch;
+
+  /// Batch card note: the quick path (DY-042).
+  ///
+  /// In en, this message translates to:
+  /// **'Logged now, nothing kept for later.'**
+  String get recordNoteQuickPath;
+
+  /// Batch card note: the leftovers path (DY-043).
+  ///
+  /// In en, this message translates to:
+  /// **'Kept as leftovers for later portions.'**
+  String get recordNoteLeftovers;
+
+  /// Record card note: a food is an AI estimate (AI-070).
+  ///
+  /// In en, this message translates to:
+  /// **'Includes an AI estimate.'**
+  String get recordNoteEstimate;
+
+  /// Batch card choice: the quick path (AI-100).
+  ///
+  /// In en, this message translates to:
+  /// **'Log now'**
+  String get recordBatchPathQuick;
+
+  /// Batch card choice: the leftovers path (AI-100).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep leftovers'**
+  String get recordBatchPathLeftovers;
+
+  /// Accepts Buddy's offer to remember a choice (AI-065).
+  ///
+  /// In en, this message translates to:
+  /// **'Remember'**
+  String get buddyNoticeYes;
+
+  /// Dismisses a Buddy offer or tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get buddyNoticeNo;
+
+  /// Undo snackbar after accepting an offer to remember.
+  ///
+  /// In en, this message translates to:
+  /// **'Remembered.'**
+  String get buddyNoticeRemembered;
+
+  /// Buddy remembers: section with the conversation summary (AI-165).
+  ///
+  /// In en, this message translates to:
+  /// **'Summary of older chat'**
+  String get buddyMemorySummary;
+
+  /// Buddy remembers without memory items.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing remembered yet. Tell Buddy things like “I always weigh rice raw”.'**
+  String get buddyMemoryEmpty;
+
+  /// Buddy remembers section: defaults the cards apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Defaults'**
+  String get buddyMemoryGroupDefaults;
+
+  /// Buddy remembers section.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual portions'**
+  String get buddyMemoryGroupPortions;
+
+  /// Buddy remembers section: aliases, brands, nicknames.
+  ///
+  /// In en, this message translates to:
+  /// **'Names and brands'**
+  String get buddyMemoryGroupNames;
+
+  /// Buddy remembers section: habits learned from confirmed cards (AI-081).
+  ///
+  /// In en, this message translates to:
+  /// **'Learned from your cards'**
+  String get buddyMemoryGroupLearned;
+
+  /// Buddy remembers section: weighing tips Buddy showed (AI-084).
+  ///
+  /// In en, this message translates to:
+  /// **'Tips shown'**
+  String get buddyMemoryGroupTips;
+
+  /// Deletes one memory item (AI-082).
+  ///
+  /// In en, this message translates to:
+  /// **'Forget'**
+  String get buddyMemoryForget;
+
+  /// Undo snackbar after deleting a memory item.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgotten.'**
+  String get buddyMemoryForgotten;
+
+  /// Deletes every memory item.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget everything'**
+  String get buddyMemoryClearAll;
+
+  /// Confirmation before deleting every memory item.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy forgets everything listed here. Your diary and your foods don\'t change.'**
+  String get buddyMemoryClearAllBody;
+
+  /// Subtitle of the Me row that opens Buddy remembers.
+  ///
+  /// In en, this message translates to:
+  /// **'See what Buddy remembers'**
+  String get buddyRemembersOpen;
+
+  /// Memory default kind: how a food is weighed (raw/cooked).
+  ///
+  /// In en, this message translates to:
+  /// **'weighed'**
+  String get buddyMemoryDimensionState;
+
+  /// Memory default kind: cooking fat.
+  ///
+  /// In en, this message translates to:
+  /// **'cooking fat'**
+  String get buddyMemoryDimensionFat;
+
+  /// Memory default kind: the usual variant.
+  ///
+  /// In en, this message translates to:
+  /// **'usually'**
+  String get buddyMemoryDimensionVariant;
+
+  /// Memory default kind: the usual size.
+  ///
+  /// In en, this message translates to:
+  /// **'usual size'**
+  String get buddyMemoryDimensionPortion;
+
+  /// Record card line: amount before and after an edit.
+  ///
+  /// In en, this message translates to:
+  /// **'{before} → {after}'**
+  String recordBeforeAfter(String before, String after);
+
+  /// Record card line: where the entry moves.
+  ///
+  /// In en, this message translates to:
+  /// **'Moves to {where}'**
+  String recordMovesTo(String where);
+
+  /// Copy card: where the meal is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'To {where}'**
+  String recordCopiesTo(String where);
+
+  /// Record card total: the calorie change (+/−).
+  ///
+  /// In en, this message translates to:
+  /// **'Change: {kcal}'**
+  String recordKcalChange(String kcal);
+
+  /// Record card total calories.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {kcal}'**
+  String recordKcalTotal(String kcal);
+
+  /// Which-one chip: an entry the user can pick.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {where} · {kcal}'**
+  String recordChoice(String name, String where, String kcal);
+
+  /// Batch card note: plates are estimated (DY-041).
+  ///
+  /// In en, this message translates to:
+  /// **'A plate counts as {grams}.'**
+  String recordNotePlate(String grams);
+
+  /// Batch card fact.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole batch: {amount}'**
+  String recordBatchWhole(String amount);
+
+  /// Batch or food card fact.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} per 100 g'**
+  String recordBatchPer100(String kcal);
+
+  /// Batch card: the portion logged now.
+  ///
+  /// In en, this message translates to:
+  /// **'Now: {amount} · {kcal}'**
+  String recordBatchEaten(String amount, String kcal);
+
+  /// Batch card: what's left.
+  ///
+  /// In en, this message translates to:
+  /// **'Left afterwards: {amount}'**
+  String recordBatchLeft(String amount);
+
+  /// Personal-food card: other names.
+  ///
+  /// In en, this message translates to:
+  /// **'Also called {names}'**
+  String recordFoodAliases(String names);
+
+  /// Personal-food card: the figures the user stated (TD-092).
+  ///
+  /// In en, this message translates to:
+  /// **'Your figures: {kcal}'**
+  String recordFoodStated(String kcal);
+
+  /// Memory card or row: what is remembered.
+  ///
+  /// In en, this message translates to:
+  /// **'{subject}: {value}'**
+  String recordMemoryLine(String subject, String value);
+
+  /// Memory default: e.g. rice: weighed raw.
+  ///
+  /// In en, this message translates to:
+  /// **'{subject}: {what} {value}'**
+  String recordMemoryDefault(String subject, String what, String value);
+
+  /// Weigh-in card.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} on {day}'**
+  String recordWeighIn(String value, String day);
+
+  /// Weigh-in card: change against the trend weight.
+  ///
+  /// In en, this message translates to:
+  /// **'{delta} vs your trend'**
+  String recordWeighInTrend(String delta);
+
+  /// Offer to remember a repeated answer (AI-065).
+  ///
+  /// In en, this message translates to:
+  /// **'Always treat {food} as {value}?'**
+  String buddyNoticeRemember(String food, String value);
+
+  /// Weighing tip (AI-084).
+  ///
+  /// In en, this message translates to:
+  /// **'You log {food} often. Weigh it once and save your usual portion for exact numbers.'**
+  String buddyNoticeWeigh(String food);
+
+  /// Buddy remembers: a tip shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighing tip for {food}, {date}'**
+  String buddyMemoryTip(String food, String date);
 }
 
 class _AppLocalizationsDelegate

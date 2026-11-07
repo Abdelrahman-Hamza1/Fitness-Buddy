@@ -942,21 +942,15 @@ Nutrients _sum(Iterable<Nutrients> values) {
       time = time.onDate(time.localDate.plusDays(-1));
     }
   }
-  final active = context.slots.where((s) => s.active && s.mode == context.mode);
-  final explicit = active
-      .where(
-        (s) =>
-            intent.slotHint != null &&
-            (context.normalize(s.id) == context.normalize(intent.slotHint!) ||
-                context.normalize(s.defaultKey ?? '') ==
-                    context.normalize(intent.slotHint ?? '') ||
-                context.normalize(s.name ?? '') ==
-                    context.normalize(intent.slotHint!)),
-      )
-      .firstOrNull;
+  final explicit = matchSlotHint(
+    intent.slotHint,
+    context.slots,
+    context.mode,
+    context.normalize,
+  );
   final slot =
       state.slots[intent.index] ??
-      explicit?.id ??
+      explicit ??
       const SlotAssigner().assign(
         time.localDateTime.time.minuteOfDay,
         context.slots,

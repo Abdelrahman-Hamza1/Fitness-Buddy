@@ -8115,6 +8115,753 @@ class BuddySummariesCompanion extends UpdateCompanion<BuddySummaryRow> {
   }
 }
 
+class $MemoryItemsTable extends MemoryItems
+    with TableInfo<$MemoryItemsTable, MemoryItemRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemoryItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedHlcMeta = const VerificationMeta(
+    'updatedHlc',
+  );
+  @override
+  late final GeneratedColumn<String> updatedHlc = GeneratedColumn<String>(
+    'updated_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+    'origin',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _editedByUserMeta = const VerificationMeta(
+    'editedByUser',
+  );
+  @override
+  late final GeneratedColumn<bool> editedByUser = GeneratedColumn<bool>(
+    'edited_by_user',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("edited_by_user" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memoryKeyMeta = const VerificationMeta(
+    'memoryKey',
+  );
+  @override
+  late final GeneratedColumn<String> memoryKey = GeneratedColumn<String>(
+    'memory_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memoryValueMeta = const VerificationMeta(
+    'memoryValue',
+  );
+  @override
+  late final GeneratedColumn<String> memoryValue = GeneratedColumn<String>(
+    'memory_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdFromMeta = const VerificationMeta(
+    'createdFrom',
+  );
+  @override
+  late final GeneratedColumn<String> createdFrom = GeneratedColumn<String>(
+    'created_from',
+    aliasedName,
+    false,
+    check: () => createdFrom.isIn(['explicit', 'learned']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    kind,
+    memoryKey,
+    memoryValue,
+    createdFrom,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'memory_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemoryItemRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_hlc')) {
+      context.handle(
+        _updatedHlcMeta,
+        updatedHlc.isAcceptableOrUnknown(data['updated_hlc']!, _updatedHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedHlcMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_deviceIdMeta);
+    }
+    if (data.containsKey('origin')) {
+      context.handle(
+        _originMeta,
+        origin.isAcceptableOrUnknown(data['origin']!, _originMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originMeta);
+    }
+    if (data.containsKey('edited_by_user')) {
+      context.handle(
+        _editedByUserMeta,
+        editedByUser.isAcceptableOrUnknown(
+          data['edited_by_user']!,
+          _editedByUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('memory_key')) {
+      context.handle(
+        _memoryKeyMeta,
+        memoryKey.isAcceptableOrUnknown(data['memory_key']!, _memoryKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memoryKeyMeta);
+    }
+    if (data.containsKey('memory_value')) {
+      context.handle(
+        _memoryValueMeta,
+        memoryValue.isAcceptableOrUnknown(
+          data['memory_value']!,
+          _memoryValueMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_memoryValueMeta);
+    }
+    if (data.containsKey('created_from')) {
+      context.handle(
+        _createdFromMeta,
+        createdFrom.isAcceptableOrUnknown(
+          data['created_from']!,
+          _createdFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdFromMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MemoryItemRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemoryItemRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_hlc'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      )!,
+      origin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin'],
+      )!,
+      editedByUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}edited_by_user'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      memoryKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}memory_key'],
+      )!,
+      memoryValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}memory_value'],
+      )!,
+      createdFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_from'],
+      )!,
+    );
+  }
+
+  @override
+  $MemoryItemsTable createAlias(String alias) {
+    return $MemoryItemsTable(attachedDatabase, alias);
+  }
+}
+
+class MemoryItemRow extends DataClass implements Insertable<MemoryItemRow> {
+  /// UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys
+  /// (`core/db/natural_id.dart`). Lowercase canonical text.
+  final String id;
+
+  /// When the row was first written, UTC ms (0 for seeds).
+  final int createdAt;
+
+  /// The hybrid logical clock of the last write (`fb_domain` `Hlc` text).
+  final String updatedHlc;
+
+  /// 1 on insert, +1 per write: the local optimistic concurrency check.
+  final int version;
+
+  /// The tombstone, UTC ms. Synced rows are never hard-deleted.
+  final int? deletedAt;
+
+  /// The install that made the last write (the HLC's node id, TD-053).
+  final String deviceId;
+
+  /// `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`.
+  final String origin;
+
+  /// Provenance: the user overrode a value that came from another source
+  /// (AI-072, the "edited by you" badge). Set only by ops.
+  final bool editedByUser;
+
+  /// The open kind (≤ 32): default, portion, alias, brand, nickname,
+  /// habit, nudge.
+  final String kind;
+
+  /// What it's about (≤ 200; the wire field `key`, mapped by the buddy
+  /// sync codec).
+  final String memoryKey;
+
+  /// What is remembered (≤ 200; the wire field `value`).
+  final String memoryValue;
+
+  /// `explicit` or `learned`.
+  final String createdFrom;
+  const MemoryItemRow({
+    required this.id,
+    required this.createdAt,
+    required this.updatedHlc,
+    required this.version,
+    this.deletedAt,
+    required this.deviceId,
+    required this.origin,
+    required this.editedByUser,
+    required this.kind,
+    required this.memoryKey,
+    required this.memoryValue,
+    required this.createdFrom,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_hlc'] = Variable<String>(updatedHlc);
+    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    map['device_id'] = Variable<String>(deviceId);
+    map['origin'] = Variable<String>(origin);
+    map['edited_by_user'] = Variable<bool>(editedByUser);
+    map['kind'] = Variable<String>(kind);
+    map['memory_key'] = Variable<String>(memoryKey);
+    map['memory_value'] = Variable<String>(memoryValue);
+    map['created_from'] = Variable<String>(createdFrom);
+    return map;
+  }
+
+  MemoryItemsCompanion toCompanion(bool nullToAbsent) {
+    return MemoryItemsCompanion(
+      id: Value(id),
+      createdAt: Value(createdAt),
+      updatedHlc: Value(updatedHlc),
+      version: Value(version),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deviceId: Value(deviceId),
+      origin: Value(origin),
+      editedByUser: Value(editedByUser),
+      kind: Value(kind),
+      memoryKey: Value(memoryKey),
+      memoryValue: Value(memoryValue),
+      createdFrom: Value(createdFrom),
+    );
+  }
+
+  factory MemoryItemRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemoryItemRow(
+      id: serializer.fromJson<String>(json['id']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedHlc: serializer.fromJson<String>(json['updatedHlc']),
+      version: serializer.fromJson<int>(json['version']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      deviceId: serializer.fromJson<String>(json['deviceId']),
+      origin: serializer.fromJson<String>(json['origin']),
+      editedByUser: serializer.fromJson<bool>(json['editedByUser']),
+      kind: serializer.fromJson<String>(json['kind']),
+      memoryKey: serializer.fromJson<String>(json['memoryKey']),
+      memoryValue: serializer.fromJson<String>(json['memoryValue']),
+      createdFrom: serializer.fromJson<String>(json['createdFrom']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedHlc': serializer.toJson<String>(updatedHlc),
+      'version': serializer.toJson<int>(version),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+      'deviceId': serializer.toJson<String>(deviceId),
+      'origin': serializer.toJson<String>(origin),
+      'editedByUser': serializer.toJson<bool>(editedByUser),
+      'kind': serializer.toJson<String>(kind),
+      'memoryKey': serializer.toJson<String>(memoryKey),
+      'memoryValue': serializer.toJson<String>(memoryValue),
+      'createdFrom': serializer.toJson<String>(createdFrom),
+    };
+  }
+
+  MemoryItemRow copyWith({
+    String? id,
+    int? createdAt,
+    String? updatedHlc,
+    int? version,
+    Value<int?> deletedAt = const Value.absent(),
+    String? deviceId,
+    String? origin,
+    bool? editedByUser,
+    String? kind,
+    String? memoryKey,
+    String? memoryValue,
+    String? createdFrom,
+  }) => MemoryItemRow(
+    id: id ?? this.id,
+    createdAt: createdAt ?? this.createdAt,
+    updatedHlc: updatedHlc ?? this.updatedHlc,
+    version: version ?? this.version,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deviceId: deviceId ?? this.deviceId,
+    origin: origin ?? this.origin,
+    editedByUser: editedByUser ?? this.editedByUser,
+    kind: kind ?? this.kind,
+    memoryKey: memoryKey ?? this.memoryKey,
+    memoryValue: memoryValue ?? this.memoryValue,
+    createdFrom: createdFrom ?? this.createdFrom,
+  );
+  MemoryItemRow copyWithCompanion(MemoryItemsCompanion data) {
+    return MemoryItemRow(
+      id: data.id.present ? data.id.value : this.id,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedHlc: data.updatedHlc.present
+          ? data.updatedHlc.value
+          : this.updatedHlc,
+      version: data.version.present ? data.version.value : this.version,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      editedByUser: data.editedByUser.present
+          ? data.editedByUser.value
+          : this.editedByUser,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      memoryKey: data.memoryKey.present ? data.memoryKey.value : this.memoryKey,
+      memoryValue: data.memoryValue.present
+          ? data.memoryValue.value
+          : this.memoryValue,
+      createdFrom: data.createdFrom.present
+          ? data.createdFrom.value
+          : this.createdFrom,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryItemRow(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('kind: $kind, ')
+          ..write('memoryKey: $memoryKey, ')
+          ..write('memoryValue: $memoryValue, ')
+          ..write('createdFrom: $createdFrom')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdAt,
+    updatedHlc,
+    version,
+    deletedAt,
+    deviceId,
+    origin,
+    editedByUser,
+    kind,
+    memoryKey,
+    memoryValue,
+    createdFrom,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemoryItemRow &&
+          other.id == this.id &&
+          other.createdAt == this.createdAt &&
+          other.updatedHlc == this.updatedHlc &&
+          other.version == this.version &&
+          other.deletedAt == this.deletedAt &&
+          other.deviceId == this.deviceId &&
+          other.origin == this.origin &&
+          other.editedByUser == this.editedByUser &&
+          other.kind == this.kind &&
+          other.memoryKey == this.memoryKey &&
+          other.memoryValue == this.memoryValue &&
+          other.createdFrom == this.createdFrom);
+}
+
+class MemoryItemsCompanion extends UpdateCompanion<MemoryItemRow> {
+  final Value<String> id;
+  final Value<int> createdAt;
+  final Value<String> updatedHlc;
+  final Value<int> version;
+  final Value<int?> deletedAt;
+  final Value<String> deviceId;
+  final Value<String> origin;
+  final Value<bool> editedByUser;
+  final Value<String> kind;
+  final Value<String> memoryKey;
+  final Value<String> memoryValue;
+  final Value<String> createdFrom;
+  final Value<int> rowid;
+  const MemoryItemsCompanion({
+    this.id = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedHlc = const Value.absent(),
+    this.version = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.editedByUser = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.memoryKey = const Value.absent(),
+    this.memoryValue = const Value.absent(),
+    this.createdFrom = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MemoryItemsCompanion.insert({
+    required String id,
+    required int createdAt,
+    required String updatedHlc,
+    required int version,
+    this.deletedAt = const Value.absent(),
+    required String deviceId,
+    required String origin,
+    this.editedByUser = const Value.absent(),
+    required String kind,
+    required String memoryKey,
+    required String memoryValue,
+    required String createdFrom,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt),
+       updatedHlc = Value(updatedHlc),
+       version = Value(version),
+       deviceId = Value(deviceId),
+       origin = Value(origin),
+       kind = Value(kind),
+       memoryKey = Value(memoryKey),
+       memoryValue = Value(memoryValue),
+       createdFrom = Value(createdFrom);
+  static Insertable<MemoryItemRow> custom({
+    Expression<String>? id,
+    Expression<int>? createdAt,
+    Expression<String>? updatedHlc,
+    Expression<int>? version,
+    Expression<int>? deletedAt,
+    Expression<String>? deviceId,
+    Expression<String>? origin,
+    Expression<bool>? editedByUser,
+    Expression<String>? kind,
+    Expression<String>? memoryKey,
+    Expression<String>? memoryValue,
+    Expression<String>? createdFrom,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedHlc != null) 'updated_hlc': updatedHlc,
+      if (version != null) 'version': version,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deviceId != null) 'device_id': deviceId,
+      if (origin != null) 'origin': origin,
+      if (editedByUser != null) 'edited_by_user': editedByUser,
+      if (kind != null) 'kind': kind,
+      if (memoryKey != null) 'memory_key': memoryKey,
+      if (memoryValue != null) 'memory_value': memoryValue,
+      if (createdFrom != null) 'created_from': createdFrom,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MemoryItemsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? createdAt,
+    Value<String>? updatedHlc,
+    Value<int>? version,
+    Value<int?>? deletedAt,
+    Value<String>? deviceId,
+    Value<String>? origin,
+    Value<bool>? editedByUser,
+    Value<String>? kind,
+    Value<String>? memoryKey,
+    Value<String>? memoryValue,
+    Value<String>? createdFrom,
+    Value<int>? rowid,
+  }) {
+    return MemoryItemsCompanion(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedHlc: updatedHlc ?? this.updatedHlc,
+      version: version ?? this.version,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deviceId: deviceId ?? this.deviceId,
+      origin: origin ?? this.origin,
+      editedByUser: editedByUser ?? this.editedByUser,
+      kind: kind ?? this.kind,
+      memoryKey: memoryKey ?? this.memoryKey,
+      memoryValue: memoryValue ?? this.memoryValue,
+      createdFrom: createdFrom ?? this.createdFrom,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedHlc.present) {
+      map['updated_hlc'] = Variable<String>(updatedHlc.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (editedByUser.present) {
+      map['edited_by_user'] = Variable<bool>(editedByUser.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (memoryKey.present) {
+      map['memory_key'] = Variable<String>(memoryKey.value);
+    }
+    if (memoryValue.present) {
+      map['memory_value'] = Variable<String>(memoryValue.value);
+    }
+    if (createdFrom.present) {
+      map['created_from'] = Variable<String>(createdFrom.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedHlc: $updatedHlc, ')
+          ..write('version: $version, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('origin: $origin, ')
+          ..write('editedByUser: $editedByUser, ')
+          ..write('kind: $kind, ')
+          ..write('memoryKey: $memoryKey, ')
+          ..write('memoryValue: $memoryValue, ')
+          ..write('createdFrom: $createdFrom, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $WeighInsTable extends WeighIns
     with TableInfo<$WeighInsTable, WeighInRow> {
   @override
@@ -25836,6 +26583,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE INDEX ix_proposals_kind ON proposals (kind) WHERE deleted_at IS NULL',
   );
   late final $BuddySummariesTable buddySummaries = $BuddySummariesTable(this);
+  late final $MemoryItemsTable memoryItems = $MemoryItemsTable(this);
   late final $WeighInsTable weighIns = $WeighInsTable(this);
   late final Index ixWeighInsLive = Index(
     'ix_weigh_ins_live',
@@ -26187,6 +26935,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'CREATE TRIGGER buddy_summaries_no_delete BEFORE DELETE ON buddy_summaries BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
     'buddy_summaries_no_delete',
   );
+  late final Trigger memoryItemsOutboxAi = Trigger(
+    'CREATE TRIGGER memory_items_outbox_ai AFTER INSERT ON memory_items WHEN (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'memoryItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'memory_items_outbox_ai',
+  );
+  late final Trigger memoryItemsOutboxAu = Trigger(
+    'CREATE TRIGGER memory_items_outbox_au AFTER UPDATE ON memory_items WHEN NEW.updated_hlc IS NOT OLD.updated_hlc AND (SELECT value FROM sync_state WHERE "key" = \'outbox.capture\') IS NOT \'0\' BEGIN INSERT INTO sync_outbox (entity, row_id, hlc, deleted) VALUES (\'memoryItem\', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);END',
+    'memory_items_outbox_au',
+  );
+  late final Trigger memoryItemsNoDelete = Trigger(
+    'CREATE TRIGGER memory_items_no_delete BEFORE DELETE ON memory_items BEGIN SELECT RAISE (ABORT, \'tombstone, never delete\');END',
+    'memory_items_no_delete',
+  );
   late final $SyncParkedTable syncParked = $SyncParkedTable(this);
   late final $SyncDeferredTable syncDeferred = $SyncDeferredTable(this);
   late final $SyncDisplacedTable syncDisplaced = $SyncDisplacedTable(this);
@@ -26217,6 +26977,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ixProposalsPending,
     ixProposalsKind,
     buddySummaries,
+    memoryItems,
     weighIns,
     ixWeighInsLive,
     measurements,
@@ -26316,6 +27077,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     buddySummariesOutboxAi,
     buddySummariesOutboxAu,
     buddySummariesNoDelete,
+    memoryItemsOutboxAi,
+    memoryItemsOutboxAu,
+    memoryItemsNoDelete,
     syncParked,
     syncDeferred,
     syncDisplaced,
@@ -26822,6 +27586,27 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'buddy_summaries',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'memory_items',
+        limitUpdateKind: UpdateKind.insert,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'memory_items',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'memory_items',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [],

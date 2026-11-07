@@ -23,6 +23,7 @@ Map<String, SyncEntityCodec> appCodecs(AppDatabase db) => {
   'chatMessage': ChatMessageSyncCodec(db),
   'proposal': ProposalSyncCodec(db),
   'buddySummary': BuddySummarySyncCodec(db),
+  'memoryItem': MemoryItemSyncCodec(db),
 };
 
 /// Runs a body directly (tests without an applier).

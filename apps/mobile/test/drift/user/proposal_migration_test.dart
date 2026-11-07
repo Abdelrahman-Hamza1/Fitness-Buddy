@@ -19,6 +19,8 @@ const _proposalId = '019a1b2c-0000-7000-8000-000000000042';
 const _requiredExtras = <String, Map<String, Object>>{
   'weigh_ins': {'tz_offset_min': 0, 'input_value': 1.0, 'input_unit': 'kg'},
   'chat_messages': {'message_text': 'Synthetic reply'},
+  'buddy_summaries': {'summary_text': 'Synthetic summary'},
+  'memory_items': {'memory_key': 'synthetic key', 'memory_value': 'synthetic'},
 };
 
 String _snake(String s) =>

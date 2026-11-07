@@ -16,6 +16,8 @@ import 'package:fb_mobile/features/buddy/application/buddy_thread_restorer.dart'
 import 'package:fb_mobile/features/buddy/application/buddy_thread_state.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_write_lane.dart';
+import 'package:fb_mobile/features/buddy/application/records/record_cards.dart';
+import 'package:fb_mobile/features/buddy/application/records/record_food_draft.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
 import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
@@ -23,12 +25,16 @@ import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_turn_api.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_turn_context_reader.dart';
 import 'package:fb_mobile/features/buddy/data/chat_message_repository.dart';
+import 'package:fb_mobile/features/buddy/data/memory_repository.dart';
 import 'package:fb_mobile/features/buddy/data/phone_tools.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_repository.dart';
+import 'package:fb_mobile/features/buddy/data/records/record_intents.dart';
+import 'package:fb_mobile/features/buddy/data/records/weighing_tips.dart';
 import 'package:fb_mobile/features/buddy/data/turn/buddy_turn_runner.dart';
 import 'package:fb_mobile/features/buddy/data/turn/turn_checkpoint.dart';
-import 'package:fb_mobile/features/foods/foods.dart' show FoodChoice;
+import 'package:fb_mobile/features/foods/foods.dart'
+    show FoodChoice, FoodFormPrefill, preparedFoodPrefillProvider;
 import 'package:fb_mobile/features/settings/settings.dart' show AppSettings;
 import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -136,6 +142,20 @@ class BuddyThreadController extends _$BuddyThreadController {
     // A34 D17 (A23 handoff): rows pulled from another phone can add or
     // resolve cards; read this profile's pending cards back again (merged
     // by message ID, a turn in memory wins).
+    // The personal-food form confirms a card in its own change set (A67
+    // D8); its Undo reopens it.
+    final foods = ref
+        .read(domainEventBusProvider)
+        .on<ChangeSetApplied>()
+        .where((e) => e.entities.contains('proposal'))
+        .listen((_) {
+          if (state.turns.any(
+            (t) =>
+                t.records.any((r) => r.kind == RecordKind.personalFoodCreate),
+          )) {
+            unawaited(_syncFoodCards());
+          }
+        });
     final remote = ref
         .read(domainEventBusProvider)
         .on<RemoteChangesApplied>()
@@ -163,6 +183,7 @@ class BuddyThreadController extends _$BuddyThreadController {
     } catch (_) {}
     ref
       ..onDispose(changes.cancel)
+      ..onDispose(foods.cancel)
       ..onDispose(remote.cancel)
       ..onDispose(() => lifecycle?.dispose())
       ..onDispose(() => _retry?.cancel());
@@ -359,14 +380,24 @@ class BuddyThreadController extends _$BuddyThreadController {
 
   /// The open cards a start request lists (`snapshot.openCards`).
   List<OpenCardRef> _openCards() => [
-    for (final t in state.turns)
+    for (final t in state.turns) ...[
       for (final c in t.cards)
         if (c.resolution == CardResolution.open)
           (
             cardId: c.id,
+            kind: foodLogKind,
             revision: c.revision,
             label: AgentCardWriter.labelOf(c.card),
           ),
+      for (final r in t.records)
+        if (r.resolution == CardResolution.open && r.plan.view != null)
+          (
+            cardId: r.id,
+            kind: r.kind.code,
+            revision: r.revision,
+            label: recordLabel(r.plan.view!),
+          ),
+    ],
   ];
 
   /// Builds turn [turnId]'s start request, marks it `processing` with its
@@ -495,6 +526,7 @@ class BuddyThreadController extends _$BuddyThreadController {
         if (body == null &&
             end.kind == TurnEndKind.done &&
             now.cards.isEmpty &&
+            now.records.isEmpty &&
             !now.unsupported) {
           body = texts?.noCard;
         }
@@ -548,7 +580,9 @@ class BuddyThreadController extends _$BuddyThreadController {
             // Without a reply text, the first card's holder row stands for
             // the reply (it's never drawn as a bubble).
             assistantMessageId:
-                replyId ?? t.cards.firstOrNull?.card.budgetMessageId,
+                replyId ??
+                t.cards.firstOrNull?.card.budgetMessageId ??
+                t.records.firstOrNull?.holderId,
             clearStep: true,
           ),
         );
@@ -719,6 +753,41 @@ class BuddyThreadController extends _$BuddyThreadController {
     for (final c in checkpoint.cards) {
       final turn = _turn(turnId);
       if (!_current(gen) || turn == null) return;
+      if (_record(c.cardId) case (final owner, final r)?) {
+        if (r.revision < c.revision) {
+          _setRecord(owner.userMessageId, r.copyWith(revision: c.revision));
+        }
+        continue;
+      }
+      final stored = await proposals.byId(c.cardId);
+      if (stored != null && RecordKind.fromCode(stored.kind) != null) {
+        final card = await ref
+            .read(recordCardsProvider)
+            .restore(
+              stored,
+              turn.message.time,
+              revision: c.revision,
+              requireView: stored.isPending,
+            );
+        if (card == null || !_current(gen)) continue;
+        _update(
+          turnId,
+          (t) => t.copyWith(
+            records: [
+              ...t.records,
+              card.copyWith(
+                resolution: switch (stored.status) {
+                  ProposalStatus.pending => CardResolution.open,
+                  ProposalStatus.confirmed => CardResolution.logged,
+                  ProposalStatus.discarded => CardResolution.discarded,
+                  ProposalStatus.superseded => CardResolution.superseded,
+                },
+              ),
+            ]..sort((a, b) => a.id.compareTo(b.id)),
+          ),
+        );
+        continue;
+      }
       final shown = _card(c.cardId);
       if (shown != null) {
         if (shown.$2.revision < c.revision) {
@@ -773,6 +842,12 @@ class BuddyThreadController extends _$BuddyThreadController {
     final turn = _turn(turnId);
     if (turn == null || !_current(gen)) return null;
     final lane = _lane;
+    if (RecordKind.fromCode(proposal.intent['kind']) != null ||
+        (proposal.replaces != null &&
+            _record(proposal.target?.cardId ?? proposal.replaces!.proposalId) !=
+                null)) {
+      return await _recordProposal(turnId, proposal, withCard, gen);
+    }
     if (proposal.replaces case final replaces?) {
       final cardId =
           proposal.target?.cardId ??
@@ -929,6 +1004,29 @@ class BuddyThreadController extends _$BuddyThreadController {
   ) async {
     final lane = _lane;
     for (final id in cardIds) {
+      if (_record(id) != null) {
+        final records = _records;
+        await lane.run(() async {
+          final found = _record(id);
+          if (!_current(gen) ||
+              found == null ||
+              found.$2.resolution != CardResolution.open) {
+            return;
+          }
+          final done = await records.discard(found.$2, system: true);
+          if (done == null || !_current(gen)) return;
+          _update(
+            found.$1.userMessageId,
+            (t) => t.copyWith(
+              records: [
+                for (final c in t.records)
+                  if (c.id != id) c,
+              ],
+            ),
+          );
+        });
+        continue;
+      }
       await lane.run(() async {
         await lane.drain(_writeLatest(_resolution, gen));
         final found = _card(id);
@@ -1000,9 +1098,37 @@ class BuddyThreadController extends _$BuddyThreadController {
     final gen = _generation;
     if (turn == null || turn.profileGeneration != gen) return;
     final targets = turn.applicable;
-    if (targets.length < 2) return;
+    final recordTargets = turn.applicableRecords;
+    if (targets.length + recordTargets.length < 2) return;
+    if (targets.isEmpty) return await _applyRecords(turn, recordTargets, gen);
     final resolution = _resolution;
+    final records = _records;
     final lane = _lane;
+    final recordIds = {for (final r in recordTargets) r.id};
+    for (final r in recordTargets) {
+      _setRecord(
+        userMessageId,
+        r.copyWith(resolution: CardResolution.confirming, couldNotSave: false),
+      );
+    }
+    List<RecordCard> latestRecords() => [
+      for (final id in recordIds)
+        if (_record(id)?.$2 case final r?
+            when r.resolution == CardResolution.confirming && r.plan.canConfirm)
+          r,
+    ];
+    void reopenRecords({required bool failed}) {
+      for (final id in recordIds) {
+        final now = _record(id)?.$2;
+        if (now != null && now.resolution == CardResolution.confirming) {
+          _setRecord(
+            userMessageId,
+            now.copyWith(resolution: CardResolution.open, couldNotSave: failed),
+          );
+        }
+      }
+    }
+
     for (final c in targets) {
       _setCard(
         userMessageId,
@@ -1021,15 +1147,18 @@ class BuddyThreadController extends _$BuddyThreadController {
                     c.card.canConfirm)
               c,
         ];
-        final outcome = latest.length < 2
+        final withRecords = latestRecords();
+        final outcome = latest.isEmpty || latest.length + withRecords.length < 2
             ? null
             : await resolution.confirmAll(
                 [for (final c in latest) (c.session, c.id)],
                 _origin(turn).referenceTime,
                 membership: state.membership,
+                extra: [for (final r in withRecords) ...records.confirmOps(r)],
               );
         if (!_current(gen)) return;
         if (outcome == null) {
+          reopenRecords(failed: latest.length + withRecords.length >= 2);
           for (final id in ids) {
             final now = _card(id)?.$2;
             if (now != null && now.resolution == CardResolution.confirming) {
@@ -1044,6 +1173,17 @@ class BuddyThreadController extends _$BuddyThreadController {
           }
           return;
         }
+        for (final r in withRecords) {
+          _setRecord(
+            userMessageId,
+            r.copyWith(
+              resolution: CardResolution.logged,
+              undoEntryId: outcome.undoEntryId,
+              appliedAt: outcome.appliedAt,
+            ),
+          );
+        }
+        reopenRecords(failed: false);
         for (final c in latest) {
           final session = outcome.sessions[c.id] ?? c.session;
           final before = c.card;
@@ -1083,9 +1223,56 @@ class BuddyThreadController extends _$BuddyThreadController {
           );
         }
       }
+      if (_current(gen)) reopenRecords(failed: true);
       return;
     }
     if (_current(gen)) await _refreshOthersSafely('', gen);
+  }
+
+  /// Apply all over record cards only: their ops and resolves in one
+  /// change set, one Undo (AI-162).
+  Future<void> _applyRecords(
+    BuddyTurn turn,
+    List<RecordCard> cards,
+    int gen,
+  ) async {
+    final records = _records;
+    for (final r in cards) {
+      _setRecord(
+        turn.userMessageId,
+        r.copyWith(resolution: CardResolution.confirming, couldNotSave: false),
+      );
+    }
+    var written = false;
+    try {
+      await _lane.run(() async {
+        if (!_current(gen)) return;
+        final latest = [
+          for (final r in cards)
+            if (_record(r.id)?.$2 case final now?
+                when now.resolution == CardResolution.confirming)
+              now,
+        ];
+        final done = await records.confirmAll(latest);
+        if (done == null || !_current(gen)) return;
+        written = true;
+        for (final r in done) {
+          _setRecord(turn.userMessageId, r);
+        }
+      });
+      // A throw never leaves cards "confirming".
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {}
+    if (written || !_current(gen)) return;
+    for (final r in cards) {
+      final now = _record(r.id)?.$2;
+      if (now != null && now.resolution == CardResolution.confirming) {
+        _setRecord(
+          turn.userMessageId,
+          now.copyWith(resolution: CardResolution.open, couldNotSave: true),
+        );
+      }
+    }
   }
 
   /// Applies a chip/answer [adjustment] to open card [cardId] and recomputes
@@ -1270,6 +1457,9 @@ class BuddyThreadController extends _$BuddyThreadController {
       card.copyWith(resolution: CardResolution.confirming, couldNotLog: false),
     );
     var logged = false;
+    ProposalCard? confirmed;
+    // Read before the confirm writes this card's habits (AI-065).
+    final repeated = await _repeatedHabits(card.card);
     try {
       await lane.run(() async {
         await lane.drain(_writeLatest(resolution, gen));
@@ -1284,6 +1474,7 @@ class BuddyThreadController extends _$BuddyThreadController {
         );
         if (!_current(gen)) return;
         logged = _onConfirmed(turn, latest, before, outcome);
+        if (logged) confirmed = before;
       });
       // A throw never leaves the card "confirming": it's open again with
       // "Couldn't log this card." (A22a review).
@@ -1300,6 +1491,9 @@ class BuddyThreadController extends _$BuddyThreadController {
       return;
     }
     if (logged && _current(gen)) await _refreshOthersSafely(cardId, gen);
+    if (confirmed case final card? when _current(gen)) {
+      await _afterLogged(turn.userMessageId, card, repeated, gen);
+    }
   }
 
   /// The thread after confirm [outcome] of [card] (whose card was
@@ -1737,6 +1931,8 @@ class BuddyThreadController extends _$BuddyThreadController {
       if (!_current(gen)) break;
       await _reopen(c.id, t, c, restorer, gen);
     }
+    // Record cards logged by the same Apply all open again too (A67).
+    if (_current(gen)) await _reopenRecords(entry, gen);
     return outcome;
   }
 
@@ -1832,6 +2028,512 @@ class BuddyThreadController extends _$BuddyThreadController {
     messageId: turn.assistantMessageId ?? turn.userMessageId,
     referenceTime: turn.message.time,
   );
+
+  // ---- record cards (A67) ----
+
+  RecordCards get _records => ref.read(recordCardsProvider);
+
+  (BuddyTurn, RecordCard)? _record(String cardId) {
+    for (final turn in state.turns) {
+      for (final card in turn.records) {
+        if (card.id == cardId) return (turn, card);
+      }
+    }
+    return null;
+  }
+
+  void _setRecord(String userMessageId, RecordCard card) => _update(
+    userMessageId,
+    (t) => t.copyWith(
+      records: [
+        for (final c in t.records)
+          if (c.id == card.id) card else c,
+      ],
+    ),
+  );
+
+  /// The logged entries of food card [cardId] ("save this", A67 D6), or
+  /// `null` when it isn't logged.
+  Set<String>? _loggedEntries(String? cardId) {
+    final found = cardId == null ? null : _card(cardId);
+    if (found == null || found.$2.resolution != CardResolution.logged) {
+      return null;
+    }
+    return {
+      for (final op in found.$2.card.draftOps)
+        if (op case LogEntries(:final entries)) ...entries.map((e) => e.id),
+    };
+  }
+
+  Set<String>? _cardEntriesOf(Map<String, Object?> intent) =>
+      intent['kind'] == RecordKind.savedMealCreate.code
+      ? _loggedEntries(intent['activeProposal'] as String?) ?? <String>{}
+      : null;
+
+  /// Writes a record `proposal` event (A67 D2, D3): a new pending card, or
+  /// an update of an open one at the revision the event names. Never a
+  /// domain row: only a user tap confirms.
+  Future<TurnCheckpoint?> _recordProposal(
+    String turnId,
+    TurnProposal proposal,
+    TurnCheckpoint Function(CheckpointCard) withCard,
+    int gen,
+  ) async {
+    final turn = _turn(turnId);
+    if (turn == null) return null;
+    final records = _records;
+    final lane = _lane;
+    if (proposal.replaces case final replaces?) {
+      final cardId = proposal.target?.cardId ?? replaces.proposalId;
+      return await lane.run(() async {
+        final found = _record(cardId);
+        if (!_current(gen) || found == null || _stoppedTurn(turnId)) {
+          return null;
+        }
+        final (owner, card) = found;
+        if (card.resolution != CardResolution.open ||
+            replaces.expectedRevision != card.revision) {
+          if (card.resolution == CardResolution.open) {
+            _setRecord(
+              owner.userMessageId,
+              card.copyWith(changedMeanwhile: true),
+            );
+          }
+          return null;
+        }
+        final next = withCard(
+          CheckpointCard(
+            proposalId: proposal.target?.proposalId ?? replaces.proposalId,
+            cardId: cardId,
+            revision: proposal.revision,
+            round: proposal.target?.round ?? proposal.round,
+            attempt: proposal.target?.attempt ?? proposal.attempt,
+          ),
+        );
+        final written = await records.update(
+          card: card,
+          raw: proposal.intent,
+          revision: proposal.revision,
+          userId: turnId,
+          checkpoint: next.encode(),
+          cardEntryIds: _cardEntriesOf(proposal.intent),
+          cancelled: () => _stoppedTurn(turnId) || !_current(gen),
+        );
+        if (written == null || !_current(gen)) return null;
+        _setRecord(owner.userMessageId, written);
+        return next;
+      });
+    }
+    final cardId = ref.read(idGeneratorProvider).next();
+    return await lane.run(() async {
+      if (!_current(gen) || _stoppedTurn(turnId)) return null;
+      final next = withCard(
+        CheckpointCard(
+          proposalId: proposal.proposalId,
+          cardId: cardId,
+          revision: proposal.revision,
+          round: proposal.round,
+          attempt: proposal.attempt,
+        ),
+      );
+      final written = await records.create(
+        raw: proposal.intent,
+        revision: proposal.revision,
+        cardId: cardId,
+        userId: turnId,
+        referenceTime: turn.message.time,
+        checkpoint: next.encode(),
+        cardEntryIds: _cardEntriesOf(proposal.intent),
+        cancelled: () => _stoppedTurn(turnId) || !_current(gen),
+      );
+      if (!_current(gen)) return null;
+      if (written == null) {
+        _update(turnId, (t) => t.copyWith(unsupported: true));
+        return null;
+      }
+      _update(turnId, (t) => t.copyWith(records: [...t.records, written]));
+      return next;
+    });
+  }
+
+  /// Picks entry [entryId] on which-one card [cardId] (AI-091): the card
+  /// is planned for it (nothing is written).
+  Future<void> pickRecord(String cardId, String entryId) =>
+      _replanRecord(cardId, (c) => c.copyWith(choice: entryId));
+
+  /// Picks the batch [path] on card [cardId] (AI-100); nothing is written.
+  Future<void> setRecordPath(String cardId, BatchPath path) =>
+      _replanRecord(cardId, (c) => c.copyWith(path: path));
+
+  Future<void> _replanRecord(
+    String cardId,
+    RecordCard Function(RecordCard) change,
+  ) async {
+    final found = _record(cardId);
+    if (found == null || found.$2.resolution != CardResolution.open) return;
+    final gen = _generation;
+    final fresh = await _records.replan(
+      change(found.$2),
+      cardEntryIds: _cardEntriesOf(found.$2.raw),
+    );
+    final now = _record(cardId);
+    if (fresh == null ||
+        !_current(gen) ||
+        now == null ||
+        now.$2.resolution != CardResolution.open) {
+      return;
+    }
+    _setRecord(now.$1.userMessageId, fresh.copyWith(changedMeanwhile: false));
+  }
+
+  /// Confirms record card [cardId] with one tap (A67 D2): its plan's ops
+  /// and the resolve in one change set, one Undo.
+  Future<void> confirmRecord(String cardId) async {
+    final found = _record(cardId);
+    if (found == null) return;
+    final (turn, card) = found;
+    final gen = _generation;
+    if (card.resolution != CardResolution.open ||
+        !card.plan.canConfirm ||
+        turn.profileGeneration != gen) {
+      return;
+    }
+    final records = _records;
+    final lane = _lane;
+    _setRecord(
+      turn.userMessageId,
+      card.copyWith(resolution: CardResolution.confirming, couldNotSave: false),
+    );
+    try {
+      await lane.run(() async {
+        final latest = _record(cardId)?.$2;
+        if (!_current(gen) || latest == null) return;
+        final outcome = await records.confirm(
+          latest,
+          cardEntryIds: _cardEntriesOf(latest.raw),
+        );
+        if (!_current(gen)) return;
+        switch (outcome) {
+          case RecordConfirmed(card: final logged):
+            _setRecord(turn.userMessageId, logged);
+          case RecordChanged(card: final fresh):
+            _setRecord(
+              turn.userMessageId,
+              fresh ??
+                  latest.copyWith(
+                    resolution: CardResolution.open,
+                    couldNotSave: true,
+                  ),
+            );
+          case RecordNotSaved():
+            _setRecord(
+              turn.userMessageId,
+              latest.copyWith(
+                resolution: CardResolution.open,
+                couldNotSave: true,
+              ),
+            );
+        }
+      });
+      // A throw never leaves the card "confirming".
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+      final now = _record(cardId)?.$2;
+      if (_current(gen) &&
+          now != null &&
+          now.resolution == CardResolution.confirming) {
+        _setRecord(
+          turn.userMessageId,
+          now.copyWith(resolution: CardResolution.open, couldNotSave: true),
+        );
+      }
+    }
+  }
+
+  /// Discards record card [cardId] (undoable).
+  Future<void> discardRecord(String cardId) async {
+    final found = _record(cardId);
+    if (found == null || found.$2.resolution != CardResolution.open) return;
+    final gen = _generation;
+    final records = _records;
+    await _lane.run(() async {
+      final latest = _record(cardId)?.$2;
+      if (!_current(gen) ||
+          latest == null ||
+          latest.resolution != CardResolution.open) {
+        return;
+      }
+      final done = await records.discard(latest);
+      if (done != null && _current(gen)) {
+        _setRecord(found.$1.userMessageId, done);
+      }
+    });
+  }
+
+  /// Undoes record card [cardId]'s confirm or discard (its whole change
+  /// set): every card of an Apply all opens again.
+  Future<UndoOutcome?> undoRecord(String cardId) async {
+    final found = _record(cardId);
+    final entry = found?.$2.undoEntryId;
+    if (found == null ||
+        entry == null ||
+        found.$1.profileGeneration != _generation) {
+      return null;
+    }
+    // A group with a food card: its Undo reopens everything (A66 Log all).
+    for (final t in state.turns) {
+      for (final c in t.cards) {
+        if (c.undoEntryId == entry && c.resolution == CardResolution.logged) {
+          return await undo(c.id);
+        }
+      }
+    }
+    final gen = _generation;
+    final records = _records;
+    return await _lane.run(() async {
+      if (!_current(gen)) return null;
+      final outcome = await records.undo(entry);
+      if (!_current(gen)) return outcome;
+      if (outcome != UndoOutcome.undone) {
+        final now = _record(cardId);
+        if (now != null) {
+          _setRecord(
+            now.$1.userMessageId,
+            now.$2.copyWith(undoRefused: outcome),
+          );
+        }
+        return outcome;
+      }
+      await _reopenRecords(entry, gen);
+      return outcome;
+    });
+  }
+
+  /// Opens every record card resolved by undo entry [entry] again, planned
+  /// from current rows.
+  Future<void> _reopenRecords(String entry, int gen) async {
+    final records = _records;
+    for (final t in state.turns) {
+      for (final r in t.records) {
+        if (r.undoEntryId != entry) continue;
+        final fresh = await records.replan(
+          r,
+          cardEntryIds: _cardEntriesOf(r.raw),
+        );
+        if (!_current(gen)) return;
+        _setRecord(
+          t.userMessageId,
+          RecordCard(
+            id: r.id,
+            intent: r.intent,
+            raw: r.raw,
+            plan: fresh?.plan ?? r.plan,
+            holderId: r.holderId,
+            referenceTime: r.referenceTime,
+            revision: r.revision,
+            choice: r.choice,
+            path: r.path,
+          ),
+        );
+      }
+    }
+  }
+
+  /// The ops "Review" of personal-food card [cardId] adds to the form's
+  /// save (A67 D8): the card's resolve, `adjusted` when the saved food
+  /// isn't what Buddy prepared. `null` when the card isn't open.
+  List<ChangeOp> Function({required bool adjusted})? foodFormResolve(
+    String cardId,
+  ) {
+    final found = _record(cardId);
+    if (found == null ||
+        found.$2.resolution != CardResolution.open ||
+        found.$2.kind != RecordKind.personalFoodCreate) {
+      return null;
+    }
+    final card = found.$2;
+    final records = _records;
+    return ({required adjusted}) =>
+        records.resolveOps(card, adjusted: adjusted);
+  }
+
+  /// Hands personal-food card [cardId]'s draft to the next new-food form
+  /// (A67 D8): the form's save confirms the card in its change set.
+  /// Whether there was one to hand over.
+  bool prepareFoodForm(String cardId) {
+    final resolve = foodFormResolve(cardId);
+    final food = _record(cardId)?.$2.plan.view?.food;
+    final draft = food == null ? null : recordFoodDraft(food);
+    if (resolve == null || draft == null) return false;
+    ref
+        .read(preparedFoodPrefillProvider.notifier)
+        .put(
+          FoodFormPrefill(
+            draft: draft,
+            also: resolve,
+            origin: Origin.proposal(cardId),
+            perServingWithoutSize: food!.needsServingSize,
+          ),
+        );
+    return true;
+  }
+
+  /// Personal-food cards follow their rows (A67 D8): saved by the form (or
+  /// its Undo reopening them) outside this thread's own writes.
+  Future<void> _syncFoodCards() async {
+    final gen = _generation;
+    final proposals = ref.read(proposalRepositoryProvider);
+    for (final t in state.turns) {
+      for (final r in t.records) {
+        if (r.kind != RecordKind.personalFoodCreate ||
+            r.resolution == CardResolution.confirming ||
+            r.resolution == CardResolution.superseded) {
+          continue;
+        }
+        final row = await proposals.byId(r.id);
+        if (!_current(gen) || row == null) return;
+        final next = switch (row.status) {
+          ProposalStatus.pending => CardResolution.open,
+          ProposalStatus.confirmed => CardResolution.logged,
+          _ => CardResolution.discarded,
+        };
+        final now = _record(r.id);
+        if (now == null || now.$2.resolution == next) continue;
+        if (next == CardResolution.open) {
+          _setRecord(
+            now.$1.userMessageId,
+            RecordCard(
+              id: r.id,
+              intent: r.intent,
+              raw: r.raw,
+              plan: r.plan,
+              holderId: r.holderId,
+              referenceTime: r.referenceTime,
+              revision: r.revision,
+            ),
+          );
+        } else {
+          _setRecord(now.$1.userMessageId, now.$2.copyWith(resolution: next));
+        }
+      }
+    }
+  }
+
+  /// "Always use …?" accepted (AI-065): the explicit default is saved in
+  /// one change set with an Undo; the notice goes.
+  Future<String?> rememberNotice(String userMessageId, String noticeId) async {
+    final turn = _turn(userMessageId);
+    final notice = turn?.notices.where((n) => n.id == noticeId).firstOrNull;
+    if (turn == null || notice == null || notice.value == null) return null;
+    final dimension = notice.dimension;
+    final key = noticeKey(notice);
+    if (dimension == null || key == null) return null;
+    final result = await ref
+        .read(changeSetApplierProvider)
+        .apply(
+          ChangeSet([
+            SaveMemoryItem(
+              kind: MemoryKinds.defaultValue,
+              key: key,
+              value: notice.value!,
+            ),
+          ], origin: Origin.direct),
+        );
+    if (result is! Applied) return null;
+    final entry = ref
+        .read(undoStackProvider)
+        .record(result, UndoLabel('memorySaved'));
+    dismissNotice(userMessageId, noticeId);
+    return entry.id;
+  }
+
+  /// The memory key of a remember notice (its question kind).
+  static String? noticeKey(BuddyNotice n) =>
+      n.kind == BuddyNoticeKind.remember ? n.id.split('|').first : null;
+
+  /// Hides notice [noticeId] of turn [userMessageId].
+  void dismissNotice(String userMessageId, String noticeId) => _update(
+    userMessageId,
+    (t) => t.copyWith(
+      notices: [
+        for (final n in t.notices)
+          if (n.id != noticeId) n,
+      ],
+    ),
+  );
+
+  /// The habits of [card] that were already learned with the same value
+  /// before this confirm and have no explicit default (AI-065).
+  Future<List<LearnedHabit>> _repeatedHabits(ProposalCard card) async {
+    final habits = learnedHabitsOf(card);
+    if (habits.isEmpty) return const [];
+    try {
+      final memory = await ref.read(memoryRepositoryProvider).all();
+      return [
+        for (final h in habits)
+          if (memory.any(
+                (m) =>
+                    m.kind == MemoryKinds.habit &&
+                    m.key == h.key &&
+                    m.value == h.value,
+              ) &&
+              !memory.any(
+                (m) => m.kind == MemoryKinds.defaultValue && m.key == h.key,
+              ))
+            h,
+      ];
+      // Only an offer: an unreadable memory offers nothing.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// After a food card was logged: the AI-065 offers for [repeated], and
+  /// one AI-084 weighing tip for an often-logged estimated food.
+  Future<void> _afterLogged(
+    String userMessageId,
+    ProposalCard card,
+    List<LearnedHabit> repeated,
+    int gen,
+  ) async {
+    final notices = <BuddyNotice>[
+      for (final h in repeated)
+        BuddyNotice(
+          id: '${h.key}|remember',
+          kind: BuddyNoticeKind.remember,
+          subject: h.subject,
+          dimension: h.dimension,
+          value: h.value,
+        ),
+    ];
+    try {
+      final tip = await ref
+          .read(weighingTipsProvider)
+          .tipFor(card, EntryTime.now(ref.read(clockProvider)));
+      if (tip != null) {
+        notices.add(
+          BuddyNotice(
+            id: 'weigh|${tip.key}',
+            kind: BuddyNoticeKind.weigh,
+            subject: tip.name,
+          ),
+        );
+      }
+      // A tip is optional: a failed read shows none.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {}
+    if (notices.isEmpty || !_current(gen)) return;
+    _update(
+      userMessageId,
+      (t) => t.copyWith(
+        notices: [
+          ...t.notices.where((n) => !notices.any((x) => x.id == n.id)),
+          ...notices,
+        ],
+      ),
+    );
+  }
 
   BuddyTurn? _turn(String userMessageId) =>
       state.turns.where((t) => t.userMessageId == userMessageId).firstOrNull;
@@ -1974,6 +2676,22 @@ final class _Host implements TurnHost {
   ({PriorCardState status, String line, int revision})? priorCard(
     String cardId,
   ) {
+    final record = _thread._record(cardId)?.$2;
+    if (record != null) {
+      return (
+        status: switch (record.resolution) {
+          CardResolution.logged => PriorCardState.confirmed,
+          CardResolution.discarded ||
+          CardResolution.superseded => PriorCardState.discarded,
+          CardResolution.open ||
+          CardResolution.confirming => PriorCardState.pending,
+        },
+        line: record.plan.view == null
+            ? record.kind.code
+            : recordLabel(record.plan.view!),
+        revision: record.revision,
+      );
+    }
     final found = _thread._card(cardId);
     if (found == null) return null;
     final card = found.$2;

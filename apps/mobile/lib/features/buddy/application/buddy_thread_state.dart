@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
+import 'package:fb_mobile/features/buddy/data/records/record_intents.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
 /// Where a turn stands (A66).
@@ -343,7 +344,16 @@ final class BuddyTurn {
     this.question,
     this.trace = const [],
     this.unsupported = false,
+    this.records = const [],
+    this.notices = const [],
   });
+
+  /// The turn's record cards (A67): edits, copies, saved meals, batches,
+  /// personal foods, memory and weigh-ins, in creation order.
+  final List<RecordCard> records;
+
+  /// Local offers and tips under the turn (AI-065, AI-084).
+  final List<BuddyNotice> notices;
 
   /// The profile generation the turn was created in (A33 round 4): its
   /// completions and confirms are dropped once the profile switched.
@@ -395,6 +405,15 @@ final class BuddyTurn {
       if (c.resolution == CardResolution.open && c.card.canConfirm) c,
   ];
 
+  /// The record cards Apply all confirms: open and one-tap confirmable.
+  List<RecordCard> get applicableRecords => [
+    for (final r in records)
+      if (r.resolution == CardResolution.open && r.plan.canConfirm) r,
+  ];
+
+  /// How many cards Apply all confirms.
+  int get applicableCount => applicable.length + applicableRecords.length;
+
   /// A copy with the given fields replaced.
   BuddyTurn copyWith({
     BuddyTurnPhase? phase,
@@ -409,6 +428,8 @@ final class BuddyTurn {
     BuddyQuestion? question,
     List<TraceStepView>? trace,
     bool? unsupported,
+    List<RecordCard>? records,
+    List<BuddyNotice>? notices,
   }) => BuddyTurn(
     message: message,
     phase: phase ?? this.phase,
@@ -423,6 +444,8 @@ final class BuddyTurn {
     question: question ?? this.question,
     trace: trace ?? this.trace,
     unsupported: unsupported ?? this.unsupported,
+    records: records ?? this.records,
+    notices: notices ?? this.notices,
   );
 
   @override
@@ -480,4 +503,154 @@ final class BuddyThread {
 
   @override
   String toString() => 'BuddyThread(${turns.length} turns)';
+}
+
+/// A record card in the thread (A67 D1, D2): its intent, the plan it shows
+/// and how it was resolved. Holds user content: never logged.
+@immutable
+final class RecordCard {
+  /// The card.
+  const new({
+    required this.id,
+    required this.intent,
+    required this.raw,
+    required this.plan,
+    required this.holderId,
+    required this.referenceTime,
+    this.revision = 1,
+    this.resolution = CardResolution.open,
+    this.choice,
+    this.path,
+    this.undoEntryId,
+    this.appliedAt,
+    this.changedMeanwhile = false,
+    this.couldNotSave = false,
+    this.undoRefused,
+  });
+
+  /// The card ID (the proposal row).
+  final String id;
+
+  /// The decoded intent.
+  final RecordIntent intent;
+
+  /// The raw contract intent (the proposal's interpretation).
+  final Map<String, Object?> raw;
+
+  /// What it shows and writes.
+  final RecordPlan plan;
+
+  /// Its holder assistant row (the proposal's budget message).
+  final String holderId;
+
+  /// The message's time (today and "now" for the plan).
+  final EntryTime referenceTime;
+
+  /// The revision the phone shows (A66 D6).
+  final int revision;
+
+  /// Open, confirming, logged or discarded.
+  final CardResolution resolution;
+
+  /// The which-one pick.
+  final String? choice;
+
+  /// The batch path the user picked.
+  final BatchPath? path;
+
+  /// The confirm's or discard's undo entry.
+  final String? undoEntryId;
+
+  /// When it was confirmed or discarded (the undo window).
+  final DateTime? appliedAt;
+
+  /// The rows behind it changed: re-planned, check again.
+  final bool changedMeanwhile;
+
+  /// The last confirm was refused.
+  final bool couldNotSave;
+
+  /// Why an Undo was refused.
+  final UndoOutcome? undoRefused;
+
+  /// The kind.
+  RecordKind get kind => intent.request.kind;
+
+  /// A copy with the given fields replaced.
+  RecordCard copyWith({
+    RecordIntent? intent,
+    Map<String, Object?>? raw,
+    RecordPlan? plan,
+    String? holderId,
+    int? revision,
+    CardResolution? resolution,
+    String? choice,
+    BatchPath? path,
+    String? undoEntryId,
+    DateTime? appliedAt,
+    bool? changedMeanwhile,
+    bool? couldNotSave,
+    UndoOutcome? undoRefused,
+    bool clearUndoRefused = false,
+  }) => RecordCard(
+    id: id,
+    intent: intent ?? this.intent,
+    raw: raw ?? this.raw,
+    plan: plan ?? this.plan,
+    holderId: holderId ?? this.holderId,
+    referenceTime: referenceTime,
+    revision: revision ?? this.revision,
+    resolution: resolution ?? this.resolution,
+    choice: choice ?? this.choice,
+    path: path ?? this.path,
+    undoEntryId: undoEntryId ?? this.undoEntryId,
+    appliedAt: appliedAt ?? this.appliedAt,
+    changedMeanwhile: changedMeanwhile ?? this.changedMeanwhile,
+    couldNotSave: couldNotSave ?? this.couldNotSave,
+    undoRefused: clearUndoRefused ? null : undoRefused ?? this.undoRefused,
+  );
+
+  @override
+  String toString() => 'RecordCard($id, ${kind.code}, ${resolution.name})';
+}
+
+/// A local notice under a turn: an offer to remember (AI-065) or a
+/// weighing tip (AI-084). Holds user content: never logged.
+@immutable
+final class BuddyNotice {
+  /// The notice.
+  const new({
+    required this.id,
+    required this.kind,
+    required this.subject,
+    this.dimension,
+    this.value,
+  });
+
+  /// Its ID (dismissal).
+  final String id;
+
+  /// `remember` (AI-065) or `weigh` (AI-084).
+  final BuddyNoticeKind kind;
+
+  /// The food it is about. User content.
+  final String subject;
+
+  /// The habit's dimension (`state`, `fat`).
+  final String? dimension;
+
+  /// The habit's value.
+  final String? value;
+
+  @override
+  String toString() => 'BuddyNotice(${kind.name})';
+}
+
+/// What a [BuddyNotice] is.
+enum BuddyNoticeKind {
+  /// "Always use …?" (AI-065).
+  remember,
+
+  /// "Weigh it once …" (AI-084).
+  weigh,
 }

@@ -22,6 +22,7 @@ import 'package:fb_domain/src/proposals/assumption_code.dart';
 import 'package:fb_domain/src/proposals/day_hint.dart';
 import 'package:fb_domain/src/proposals/proposal_policy_constants.dart';
 import 'package:fb_domain/src/proposals/proposal_sync_codes.dart';
+import 'package:fb_domain/src/records/record_planner.dart' show matchSlotHint;
 import 'package:fb_domain/src/targets/target_settings.dart';
 import 'package:fb_domain/src/targets/weekly_budget.dart';
 import 'package:fb_domain/src/time/local_date.dart';

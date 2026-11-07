@@ -520,3 +520,24 @@ CREATE TRIGGER buddy_summaries_no_delete BEFORE DELETE ON buddy_summaries
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;
+
+-- memory_items (entity 'memoryItem', A67)
+CREATE TRIGGER memory_items_outbox_ai AFTER INSERT ON memory_items
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('memoryItem', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER memory_items_outbox_au AFTER UPDATE ON memory_items
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('memoryItem', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER memory_items_no_delete BEFORE DELETE ON memory_items
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;

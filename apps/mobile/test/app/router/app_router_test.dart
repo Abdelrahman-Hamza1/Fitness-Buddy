@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/account/profile_generation.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/body/body.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart' show BuddyRemembersScreen;
 import 'package:fb_mobile/features/design_preview/design_preview.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -51,6 +52,8 @@ import '../../helpers/pump_app.dart';
   NewFoodFromSearchRoute() => (PersonalFoodFormScreen, true),
   BarcodeScanRoute() => (BarcodeScanScreen, true),
   NewFoodFromScanRoute() => (PersonalFoodFormScreen, true),
+  NewFoodFromBuddyRoute() => (PersonalFoodFormScreen, true),
+  BuddyRemembersRoute() => (BuddyRemembersScreen, true),
   PersonalFoodsRoute() => (PersonalFoodsScreen, true),
   PersonalFoodRoute() => (PersonalFoodFormScreen, true),
   SavedMealsRoute() => (SavedMealsScreen, true),
@@ -105,6 +108,8 @@ final List<AppRoute> _allRoutes = [
   const NewFoodFromSearchRoute(),
   const BarcodeScanRoute(),
   const NewFoodFromScanRoute(),
+  const NewFoodFromBuddyRoute(),
+  const BuddyRemembersRoute(),
   const PersonalFoodsRoute(),
   const PersonalFoodRoute(),
   const SavedMealsRoute(),
@@ -182,6 +187,8 @@ void main() {
         const NewFoodFromSearchRoute(),
         const BarcodeScanRoute(),
         const NewFoodFromScanRoute(),
+        const NewFoodFromBuddyRoute(),
+        const BuddyRemembersRoute(),
         const PersonalFoodsRoute(),
         const PersonalFoodRoute(),
         const SavedMealsRoute(),

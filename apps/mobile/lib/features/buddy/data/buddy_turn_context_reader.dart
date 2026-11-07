@@ -4,6 +4,9 @@ import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_summary_repository.dart';
 import 'package:fb_mobile/features/buddy/data/chat_message_repository.dart';
+import 'package:fb_mobile/features/buddy/data/memory_repository.dart';
+import 'package:fb_mobile/features/buddy/data/memory_slice.dart';
+import 'package:fb_mobile/features/buddy/data/open_batches.dart';
 import 'package:fb_mobile/features/buddy/data/personal_slice.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_repository.dart';
@@ -14,9 +17,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'buddy_turn_context_reader.g.dart';
 
-/// An open card the snapshot lists (≤ 5, newest last): its local ID, the
-/// revision the phone shows and its label.
-typedef OpenCardRef = ({String cardId, int revision, String label});
+/// An open card the snapshot lists (≤ 5, newest last): its local ID, its
+/// kind, the revision the phone shows and its label.
+typedef OpenCardRef = ({
+  String cardId,
+  String kind,
+  int revision,
+  String label,
+});
 
 /// The start request's bounds (`06` §3.1, the contract).
 abstract final class TurnBounds {
@@ -92,6 +100,9 @@ final class BuddyTurnContextReader {
       final evicted = older.sublist(mark + 1);
       final slots = await DiaryReads(_db).slots();
       final foods = await _personalFoods();
+      final memory = await MemoryRepository(_db).all();
+      final meals = await DiaryReads(_db).savedMeals();
+      final batches = await openBatches(_db, foods, now.occurredAtUtc);
       final previous = before.reversed
           .where(
             (m) =>
@@ -119,11 +130,15 @@ final class BuddyTurnContextReader {
                     : evicted,
                 previousRevision: summary?.revision ?? 0,
               ),
-        personal: PersonalSlice.match(text, foods),
+        personal: PersonalSlice.match(
+          text,
+          foods,
+          savedMeals: meals,
+          batches: batches,
+        ),
         profile: BuddyTurnProfile(
-          // Memory items and learned defaults come with A67's table.
-          memory: const [],
-          defaults: const [],
+          memory: MemorySlice.profile(memory),
+          defaults: MemorySlice.habits(memory),
           halal: halal,
           units: BuddyUnits(
             mass: units == UnitSystem.imperial
@@ -151,7 +166,7 @@ final class BuddyTurnContextReader {
           openCards: [
             for (final c in openCards.reversed.take(TurnBounds.openCards))
               BuddyOpenCard(
-                kind: foodLogKind,
+                kind: c.kind,
                 proposalId: c.cardId,
                 revision: c.revision,
                 summary: _cut(c.label, TurnBounds.openCardSummary),

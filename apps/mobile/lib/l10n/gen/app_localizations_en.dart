@@ -7879,4 +7879,260 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dayEstimateRemoved => 'Day estimate removed';
+
+  @override
+  String get recordKindEdit => 'Edit';
+
+  @override
+  String get recordKindDelete => 'Delete';
+
+  @override
+  String get recordKindCopy => 'Copy meal';
+
+  @override
+  String get recordKindSavedMeal => 'Saved meal';
+
+  @override
+  String get recordKindSaveMeal => 'Save as a meal';
+
+  @override
+  String get recordKindBatch => 'Batch';
+
+  @override
+  String get recordKindBatchPortion => 'From your batch';
+
+  @override
+  String get recordKindBatchClose => 'Close batch';
+
+  @override
+  String get recordKindFood => 'Your food';
+
+  @override
+  String get recordKindRemember => 'Remember';
+
+  @override
+  String get recordKindForget => 'Forget';
+
+  @override
+  String get recordKindWeighIn => 'Weigh-in';
+
+  @override
+  String get recordConfirmEdit => 'Save change';
+
+  @override
+  String get recordConfirmDelete => 'Delete';
+
+  @override
+  String get recordConfirmCopy => 'Copy';
+
+  @override
+  String get recordConfirmSave => 'Save';
+
+  @override
+  String get recordConfirmClose => 'Close it';
+
+  @override
+  String get recordConfirmReview => 'Review and save';
+
+  @override
+  String get recordConfirmRemember => 'Remember';
+
+  @override
+  String get recordConfirmForget => 'Forget';
+
+  @override
+  String get recordWhichOne => 'Which one?';
+
+  @override
+  String get recordRemoved => 'Removed';
+
+  @override
+  String get recordCouldNotSave => 'Couldn\'t save this card.';
+
+  @override
+  String get recordDone => 'Done.';
+
+  @override
+  String get recordNoteTimeIgnored => 'Keeps its time of day.';
+
+  @override
+  String get recordNoteRawWeight =>
+      'No cooked weight given: counted on the ingredients\' raw weight.';
+
+  @override
+  String get recordNoteClosesBatch => 'This finishes the batch.';
+
+  @override
+  String get recordNoteQuickPath => 'Logged now, nothing kept for later.';
+
+  @override
+  String get recordNoteLeftovers => 'Kept as leftovers for later portions.';
+
+  @override
+  String get recordNoteEstimate => 'Includes an AI estimate.';
+
+  @override
+  String get recordBatchPathQuick => 'Log now';
+
+  @override
+  String get recordBatchPathLeftovers => 'Keep leftovers';
+
+  @override
+  String get buddyNoticeYes => 'Remember';
+
+  @override
+  String get buddyNoticeNo => 'Not now';
+
+  @override
+  String get buddyNoticeRemembered => 'Remembered.';
+
+  @override
+  String get buddyMemorySummary => 'Summary of older chat';
+
+  @override
+  String get buddyMemoryEmpty =>
+      'Nothing remembered yet. Tell Buddy things like “I always weigh rice raw”.';
+
+  @override
+  String get buddyMemoryGroupDefaults => 'Defaults';
+
+  @override
+  String get buddyMemoryGroupPortions => 'Usual portions';
+
+  @override
+  String get buddyMemoryGroupNames => 'Names and brands';
+
+  @override
+  String get buddyMemoryGroupLearned => 'Learned from your cards';
+
+  @override
+  String get buddyMemoryGroupTips => 'Tips shown';
+
+  @override
+  String get buddyMemoryForget => 'Forget';
+
+  @override
+  String get buddyMemoryForgotten => 'Forgotten.';
+
+  @override
+  String get buddyMemoryClearAll => 'Forget everything';
+
+  @override
+  String get buddyMemoryClearAllBody =>
+      'Buddy forgets everything listed here. Your diary and your foods don\'t change.';
+
+  @override
+  String get buddyRemembersOpen => 'See what Buddy remembers';
+
+  @override
+  String get buddyMemoryDimensionState => 'weighed';
+
+  @override
+  String get buddyMemoryDimensionFat => 'cooking fat';
+
+  @override
+  String get buddyMemoryDimensionVariant => 'usually';
+
+  @override
+  String get buddyMemoryDimensionPortion => 'usual size';
+
+  @override
+  String recordBeforeAfter(String before, String after) {
+    return '$before → $after';
+  }
+
+  @override
+  String recordMovesTo(String where) {
+    return 'Moves to $where';
+  }
+
+  @override
+  String recordCopiesTo(String where) {
+    return 'To $where';
+  }
+
+  @override
+  String recordKcalChange(String kcal) {
+    return 'Change: $kcal';
+  }
+
+  @override
+  String recordKcalTotal(String kcal) {
+    return 'Total: $kcal';
+  }
+
+  @override
+  String recordChoice(String name, String where, String kcal) {
+    return '$name · $where · $kcal';
+  }
+
+  @override
+  String recordNotePlate(String grams) {
+    return 'A plate counts as $grams.';
+  }
+
+  @override
+  String recordBatchWhole(String amount) {
+    return 'Whole batch: $amount';
+  }
+
+  @override
+  String recordBatchPer100(String kcal) {
+    return '$kcal per 100 g';
+  }
+
+  @override
+  String recordBatchEaten(String amount, String kcal) {
+    return 'Now: $amount · $kcal';
+  }
+
+  @override
+  String recordBatchLeft(String amount) {
+    return 'Left afterwards: $amount';
+  }
+
+  @override
+  String recordFoodAliases(String names) {
+    return 'Also called $names';
+  }
+
+  @override
+  String recordFoodStated(String kcal) {
+    return 'Your figures: $kcal';
+  }
+
+  @override
+  String recordMemoryLine(String subject, String value) {
+    return '$subject: $value';
+  }
+
+  @override
+  String recordMemoryDefault(String subject, String what, String value) {
+    return '$subject: $what $value';
+  }
+
+  @override
+  String recordWeighIn(String value, String day) {
+    return '$value on $day';
+  }
+
+  @override
+  String recordWeighInTrend(String delta) {
+    return '$delta vs your trend';
+  }
+
+  @override
+  String buddyNoticeRemember(String food, String value) {
+    return 'Always treat $food as $value?';
+  }
+
+  @override
+  String buddyNoticeWeigh(String food) {
+    return 'You log $food often. Weigh it once and save your usual portion for exact numbers.';
+  }
+
+  @override
+  String buddyMemoryTip(String food, String date) {
+    return 'Weighing tip for $food, $date';
+  }
 }

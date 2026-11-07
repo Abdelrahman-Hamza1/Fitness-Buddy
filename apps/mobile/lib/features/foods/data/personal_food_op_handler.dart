@@ -86,7 +86,8 @@ final class PersonalFoodOpHandler extends ChangeOpHandler<PersonalFoodOp> {
       CreatePersonalFood(:final id, :final draft) => OpPlan([
         InsertRow(db.personalFoods, columns(draft).copyWith(id: Value(id))),
       ]),
-      RequirePersonalFood() => OpPlan(const []),
+      RequirePersonalFood(:final food, :final consumption) =>
+        await _consumption(tx, food.id, consumption),
       DeletePersonalFood(:final food) => OpPlan([
         TombstoneRow(
           db.personalFoods,
@@ -147,5 +148,37 @@ final class PersonalFoodOpHandler extends ChangeOpHandler<PersonalFoodOp> {
         expectedVersion: op.merged.expectedVersion,
       ),
     ]);
+  }
+
+  /// No writes: the food's live diary entries must be exactly [expected]
+  /// (a batch's remainder, A67 review); `null` checks nothing.
+  Future<OpPlan> _consumption(
+    TxReader tx,
+    String foodId,
+    List<VersionedId>? expected,
+  ) async {
+    if (expected == null) return OpPlan(const []);
+    final rows =
+        await (tx.db.select(db.diaryEntries)..where(
+              (t) =>
+                  t.deletedAt.isNull() &
+                  t.foodKind.equals('personal') &
+                  t.foodId.equals(foodId),
+            ))
+            .get();
+    final live = {for (final r in rows) r.id: r.version};
+    final want = {for (final v in expected) v.id: v.expectedVersion};
+    if (live.length != want.length ||
+        want.entries.any((e) => live[e.key] != e.value)) {
+      throw ChangeRejected(
+        VersionConflict(
+          entity: 'diaryEntry',
+          id: foodId,
+          expected: want.length,
+          actual: live.length,
+        ),
+      );
+    }
+    return OpPlan(const []);
   }
 }

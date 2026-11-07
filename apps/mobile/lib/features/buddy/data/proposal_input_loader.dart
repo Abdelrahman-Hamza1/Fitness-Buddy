@@ -245,10 +245,25 @@ final class ProposalInputLoader {
           ...await reads.dailyTotals(today.plusDays(-1), today),
           for (final day in named) ...await reads.dailyTotals(day, day),
         ];
+        // Explicit defaults ("I always weigh rice raw", AI-055) settle the
+        // engine's questions offline (A67 D11); learned habits only offer.
+        final defaults =
+            await (_db.select(_db.memoryItems)..where(
+                  (t) =>
+                      t.deletedAt.isNull() &
+                      t.kind.equals(MemoryKinds.defaultValue) &
+                      t.createdFrom.equals(MemoryOrigin.explicit.code),
+                ))
+                .get();
         final context = ProposalContext(
           referenceTime: referenceTime,
           slots: await reads.slots(),
           yields: yields,
+          savedDefaults: {
+            for (final d in defaults)
+              if (d.memoryKey.isNotEmpty && d.memoryValue.isNotEmpty)
+                d.memoryKey: d.memoryValue,
+          },
           mode: mode,
           normalize: normalizeKey,
           dayContext: ProposalDayContext(

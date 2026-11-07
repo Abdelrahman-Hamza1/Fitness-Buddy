@@ -94,7 +94,13 @@ final class PersonalFoodActions {
   final Set<String> _pending = {};
 
   /// Creates one validated definition with Undo.
-  Future<PersonalFoodOutcome> create(PersonalFoodDraft draft) {
+  /// [also] (a prefill's ops, e.g. the Buddy card this save confirms,
+  /// A67 D8) is written in the same change set with [origin].
+  Future<PersonalFoodOutcome> create(
+    PersonalFoodDraft draft, {
+    List<ChangeOp> also = const [],
+    Origin? origin,
+  }) {
     if (draft.validate() != null) {
       return Future.value(
         const PersonalFoodFailed(PersonalFoodFailure.invalid),
@@ -103,10 +109,11 @@ final class PersonalFoodActions {
     final id = ids.next();
     return _run(
       {'create'},
-      [CreatePersonalFood(id, draft)],
+      [CreatePersonalFood(id, draft), ...also],
       PersonalFoodKind.personalFoodSaved,
       {'name': draft.names},
       foodId: id,
+      origin: origin,
     );
   }
 
@@ -182,13 +189,14 @@ final class PersonalFoodActions {
     PersonalFoodKind kind,
     Map<String, Object> args, {
     String? foodId,
+    Origin? origin,
   }) async {
     if (keys.any(_pending.contains)) return const PersonalFoodPending();
     _pending.addAll(keys);
     try {
       final ApplyResult result;
       try {
-        result = await apply(ChangeSet(ops, origin: Origin.direct));
+        result = await apply(ChangeSet(ops, origin: origin ?? Origin.direct));
       } on ChangeRejected catch (rejection) {
         return _failure(rejection.failure);
       }

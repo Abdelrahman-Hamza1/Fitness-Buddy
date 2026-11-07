@@ -44,7 +44,13 @@ enum _MenuAction { merge, delete }
 /// one tab never shows up in a new form opened in another.
 class PersonalFoodFormScreen extends ConsumerStatefulWidget {
   /// Creates the form; [id] is null for a new food.
-  const new({this.id, this.addTo, this.fromScan = false, super.key});
+  const new({
+    this.id,
+    this.addTo,
+    this.fromScan = false,
+    this.prepared = false,
+    super.key,
+  });
 
   /// The food to edit; null for a new one.
   final String? id;
@@ -54,6 +60,9 @@ class PersonalFoodFormScreen extends ConsumerStatefulWidget {
 
   /// Opened from the barcode scanner: prefilled from the scan (A28a D9).
   final bool fromScan;
+
+  /// Opened with a prepared food (a Buddy card, A67 D8).
+  final bool prepared;
 
   @override
   ConsumerState<PersonalFoodFormScreen> createState() =>
@@ -65,6 +74,8 @@ class _PersonalFoodFormScreenState
   final PersonalFoodInputs _inputs = PersonalFoodInputs();
   late final PersonalFoodFormKey _key = widget.fromScan && widget.id == null
       ? PersonalFoodFormKey.scan()
+      : widget.prepared && widget.id == null
+      ? PersonalFoodFormKey.prepared()
       : PersonalFoodFormKey(widget.id);
   bool _attempted = false;
   bool _leaving = false;

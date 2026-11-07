@@ -373,6 +373,33 @@ final class NewFoodFromSearchRoute extends AppRoute {
   }
 }
 
+/// "Review" on a Buddy personal-food card (A67 D8, AI-054): the new-food
+/// form of the Today tab, prefilled with what Buddy prepared through a
+/// one-shot provider; nothing travels in the URL.
+final class NewFoodFromBuddyRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/today/buddy-food';
+
+  @override
+  String get location => path;
+}
+
+/// "Buddy remembers" (A67 D14, AI-082, AI-165): what Buddy remembers and
+/// its summary of older chat, a detail screen of the Me tab.
+final class BuddyRemembersRoute extends AppRoute {
+  /// Creates the route.
+  const new();
+
+  /// The route's path pattern.
+  static const path = '/me/buddy-remembers';
+
+  @override
+  String get location => path;
+}
+
 /// The barcode scanner (FD-030, A28a D14): a detail screen of the Today tab,
 /// opened by the input bar's barcode button. [date] and [slotId] are where a
 /// scanned product is logged (today and the time's meal when null).

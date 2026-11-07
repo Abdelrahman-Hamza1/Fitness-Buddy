@@ -68,6 +68,7 @@ List<Override> appOverrides(AppConfig config) => [
       MeasurementOpHandler(db),
       ChatMessageOpHandler(db),
       BuddySummaryOpHandler(db),
+      MemoryItemOpHandler(db),
       ProposalOpHandler(db),
       WorkoutOpHandler(db),
       // A34 D14: restoring an earlier version (G7).

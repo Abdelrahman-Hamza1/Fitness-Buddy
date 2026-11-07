@@ -5,8 +5,9 @@ import 'package:fb_text/fb_text.dart';
 /// The personal slice of a turn (A66 D10, `06` §3.1) and `findMyFoods`
 /// (§4.2): the personal foods whose normalized names or aliases share a
 /// word with the text, most shared words first, then by ID, at most
-/// [limit], each within the contract's bounds. Saved meals, open batches
-/// and usual meals join with A67. Pure: no I/O.
+/// [limit], each within the contract's bounds, with saved meals (whole-meal
+/// facts) and open batches (per 100 g and what's left, A67 D13). Usual
+/// meals aren't sent yet. Pure: no I/O.
 abstract final class PersonalSlice {
   /// The most items sent.
   static const limit = 20;
@@ -23,27 +24,121 @@ abstract final class PersonalSlice {
     String text,
     Iterable<PersonalFood> foods, {
     int max = limit,
+    Iterable<SavedMeal> savedMeals = const [],
+    Iterable<BatchFacts> batches = const [],
+    Set<BuddyPersonalKind> kinds = const {},
   }) {
     final words = wordsOf(text);
     if (words.isEmpty) return const [];
-    final scored = <(int, PersonalFood)>[];
+    bool wants(BuddyPersonalKind k) => kinds.isEmpty || kinds.contains(k);
+    final open = {for (final b in batches) b.food.id: b};
+    // (shared words, ID, the item when it fits).
+    final scored = <(int, String, BuddyPersonalItem? Function())>[];
+    int shared(Iterable<String> names) =>
+        {for (final n in names) ...wordsOf(n)}.intersection(words).length;
     for (final food in foods) {
-      final shared = {
-        for (final name in [..._namesOf(food), ...food.aliases])
-          ...wordsOf(name),
-      }.intersection(words).length;
-      if (shared > 0) scored.add((shared, food));
+      final batch = open[food.id];
+      if (batch != null
+          ? !wants(BuddyPersonalKind.batch)
+          : !wants(BuddyPersonalKind.personalFood)) {
+        continue;
+      }
+      final n = shared([..._namesOf(food), ...food.aliases]);
+      if (n > 0) {
+        scored.add((
+          n,
+          food.id,
+          () => batch == null ? _item(food, words) : _batch(batch, words),
+        ));
+      }
+    }
+    if (wants(BuddyPersonalKind.savedMeal)) {
+      for (final meal in savedMeals) {
+        final n = shared([meal.name]);
+        if (n > 0) scored.add((n, meal.id, () => _meal(meal)));
+      }
     }
     scored.sort(
-      (a, b) =>
-          a.$1 != b.$1 ? b.$1.compareTo(a.$1) : a.$2.id.compareTo(b.$2.id),
+      (a, b) => a.$1 != b.$1 ? b.$1.compareTo(a.$1) : a.$2.compareTo(b.$2),
     );
     final out = <BuddyPersonalItem>[];
-    for (final (_, food) in scored) {
+    for (final (_, _, item) in scored) {
       if (out.length == max) break;
-      if (_item(food, words) case final f?) out.add(f);
+      if (item() case final f?) out.add(f);
     }
     return out;
+  }
+
+  static BuddyNutrientsRequest? _nutrients(Nutrients n) {
+    final values = [n.kcal, n.protein, n.carbs, n.fat, n.fiber];
+    if (!values.every((v) => v.isFinite && v >= 0 && v <= _nutrient)) {
+      return null;
+    }
+    return BuddyNutrientsRequest(
+      kcal: n.kcal,
+      proteinG: n.protein,
+      carbsG: n.carbs,
+      fatG: n.fat,
+      fiberG: n.fiber,
+    );
+  }
+
+  static String _cut(String s, int n) => s.length <= n ? s : s.substring(0, n);
+
+  /// A saved meal with its whole-meal facts (DY-031).
+  static BuddyPersonalItem? _meal(SavedMeal meal) {
+    final name = meal.name.trim();
+    final totals = _nutrients(meal.totals);
+    if (name.isEmpty || !_fits(name) || totals == null || meal.items.isEmpty) {
+      return null;
+    }
+    var grams = 0.0;
+    for (final i in meal.items) {
+      grams += i.amount.amount;
+    }
+    return BuddyPersonalItem(
+      kind: BuddyPersonalKind.savedMeal,
+      ref: meal.id,
+      names: [name],
+      aliases: const [],
+      state: null,
+      per100: null,
+      servings: const [],
+      portions: [
+        BuddyPortionFacts(
+          label: _cut('whole meal', 120),
+          g: grams > 0 && grams <= _serving ? grams : null,
+          nutrients: totals,
+        ),
+      ],
+    );
+  }
+
+  /// An open batch: per 100 g and what's left (DY-043).
+  static BuddyPersonalItem? _batch(BatchFacts batch, Set<String> words) {
+    final base = _item(batch.food, words);
+    final left = batch.remainingGrams;
+    if (base == null) return null;
+    final leftNutrients = left == null
+        ? null
+        : _nutrients(batch.food.per100.scale(left / 100));
+    return BuddyPersonalItem(
+      kind: BuddyPersonalKind.batch,
+      ref: base.ref,
+      names: base.names,
+      aliases: base.aliases,
+      state: base.state,
+      per100: base.per100,
+      servings: base.servings,
+      portions: [
+        if (left != null && leftNutrients != null && left <= _serving)
+          BuddyPortionFacts(
+            label: 'remaining',
+            g: left,
+            nutrients: leftNutrients,
+          ),
+      ],
+    );
   }
 
   static BuddyPersonalItem? _item(PersonalFood food, Set<String> words) {

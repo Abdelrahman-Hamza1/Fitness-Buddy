@@ -62,7 +62,7 @@ final class PersonalFoodFormControllerProvider
 }
 
 String _$personalFoodFormControllerHash() =>
-    r'e7e94fda14ff2c3b5a6ddf98475614eb99137284';
+    r'21067ea07c156818937279ce5fd0474c347b4ff6';
 
 /// Disposable per-form state; only submit calls the application commands.
 /// Each open form passes its own [PersonalFoodFormKey].

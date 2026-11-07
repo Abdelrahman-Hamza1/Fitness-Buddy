@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_issues.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_state.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
+import 'package:fb_mobile/features/buddy/application/records/record_cards.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
 import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
@@ -52,6 +53,7 @@ final class BuddyThreadRestorer {
     required this._loader,
     this._clock,
     this._report,
+    this._records,
   });
 
   final ChatMessageRepository _messages;
@@ -59,13 +61,23 @@ final class BuddyThreadRestorer {
   final ProposalInputLoader _loader;
   final Clock? _clock;
   final BuddyIssueSink? _report;
+  final RecordCards? _records;
 
   /// Every session with a live pending card, as turns keyed by their user
   /// message (A23 D12): cards under the turn of their `originMessageId`,
   /// resolved siblings as resolved rows, cards of a session that can't be
   /// reopened as placeholders (D13). [generation] stamps the turns.
   Future<RestoredThread> restore({required int generation}) async {
-    final pending = await _proposals.pending();
+    final all = await _proposals.pending();
+    // Record cards (A67) reopen on their own: re-planned from current rows.
+    final recordRows = [
+      for (final r in all)
+        if (RecordKind.fromCode(r.kind) != null) r,
+    ];
+    final pending = [
+      for (final r in all)
+        if (RecordKind.fromCode(r.kind) == null) r,
+    ];
     final budgets = <String>[
       for (final m in {for (final r in pending) ?r.budgetMessageId}) m,
     ];
@@ -190,6 +202,38 @@ final class BuddyThreadRestorer {
         );
       }
     }
+    for (final record in recordRows) {
+      final origin = record.originMessageId;
+      final turn = origin == null ? null : await turnOf(origin);
+      if (turn == null) {
+        orphans.add(
+          UnrestorableCard(
+            record: record,
+            issue: ProposalIssue.sessionIncomplete,
+          ),
+        );
+        continue;
+      }
+      final holder = record.budgetMessageId == null
+          ? null
+          : await row(record.budgetMessageId!);
+      final answer = holder == null ? null : await _answer(holder);
+      final card = await _records?.restore(
+        record,
+        turn.time(this),
+        revision: switch (answer?[AgentCardWriter.revisionKey]) {
+          final int r when r >= 1 => r,
+          _ => 1,
+        },
+      );
+      if (card == null) {
+        turn.unrestorable.add(
+          UnrestorableCard(record: record, issue: ProposalIssue.staleFacts),
+        );
+      } else {
+        turn.records.add(card);
+      }
+    }
     // The latest turns, with or without cards (A66 review 9): user rows,
     // their reply rows and the reply's local question and trace.
     final recent = await _messages.recent(historyRows);
@@ -210,6 +254,46 @@ final class BuddyThreadRestorer {
       turn
         ..reply = m
         ..meta = await _answer(m);
+    }
+    // Resolved record cards of the turns shown keep their outcome rows
+    // (A67 review 6): read by their holders, never re-planned as open.
+    final records = _records;
+    if (records != null) {
+      final holders = {
+        for (final m in recent)
+          if (m.role == ChatMessageRole.assistant &&
+              m.budgetJson == recordHolderBudget &&
+              turns.containsKey(m.replyToMessageId))
+            m.id: m.replyToMessageId!,
+      };
+      final shown = {
+        for (final t in turns.values) ...t.records.map((r) => r.id),
+      };
+      for (final r in await _proposals.byOrigins(holders.keys.toSet())) {
+        final turn = turns[holders[r.originMessageId]];
+        if (turn == null ||
+            r.isPending ||
+            shown.contains(r.id) ||
+            RecordKind.fromCode(r.kind) == null) {
+          continue;
+        }
+        final card = await records.restore(
+          r,
+          turn.time(this),
+          requireView: false,
+        );
+        if (card == null) continue;
+        shown.add(r.id);
+        turn.records.add(
+          card.copyWith(
+            resolution: switch (r.status) {
+              ProposalStatus.confirmed => CardResolution.logged,
+              ProposalStatus.superseded => CardResolution.superseded,
+              _ => CardResolution.discarded,
+            },
+          ),
+        );
+      }
     }
     final ordered = turns.values.toList()
       ..sort(
@@ -302,6 +386,7 @@ final class _TurnDraft {
   ChatMessage? reply;
   Map<String, Object?>? meta;
   final List<BuddyCard> cards = [];
+  final List<RecordCard> records = [];
   final List<UnrestorableCard> unrestorable = [];
 
   EntryTime time(BuddyThreadRestorer restorer) => restorer._timeOf(user);
@@ -324,6 +409,7 @@ final class _TurnDraft {
     interpretation: answer,
     // Creation order: card IDs are UUIDv7s allocated in order.
     cards: cards..sort((a, b) => a.id.compareTo(b.id)),
+    records: records..sort((a, b) => a.id.compareTo(b.id)),
     unrestorable: unrestorable,
     profileGeneration: generation,
     question: switch (meta?['question']) {
@@ -362,4 +448,5 @@ BuddyThreadRestorer buddyThreadRestorer(Ref ref) => BuddyThreadRestorer(
   loader: ref.watch(proposalInputLoaderProvider),
   clock: ref.watch(clockProvider),
   report: ref.watch(buddyIssueSinkProvider),
+  records: ref.watch(recordCardsProvider),
 );

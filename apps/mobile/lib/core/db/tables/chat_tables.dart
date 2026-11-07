@@ -123,3 +123,29 @@ class BuddySummaries extends Table with SyncColumns {
 
 /// Sync registry name (`buddySummary` v1, B25).
 const buddySummaryEntity = 'buddySummary';
+
+/// What Buddy remembers (A67 D10, `06` §6.2, AI-080–AI-082): one row per
+/// kind + key (`naturalId('memoryItem', …)`), synced as `memoryItem` v1.
+/// Written only by confirmed cards (explicit) or learned from confirmed
+/// data, shown and deletable on "Buddy remembers". User content: never
+/// logged.
+@DataClassName('MemoryItemRow')
+class MemoryItems extends Table with SyncColumns {
+  /// The open kind (≤ 32): default, portion, alias, brand, nickname,
+  /// habit, nudge.
+  TextColumn get kind => text()();
+
+  /// What it's about (≤ 200; the wire field `key`, mapped by the buddy
+  /// sync codec).
+  TextColumn get memoryKey => text()();
+
+  /// What is remembered (≤ 200; the wire field `value`).
+  TextColumn get memoryValue => text()();
+
+  /// `explicit` or `learned`.
+  TextColumn get createdFrom =>
+      text().check(createdFrom.isIn(['explicit', 'learned']))();
+}
+
+/// Sync registry name (`memoryItem` v1, B25).
+const memoryItemEntity = 'memoryItem';

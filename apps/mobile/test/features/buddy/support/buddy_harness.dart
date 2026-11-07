@@ -18,6 +18,7 @@ import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
+import 'package:fb_mobile/features/body/body.dart' show WeighInOpHandler;
 import 'package:fb_mobile/features/buddy/application/buddy_issues.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
@@ -25,6 +26,7 @@ import 'package:fb_mobile/features/buddy/application/buddy_thread_restorer.dart'
 import 'package:fb_mobile/features/buddy/application/durable_proposals.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_persistence_contributor.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
+import 'package:fb_mobile/features/buddy/application/records/record_cards.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
 import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
@@ -32,6 +34,7 @@ import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_turn_api.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
+import 'package:fb_mobile/features/buddy/data/records/record_facts_loader.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
@@ -149,6 +152,8 @@ final class BuddyHarness {
         DiaryOpHandler(db),
         MealSlotOpHandler(db),
         PersonalFoodOpHandler(db),
+        MemoryItemOpHandler(db),
+        WeighInOpHandler(db),
         const ScriptHandler(),
       ],
       clock: clock,
@@ -192,12 +197,19 @@ final class BuddyHarness {
       contributors: contributors,
       report: issues.add,
     );
+    records = RecordCards(
+      apply: apply,
+      undo: undo,
+      ids: ids,
+      loader: RecordFactsLoader(db, loader),
+    );
     restorer = BuddyThreadRestorer(
       messages: ChatMessageRepository(db),
       proposals: ProposalRepository(db),
       loader: loader,
       clock: clock,
       report: issues.add,
+      records: records,
     );
     container = _container();
   }
@@ -226,6 +238,7 @@ final class BuddyHarness {
       changeSetApplierProvider.overrideWithValue(applier),
       buddyTraceEnabledProvider.overrideWithValue(false),
       proposalResolutionProvider.overrideWithValue(resolution),
+      recordCardsProvider.overrideWithValue(records),
       buddyThreadRestorerProvider.overrideWithValue(restorer),
       // What the sheet and cards read.
       appDatabaseProvider.overrideWithValue(db),
@@ -281,6 +294,7 @@ final class BuddyHarness {
   late final UndoStack undo;
   late final SendBuddyMessage send;
   late final ProposalResolution resolution;
+  late final RecordCards records;
   late final BuddyThreadRestorer restorer;
   late ProviderContainer container;
 

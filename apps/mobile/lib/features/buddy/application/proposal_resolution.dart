@@ -272,6 +272,7 @@ final class ProposalResolution {
     EntryTime referenceTime, {
     SessionMembership membership = const SessionMembership(),
     bool reidentified = false,
+    List<ChangeOp> extra = const [],
   }) async {
     if (cards.isEmpty) return null;
     final sessions = <ProposalSession>{};
@@ -294,6 +295,8 @@ final class ProposalResolution {
           for (final c in _contributors) ...c.onConfirm(card, done, membership),
         ]);
     }
+    // The same reply's record cards (A67): written in this change set.
+    ops.addAll(extra);
     if (ops.length > ChangeSet.maxOps) return null;
     final result = await _apply(
       ChangeSet(ops, origin: Origin.proposal(cards.first.$2)),
@@ -322,6 +325,7 @@ final class ProposalResolution {
         referenceTime,
         membership: membership,
         reidentified: true,
+        extra: extra,
       );
     }
     if (result is! Applied) return null;

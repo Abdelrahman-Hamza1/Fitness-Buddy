@@ -94,16 +94,37 @@ final class MergePersonalFoods extends PersonalFoodOp {
   int get hashCode => Object.hash(MergePersonalFoods, survivor, merged);
 }
 
-/// No writes: rejects a food that changed since it was shown.
+/// No writes: rejects a food that changed since it was shown. With
+/// [consumption] (a batch's remainder, A67 review), also rejects when the
+/// live diary entries of the food aren't exactly those entries at those
+/// versions (one was logged, edited or deleted meanwhile).
 final class RequirePersonalFood extends PersonalFoodOp {
   /// Observed food.
-  const new(this.food) : super._();
+  const new(this.food, {this.consumption}) : super._();
 
   /// Expected identity/version.
   final VersionedId food;
+
+  /// The food's live diary entries as shown, or `null` (not checked).
+  final List<VersionedId>? consumption;
   @override
   bool operator ==(Object other) =>
-      other is RequirePersonalFood && other.food == food;
+      other is RequirePersonalFood &&
+      other.food == food &&
+      _sameIds(other.consumption, consumption);
   @override
-  int get hashCode => Object.hash(RequirePersonalFood, food);
+  int get hashCode => Object.hash(
+    RequirePersonalFood,
+    food,
+    consumption == null ? null : Object.hashAll(consumption!),
+  );
+}
+
+bool _sameIds(List<VersionedId>? a, List<VersionedId>? b) {
+  if (a == null || b == null) return a == b;
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }

@@ -10,6 +10,7 @@ import 'package:fb_mobile/core/db/migrations/from_13_to_14.dart';
 import 'package:fb_mobile/core/db/migrations/from_14_to_15.dart';
 import 'package:fb_mobile/core/db/migrations/from_15_to_16.dart';
 import 'package:fb_mobile/core/db/migrations/from_16_to_17.dart';
+import 'package:fb_mobile/core/db/migrations/from_17_to_18.dart';
 import 'package:fb_mobile/core/db/migrations/from_1_to_2.dart';
 import 'package:fb_mobile/core/db/migrations/from_2_to_3.dart';
 import 'package:fb_mobile/core/db/migrations/from_3_to_4.dart';
@@ -71,6 +72,7 @@ typedef CatalogErrorHandler = void Function(Object error, StackTrace stack);
     ChatMessages,
     Proposals,
     BuddySummaries,
+    MemoryItems,
     CustomExercises,
     WorkoutSessions,
     SessionExercises,
@@ -150,6 +152,10 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       buddySummaries,
       buddySummaryEntity,
     ),
+    SyncedTable<$MemoryItemsTable, MemoryItemRow>(
+      memoryItems,
+      memoryItemEntity,
+    ),
     SyncedTable<$CustomExercisesTable, CustomExerciseRow>(
       customExercises,
       customExerciseEntity,
@@ -181,7 +187,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
   ];
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -207,6 +213,7 @@ final class AppDatabase extends _$AppDatabase with WriteGuarded {
       from14To15: from14To15,
       from15To16: from15To16,
       from16To17: from16To17,
+      from17To18: from17To18,
     ),
     beforeOpen: (details) async {
       // drift runs this on the executor it's opening, below the guard (the

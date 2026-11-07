@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/features/buddy/data/memory_repository.dart';
+import 'package:fb_mobile/features/buddy/data/open_batches.dart' as batches;
 import 'package:fb_mobile/features/diary/diary.dart' show DiaryReads;
 import 'package:fb_mobile/features/foods/foods.dart'
     show PersonalFoodMappingError, personalFoodOf;
@@ -44,6 +46,23 @@ final class BuddyPhoneReads {
     )..where((t) => t.deletedAt.isNull())).get();
     return [for (final row in rows) ?_food(row)];
   }
+
+  /// Live saved meals (`findMyFoods`, A67).
+  Future<List<SavedMeal>> savedMeals() => DiaryReads(_db).savedMeals();
+
+  /// The open batches among [foods] on [today] (A67 D7; the day's noon,
+  /// UTC, stands for "now": the 7-day window is counted in days).
+  Future<List<BatchFacts>> openBatches(
+    List<PersonalFood> foods,
+    LocalDate today,
+  ) => batches.openBatches(
+    _db,
+    foods,
+    DateTime.utc(today.year, today.month, today.day, 12),
+  );
+
+  /// Live memory items, newest first (`readMemory`, A67).
+  Future<List<MemoryItem>> memory() => MemoryRepository(_db).all();
 
   static PersonalFood? _food(PersonalFoodRow row) {
     try {
