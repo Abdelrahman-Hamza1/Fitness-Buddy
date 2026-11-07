@@ -21,6 +21,7 @@ export 'src/body/weight_graph.dart';
 export 'src/changes/change_op.dart';
 export 'src/changes/domain_event.dart';
 export 'src/changes/origin.dart';
+export 'src/chat/buddy_summary_ops.dart';
 export 'src/chat/chat_language.dart';
 export 'src/chat/chat_message.dart';
 export 'src/chat/chat_message_ops.dart';

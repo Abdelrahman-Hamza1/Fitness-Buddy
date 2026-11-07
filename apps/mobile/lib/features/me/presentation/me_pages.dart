@@ -5,6 +5,7 @@ import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/ui/load_states.dart';
 import 'package:fb_mobile/features/account/account.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart' show BuddyRemembersRow;
 import 'package:fb_mobile/features/me/presentation/me_parts.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
@@ -223,6 +224,7 @@ class MeAccountScreen extends ConsumerWidget {
               trailing: const Icon(FbIcons.next),
               onTap: () => unawaited(showExportSheet(context)),
             ),
+            const BuddyRemembersRow(),
           ],
         ),
         if (delete) ...[

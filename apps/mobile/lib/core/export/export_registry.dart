@@ -140,6 +140,16 @@ const exportRegistryV1 = <ExportTableSpec>[
     ExportColumn('version', ExportKind.integer),
     ExportColumn('origin', ExportKind.text),
   ]),
+  ExportTableSpec('buddySummary', 'buddy-summaries', 'buddy_summaries', [
+    ExportColumn('id', ExportKind.text),
+    ExportColumn('summary_text', ExportKind.text),
+    ExportColumn('revision', ExportKind.integer),
+    ExportColumn('watermark', ExportKind.text),
+    ExportColumn('created_at', ExportKind.utcMs),
+    ExportColumn('edited_by_user', ExportKind.boolean),
+    ExportColumn('version', ExportKind.integer),
+    ExportColumn('origin', ExportKind.text),
+  ]),
   ExportTableSpec('dishGroup', 'dish-groups', 'dish_groups', [
     ExportColumn('id', ExportKind.text),
     ExportColumn('name', ExportKind.text),

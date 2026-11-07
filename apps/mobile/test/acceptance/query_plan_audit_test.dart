@@ -83,6 +83,15 @@ final _accepted = <(RegExp sql, RegExp plan, String why)>[
         'pending cards',
   ),
   (
+    RegExp(
+      'FROM "chat_messages" WHERE "deleted_at" IS NULL '
+      r'ORDER BY "created_at" DESC, "id" DESC LIMIT \d+;?$',
+    ),
+    RegExp(r'^SCAN chat_messages USING INDEX ix_chat_messages_order$'),
+    'bounded: the restored thread reads only the newest live messages '
+        '(LIMIT, A66 history), walking ix_chat_messages_order from its end',
+  ),
+  (
     RegExp('FROM "workout_sessions" WHERE "deleted_at" IS NULL ORDER BY'),
     RegExp('USING INDEX ix_workout_sessions_date'),
     "by design for the workout history (every session, A37a); Today's "

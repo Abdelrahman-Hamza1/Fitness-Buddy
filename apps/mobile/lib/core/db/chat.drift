@@ -6,6 +6,12 @@ import 'tables/chat_tables.dart';
 CREATE INDEX ix_chat_messages_order ON chat_messages (created_at, id)
   WHERE deleted_at IS NULL;
 
+-- User messages by status (A66 D12): the waiting turns the restorer and the
+-- dispatcher read (queued, processing, pending_offline) and the offline
+-- count, without a pass over the whole transcript.
+CREATE INDEX ix_chat_messages_status ON chat_messages (status, created_at, id)
+  WHERE deleted_at IS NULL;
+
 -- Replies grouped by the user message they answer.
 CREATE INDEX ix_chat_messages_reply ON chat_messages (reply_to_message_id)
   WHERE reply_to_message_id IS NOT NULL AND deleted_at IS NULL;

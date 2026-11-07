@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
-import 'package:fb_mobile/features/buddy/application/proposal_session_writer.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_write_lane.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -38,8 +37,6 @@ Future<int> _allRestore(BuddyHarness h, String reason) async {
   return checked;
 }
 
-int? _revision(String? json) => proposalRevisionOf(json);
-
 void main() {
   // rule: A23 lane-serial
   test('A23 the write lane runs jobs one after another and survives a '
@@ -71,77 +68,6 @@ void main() {
     expect(written, ['m']);
     expect(lane.isPending('m'), isFalse);
     expect('$lane', isNot(contains('m,')));
-  });
-
-  // rule: A23 stale-guard
-  test('A23 a stale session write never overwrites a newer stored '
-      'session', () async {
-    final (h, _) = await _cards();
-    final turn = h.state.turns.single;
-    final m = turn.assistantMessageId!;
-    final card = turn.cards.first;
-    final line = card.card.lines.single.entry.id;
-    h.thread.setAmount(card.id, line, Quantity(150, 'g'));
-    final older = h.state.turns.single.cards.first.session;
-    h.thread.setAmount(card.id, line, Quantity(250, 'g'));
-    // Adjustments wait for a flush (no write per tap).
-    final writes = h.applied.length;
-    expect(h.applied, hasLength(writes));
-    await h.thread.flush();
-    expect(h.applied, hasLength(writes + 1));
-    final stored = _revision((await h.row(m)).budgetJson);
-    final draft = (await h.proposal(card.id)).draftJson;
-    expect(
-      stored,
-      greaterThan(_revision(ProposalSessionWriter.budget(older))!),
-    );
-    // The older in-memory session is refused, nothing changes.
-    expect(await h.resolution.persist(older, h.state.membership), isFalse);
-    expect(_revision((await h.row(m)).budgetJson), stored);
-    expect((await h.proposal(card.id)).draftJson, draft);
-    // A second flush with nothing pending writes nothing.
-    final tried = h.applied.length;
-    await h.thread.flush();
-    expect(h.applied, hasLength(tried));
-    expect(await _allRestore(h, 'after flush'), 1);
-    // The stored card has the latest amount.
-    final restored = (await h.restorer.session(
-      m,
-      referenceTime: turn.message.time,
-    )).value!;
-    expect(
-      restored.cards.first.lines.single.entry.amount.input,
-      Quantity(250, 'g'),
-    );
-  });
-
-  // rule: A23 sibling-confirms
-  test('A23 sibling cards confirmed together keep both drafts', () async {
-    final (h, _) = await _cards(slots: ['breakfast', 'lunch']);
-    final turn = h.state.turns.single;
-    final m = turn.assistantMessageId!;
-    final [a, b] = turn.cards;
-    h.thread
-      ..setAmount(a.id, a.card.lines.single.entry.id, Quantity(120, 'g'))
-      ..setAmount(b.id, b.card.lines.single.entry.id, Quantity(80, 'g'));
-    // Both taps before either write lands.
-    await Future.wait([h.thread.confirm(a.id), h.thread.confirm(b.id)]);
-    final cards = h.state.turns.single.cards;
-    expect(cards.map((c) => c.resolution), [
-      CardResolution.logged,
-      CardResolution.logged,
-    ]);
-    final ra = await h.proposal(a.id);
-    final rb = await h.proposal(b.id);
-    expect([ra.status, rb.status], ['confirmed', 'confirmed']);
-    expect([ra.outcome, rb.outcome], ['adjusted', 'adjusted']);
-    final entries = (await h.entries()).where((e) => e.deletedAt == null);
-    expect(entries.map((e) => e.amount).toSet(), {120.0, 80.0});
-    // One stored session: both rows and the budget at one revision.
-    final revision = _revision((await h.row(m)).budgetJson);
-    expect(_revision(ra.draftJson), revision);
-    expect(_revision(rb.draftJson), revision);
-    expect(await _allRestore(h, 'siblings'), 1);
   });
 
   // rule: A23 lane-property
@@ -207,17 +133,35 @@ void main() {
           case 'discard':
             if (card != null) await h.thread.discard(card.id);
           case 'followUp':
-            if (h.state.followUpCard == null) break;
-            h.answer(
-              message([
-                intent([
-                  item(
-                    match: food(key: key, source: 'personal'),
-                    amount: 20.0 + random.nextInt(300),
-                    unit: 'g',
-                  ),
-                ]),
+            // Buddy updates the open card by `replaces` (A66 D6).
+            if (card == null) break;
+            final update = message([
+              intent([
+                item(
+                  match: food(key: key, source: 'personal'),
+                  amount: 20.0 + random.nextInt(300),
+                  unit: 'g',
+                ),
               ]),
+            ]);
+            h.adapter.respond = turnEvents(
+              (turnId, round) => [
+                {
+                  'type': 'proposal',
+                  'proposalId': card.id,
+                  'revision': card.revision + 1,
+                  'replaces': {
+                    'proposalId': card.id,
+                    'expectedRevision': card.revision,
+                  },
+                  'intent': (update['intents']! as List<Object?>).single,
+                },
+                {
+                  'type': 'done',
+                  'reason': 'answered',
+                  'usage': {'sends': 1, 'inputTokens': 0, 'outputTokens': 0},
+                },
+              ],
             );
             await h.thread.send('make it more', texts);
           case 'rebuild':

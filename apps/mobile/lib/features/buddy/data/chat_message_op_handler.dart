@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
@@ -35,7 +37,55 @@ final class ChatMessageOpHandler extends ChangeOpHandler<ChatMessageOp> {
     SetChatMessageStatus() => await _setStatus(op, tx),
     SetChatMessageBudget() => await _setBudget(op, tx),
     ReleaseChatMessageAnswer() => await _release(op, tx),
+    SaveTurnCheckpoint() => await _checkpoint(op, tx),
+    SaveCardRevision() => await _revision(op, tx),
   };
+
+  Future<OpPlan> _revision(SaveCardRevision op, TxReader tx) async {
+    final row = await tx.liveRow(db.chatMessages, op.id);
+    final text = row?.answerJson;
+    if (row == null || text == null || op.revision < 1) {
+      return OpPlan(const []);
+    }
+    final Object? answer;
+    try {
+      answer = jsonDecode(text);
+    } on FormatException {
+      return OpPlan(const []);
+    }
+    if (answer is! Map<String, Object?>) return OpPlan(const []);
+    final stored = answer['agentRevision'];
+    if (stored is int && stored >= op.revision) return OpPlan(const []);
+    final next = jsonEncode({...answer, 'agentRevision': op.revision});
+    if (!isLocalJsonObject(next)) return OpPlan(const []);
+    return OpPlan([
+      UpdateRow(
+        db.chatMessages,
+        op.id,
+        ChatMessagesCompanion(answerJson: Value(next)),
+        expectedVersion: row.version,
+      ),
+    ]);
+  }
+
+  Future<OpPlan> _checkpoint(SaveTurnCheckpoint op, TxReader tx) async {
+    if (op.validate() case final invalid?) {
+      throw ChangeRejected(InvalidOp(invalid.code));
+    }
+    final row = await tx.liveRow(db.chatMessages, op.id);
+    if (row == null || row.role != ChatMessageRole.user.code) {
+      throw ChangeRejected(RowNotFound(entity: chatMessageEntity, id: op.id));
+    }
+    if (row.requestJson == op.json) return OpPlan(const []);
+    return OpPlan([
+      UpdateRow(
+        db.chatMessages,
+        op.id,
+        ChatMessagesCompanion(requestJson: Value(op.json)),
+        expectedVersion: row.version,
+      ),
+    ]);
+  }
 
   Future<OpPlan> _release(ReleaseChatMessageAnswer op, TxReader tx) async {
     final row = await tx.liveRow(db.chatMessages, op.id);
@@ -122,7 +172,12 @@ final class ChatMessageOpHandler extends ChangeOpHandler<ChatMessageOp> {
       );
     }
     final language = op.language?.code ?? row.language;
-    if (row.status == op.status.code && row.language == language) {
+    // A terminal status ends the turn: its local checkpoint goes (A66 D4).
+    final clear =
+        row.requestJson != null &&
+        (op.status == ChatMessageStatus.done ||
+            op.status == ChatMessageStatus.failed);
+    if (row.status == op.status.code && row.language == language && !clear) {
       return OpPlan(const []);
     }
     return OpPlan([
@@ -132,6 +187,7 @@ final class ChatMessageOpHandler extends ChangeOpHandler<ChatMessageOp> {
         ChatMessagesCompanion(
           status: Value(op.status.code),
           language: Value(language),
+          requestJson: clear ? const Value(null) : const Value.absent(),
         ),
         expectedVersion: op.expectedVersion,
       ),

@@ -7,20 +7,86 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
-import 'package:fb_mobile/features/buddy/data/buddy_api.dart';
-import 'package:fb_mobile/features/buddy/data/interpret_request_builder.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
-/// Where a turn's request stands.
+/// Where a turn stands (A66).
 enum BuddyTurnPhase {
-  /// Saved; the interpret call is in flight (skeleton card, AI-030).
+  /// Saved; the turn is running (live step line, AI-030, AI-170).
   sending,
 
-  /// The call failed ([BuddyTurn.failure]).
+  /// Waiting to be processed: offline or Buddy unavailable (AI-047,
+  /// AI-153); it runs again on its own.
+  pending,
+
+  /// It failed for good ([BuddyTurn.limited] for today's limit): Try
+  /// again sends the text as a new message.
   failed,
 
-  /// Buddy answered (the assistant row is saved).
+  /// Buddy answered (the turn ended; its reply row is saved).
   replied,
+}
+
+/// One step of a turn's dev trace (AI-172), as shown: local only, never
+/// synced or logged.
+@immutable
+final class TraceStepView {
+  /// A step.
+  const new({
+    required this.tool,
+    required this.args,
+    required this.resultSummary,
+    required this.ms,
+    required this.tokens,
+    required this.usd,
+  });
+
+  /// The tool.
+  final String tool;
+
+  /// Its arguments, summarised by the server.
+  final String args;
+
+  /// What came back, summarised.
+  final String resultSummary;
+
+  /// Milliseconds.
+  final int ms;
+
+  /// Tokens.
+  final int tokens;
+
+  /// Estimated cost, USD.
+  final double usd;
+
+  /// The JSON form (kept with the reply on this phone).
+  Map<String, Object?> toJson() => {
+    'tool': tool,
+    'args': args,
+    'resultSummary': resultSummary,
+    'ms': ms,
+    'tokens': tokens,
+    'usd': usd,
+  };
+
+  @override
+  String toString() => 'TraceStepView($tool)';
+}
+
+/// A question Buddy asked with 2–4 chips (AI-166): a tap is the next
+/// message. Holds model text: never logged.
+@immutable
+final class BuddyQuestion {
+  /// A question.
+  const new(this.text, this.options);
+
+  /// The question.
+  final String text;
+
+  /// The chips.
+  final List<String> options;
+
+  @override
+  String toString() => 'BuddyQuestion(${options.length})';
 }
 
 /// Where a card stands in the thread (D25).
@@ -63,7 +129,22 @@ final class BuddyCard {
     this.resolvedFrom,
     this.discardedAt,
     this.rebuilt = false,
+    this.revision = 1,
+    this.possibleDuplicate = false,
+    this.changedMeanwhile = false,
   });
+
+  /// The card's revision as the phone shows it (A66 D6): an agent update
+  /// must name it; a local adjustment raises it.
+  final int revision;
+
+  /// Its food, meal and amount match a card confirmed earlier in the same
+  /// turn (06 §3.4): "possible duplicate".
+  final bool possibleDuplicate;
+
+  /// Buddy's update arrived after the card changed here and was dropped
+  /// (AI-044: "changed meanwhile").
+  final bool changedMeanwhile;
 
   /// The card's ID.
   final String id;
@@ -136,6 +217,9 @@ final class BuddyCard {
     ProposalSession? resolvedFrom,
     DateTime? discardedAt,
     bool? rebuilt,
+    int? revision,
+    bool? possibleDuplicate,
+    bool? changedMeanwhile,
   }) => BuddyCard(
     id: id,
     session: session ?? this.session,
@@ -151,6 +235,9 @@ final class BuddyCard {
     resolvedFrom: resolvedFrom ?? this.resolvedFrom,
     discardedAt: discardedAt ?? this.discardedAt,
     rebuilt: rebuilt ?? this.rebuilt,
+    revision: revision ?? this.revision,
+    possibleDuplicate: possibleDuplicate ?? this.possibleDuplicate,
+    changedMeanwhile: changedMeanwhile ?? this.changedMeanwhile,
   );
 
   @override
@@ -244,16 +331,18 @@ final class BuddyTurn {
   /// The turn of [message].
   const new({
     required this.message,
-    this.request,
     this.phase = BuddyTurnPhase.sending,
-    this.failure,
-    this.unavailableCount = 0,
+    this.limited = false,
     this.assistantMessageId,
     this.interpretation,
     this.cards = const [],
     this.profileGeneration = 0,
-    this.followUpCardId,
     this.unrestorable = const [],
+    this.step,
+    this.replyText = '',
+    this.question,
+    this.trace = const [],
+    this.unsupported = false,
   });
 
   /// The profile generation the turn was created in (A33 round 4): its
@@ -263,80 +352,91 @@ final class BuddyTurn {
   /// The saved user message.
   final SavedBuddyMessage message;
 
-  /// The frozen request, replayed by Try again (same Idempotency-Key).
-  final PreparedInterpret? request;
-
-  /// Where the request stands.
+  /// Where the turn stands.
   final BuddyTurnPhase phase;
 
-  /// Why it failed, when [phase] is failed.
-  final BuddySendFailure? failure;
+  /// It failed on today's limit (429).
+  final bool limited;
 
-  /// How many 503s this request got; the second stops Try again (D6).
-  final int unavailableCount;
-
-  /// The assistant row, once replied.
+  /// The reply row, once replied.
   final String? assistantMessageId;
 
-  /// The answer, kept to rebuild a card with current facts.
+  /// A restored A23-era answer, kept to rebuild a card with current facts.
   final Map<String, Object?>? interpretation;
 
   /// The cards, in order.
   final List<BuddyCard> cards;
 
-  /// The open card this message follows up on (AI-044), when it does.
-  final String? followUpCardId;
-
   /// Stored cards of this turn that couldn't be reopened (A23 D13).
   final List<UnrestorableCard> unrestorable;
 
-  /// The user row's ID.
+  /// The live step's wire code while it runs (AI-170).
+  final String? step;
+
+  /// The reply text so far (streamed, AI-170).
+  final String replyText;
+
+  /// The question Buddy asked, with chips (AI-166).
+  final BuddyQuestion? question;
+
+  /// The dev trace of the turn (AI-172; local only).
+  final List<TraceStepView> trace;
+
+  /// Buddy proposed something this version can't show yet (A67–A69).
+  final bool unsupported;
+
+  /// The user row's ID (the turn ID).
   String get userMessageId => message.id;
 
-  /// Whether Try again is offered.
-  bool get canRetry =>
-      phase == BuddyTurnPhase.failed &&
-      request != null &&
-      (failure?.retryable ?? false) &&
-      unavailableCount < 2;
+  /// The cards Apply all would log (AI-162): two or more open cards of
+  /// this reply that can be confirmed.
+  List<BuddyCard> get applicable => [
+    for (final c in cards)
+      if (c.resolution == CardResolution.open && c.card.canConfirm) c,
+  ];
 
   /// A copy with the given fields replaced.
   BuddyTurn copyWith({
-    PreparedInterpret? request,
     BuddyTurnPhase? phase,
-    BuddySendFailure? failure,
-    int? unavailableCount,
+    bool? limited,
     String? assistantMessageId,
     Map<String, Object?>? interpretation,
     List<BuddyCard>? cards,
     List<UnrestorableCard>? unrestorable,
+    String? step,
+    bool clearStep = false,
+    String? replyText,
+    BuddyQuestion? question,
+    List<TraceStepView>? trace,
+    bool? unsupported,
   }) => BuddyTurn(
     message: message,
-    request: request ?? this.request,
     phase: phase ?? this.phase,
-    failure: failure ?? this.failure,
-    unavailableCount: unavailableCount ?? this.unavailableCount,
+    limited: limited ?? this.limited,
     assistantMessageId: assistantMessageId ?? this.assistantMessageId,
     interpretation: interpretation ?? this.interpretation,
     cards: cards ?? this.cards,
     profileGeneration: profileGeneration,
-    followUpCardId: followUpCardId,
     unrestorable: unrestorable ?? this.unrestorable,
+    step: clearStep ? null : step ?? this.step,
+    replyText: replyText ?? this.replyText,
+    question: question ?? this.question,
+    trace: trace ?? this.trace,
+    unsupported: unsupported ?? this.unsupported,
   );
 
   @override
   String toString() => 'BuddyTurn($userMessageId, ${phase.name})';
 }
 
-/// The thread of this app process (D11): turns since launch, oldest first,
-/// and text to put back into the composer (after a second 503).
+/// The thread of this app process (D11): turns since launch and restored
+/// ones, oldest first, and text to put back into the composer.
 @immutable
 final class BuddyThread {
   /// The thread.
   const new({
     this.turns = const [],
     this.composerRestore,
-    this.followUpOff,
     this.membership = const SessionMembership(),
     this.orphans = const [],
   });
@@ -354,32 +454,12 @@ final class BuddyThread {
   /// Text the composer should take back, once.
   final String? composerRestore;
 
-  /// The open card the user said the next message isn't about (✕ on the
-  /// follow-up chip, D21).
-  final String? followUpOff;
-
-  /// Whether a follow-up about card [cardId] is in flight: the card is
-  /// read-only until its answer arrives, so the answer never overwrites an
-  /// edit made meanwhile (A22b review 1).
-  bool isUpdating(String cardId) => turns.any(
-    (t) => t.phase == BuddyTurnPhase.sending && t.followUpCardId == cardId,
-  );
-
-  /// The card the next message updates (AI-044, A22b E2): the newest open
-  /// card, unless the user turned it off.
-  BuddyCard? get followUpCard {
-    for (final turn in turns.reversed) {
-      for (final card in turn.cards.reversed) {
-        if (card.resolution == CardResolution.open) {
-          return card.id == followUpOff ? null : card;
-        }
-      }
-    }
-    return null;
-  }
-
-  /// Whether a send is in flight (Send disabled, D7).
+  /// Whether a turn is running (Send disabled; one turn at a time).
   bool get sending => turns.any((t) => t.phase == BuddyTurnPhase.sending);
+
+  /// Messages waiting to be processed (Today's "{n} waiting", AI-045).
+  int get waiting =>
+      turns.where((t) => t.phase == BuddyTurnPhase.pending).length;
 
   /// A copy with [turns] and [membership] replaced and the composer text
   /// kept or cleared ([clearComposer]).
@@ -394,7 +474,6 @@ final class BuddyThread {
     composerRestore: clearComposer
         ? null
         : composerRestore ?? this.composerRestore,
-    followUpOff: followUpOff,
     membership: membership ?? this.membership,
     orphans: orphans ?? this.orphans,
   );

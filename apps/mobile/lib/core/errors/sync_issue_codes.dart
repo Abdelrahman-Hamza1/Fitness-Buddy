@@ -22,6 +22,7 @@ abstract final class SyncIssueCodes {
     'personalFood',
     'chatMessage',
     'proposal',
+    'buddySummary',
     'profile',
     'goalPhase',
     'targetSettings',

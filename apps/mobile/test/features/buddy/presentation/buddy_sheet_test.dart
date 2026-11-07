@@ -17,9 +17,9 @@ void main() {
     await openBuddySheet(tester);
     await sendInSheet(tester, '2 eggs');
     await settleBuddy(tester);
-    expect(find.text("You're offline. Food search still works."), findsOne);
+    // It waits to be processed (AI-047) and can be tried again now.
+    expect(find.text('Try now'), findsOneWidget);
     expect(find.text('Try again'), findsNothing);
-    expect(find.text('Search foods'), findsOneWidget);
     // Nothing blocks: the composer still takes text and search opens.
     await tester.enterText(find.byType(TextField), 'tea');
     await tester.pump();

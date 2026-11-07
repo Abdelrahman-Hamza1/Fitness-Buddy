@@ -3,13 +3,11 @@ import 'dart:async';
 import 'package:fb_design_system/fb_design_system.dart';
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/account/account_providers.dart';
-import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/presentation/composer.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_list.dart';
-import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -76,7 +74,10 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     // Text handed back while the sheet was closed (a second 503) is there
     // when it opens again (after this frame: taking it changes the thread).
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _restore();
+      if (!mounted) return;
+      _restore();
+      // Opening Buddy tries waiting messages again (A66 D12).
+      unawaited(_thread.wake(buddyReplyTexts(context.l10n)));
     });
   }
 
@@ -215,7 +216,6 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
                     revealPending: widget.revealPending,
                   ),
                 ),
-                const _FollowUpChip(),
                 Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                     FbSpace.s3,
@@ -235,69 +235,6 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// "Updating {slot} card ✕" above the composer while a card is open
-/// (AI-044, UX-023, D21): the next message updates that card; ✕ makes it a
-/// new message. It reveals in its own slot directly above the composer
-/// (A57 A08): the composer never moves, the thread above gives the room.
-class _FollowUpChip extends ConsumerStatefulWidget {
-  const new();
-
-  @override
-  ConsumerState<_FollowUpChip> createState() => _FollowUpChipState();
-}
-
-class _FollowUpChipState extends ConsumerState<_FollowUpChip> {
-  /// The last chip's label, kept while it hides.
-  String? _label;
-
-  @override
-  Widget build(BuildContext context) {
-    final target = ref.watch(
-      buddyThreadControllerProvider.select(
-        (t) => switch (t.followUpCard) {
-          final c? => (c.id, c.card.lines.firstOrNull?.entry.slotId),
-          null => null,
-        },
-      ),
-    );
-    final l10n = context.l10n;
-    if (target != null) {
-      final slots =
-          ref.watch(slotRecordsProvider(SlotMode.normal)).value ?? const [];
-      final slot = slots
-          .map((r) => r.slot)
-          .where((s) => s.id == target.$2)
-          .firstOrNull;
-      _label = slot == null
-          ? l10n.buddyFollowUpTargetNoSlot
-          : l10n.buddyFollowUpTarget(slotLabel(l10n, slot));
-    }
-    final label = _label;
-    return FbReveal(
-      visible: target != null,
-      child: label == null
-          ? const SizedBox(width: double.infinity)
-          : Padding(
-              padding: const EdgeInsetsDirectional.only(
-                start: FbSpace.s3,
-                end: FbSpace.s3,
-                top: FbSpace.s1,
-              ),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: FbTargetChip(
-                  label: label,
-                  clearTooltip: l10n.buddyFollowUpClear,
-                  onClear: () => ref
-                      .read(buddyThreadControllerProvider.notifier)
-                      .clearFollowUp(),
-                ),
-              ),
-            ),
     );
   }
 }

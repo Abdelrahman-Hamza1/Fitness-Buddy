@@ -5,9 +5,11 @@ library;
 export 'application/buddy_thread_controller.dart'
     show BuddyThreadController, buddyThreadControllerProvider;
 export 'application/pending_proposals.dart' show pendingProposalCountProvider;
+export 'data/buddy_summary_op_handler.dart';
 export 'data/buddy_sync_codecs.dart' show buddySyncCodecs;
 export 'data/chat_message_op_handler.dart';
 export 'data/chat_message_repository.dart';
 export 'data/proposal_op_handler.dart';
 export 'data/proposal_repository.dart';
+export 'presentation/buddy_remembers_row.dart';
 export 'presentation/buddy_sheet.dart' show showBuddySheet;

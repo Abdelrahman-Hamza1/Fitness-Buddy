@@ -11,7 +11,6 @@ import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_persistence_contributor.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
-import 'package:fb_mobile/features/buddy/data/interpret_request_reader.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -95,6 +94,29 @@ final class CardRebuilt extends ConfirmOutcome {
 
   @override
   String toString() => 'CardRebuilt';
+}
+
+/// Apply all's outcome (AI-162): every card's confirmed [sessions] by card
+/// ID and the one [undoEntryId] that reverts them all.
+final class AllLogged {
+  /// The outcome.
+  const new({
+    required this.sessions,
+    required this.undoEntryId,
+    required this.appliedAt,
+  });
+
+  /// The confirmed sessions, by card ID.
+  final Map<String, ProposalSession> sessions;
+
+  /// The one undo entry.
+  final String undoEntryId;
+
+  /// When it was applied (UTC).
+  final DateTime appliedAt;
+
+  @override
+  String toString() => 'AllLogged($undoEntryId)';
 }
 
 /// Nothing was written and nothing rebuilt ("Couldn't log this card.").
@@ -237,6 +259,93 @@ final class ProposalResolution {
             ) ??
             const CardNotLogged();
     }
+  }
+
+  /// Confirms every card of [cards] (each `(session, cardId)`, one card
+  /// per session) in **one** change set with one undo entry: Apply all
+  /// (AI-162). Every card's draft ops and the contributors' resolve ops,
+  /// computed from each card's current session; nothing else. `null` when
+  /// a card can't be confirmed or the change set was rejected (nothing is
+  /// written; each card can still be logged on its own).
+  Future<AllLogged?> confirmAll(
+    List<(ProposalSession, String)> cards,
+    EntryTime referenceTime, {
+    SessionMembership membership = const SessionMembership(),
+    bool reidentified = false,
+  }) async {
+    if (cards.isEmpty) return null;
+    final sessions = <ProposalSession>{};
+    final ops = <ChangeOp>[];
+    final resolved = <String, ProposalSession>{};
+    for (final (session, cardId) in cards) {
+      // One card per session: two writes of one session would conflict.
+      if (!sessions.add(session)) return null;
+      final card = session.cards.where((c) => c.id == cardId).firstOrNull;
+      if (card == null || !card.canConfirm) return null;
+      final done = ProposalEngine.recompute(
+        session,
+        ProposalSetLifecycle(card.id, ProposalLifecycle.confirmed),
+      ).value?.session;
+      if (done == null) return null;
+      resolved[cardId] = done;
+      ops
+        ..addAll(card.draftOps)
+        ..addAll([
+          for (final c in _contributors) ...c.onConfirm(card, done, membership),
+        ]);
+    }
+    if (ops.length > ChangeSet.maxOps) return null;
+    final result = await _apply(
+      ChangeSet(ops, origin: Origin.proposal(cards.first.$2)),
+    );
+    if (result case Rejected(failure: ConstraintViolation(code: 'duplicateId'))
+        when !reidentified) {
+      // After the group's Undo its entry IDs are only tombstones (A23 D10):
+      // every card gets fresh ones, and the whole group is applied again in
+      // one change set. A live entry means it's logged already: nothing.
+      final ids = {
+        for (final (session, cardId) in cards)
+          ..._diaryIds(session.cards.firstWhere((c) => c.id == cardId)),
+      };
+      if (await _loader.anyLiveDiaryRow(ids)) return null;
+      final fresh = <(ProposalSession, String)>[];
+      for (final (session, cardId) in cards) {
+        final next = ProposalEngine.recompute(
+          session,
+          ProposalReidentify(cardId, GeneratorProposalIds(_ids)),
+        ).value?.session;
+        if (next == null) return null;
+        fresh.add((next, cardId));
+      }
+      return await confirmAll(
+        fresh,
+        referenceTime,
+        membership: membership,
+        reidentified: true,
+      );
+    }
+    if (result is! Applied) return null;
+    final entry = _undo.record(result, UndoLabel('proposalLogged'));
+    final refreshed = <String, ProposalSession>{};
+    for (final (session, cardId) in cards) {
+      try {
+        refreshed[cardId] = await refresh(
+          session,
+          referenceTime,
+          confirmedCardId: cardId,
+        );
+        // Written already: a failed refresh keeps the resolved session.
+        // ignore: avoid_catches_without_on_clauses
+      } catch (_) {
+        _report(const BuddyRefreshFailed());
+        refreshed[cardId] = resolved[cardId]!;
+      }
+    }
+    return AllLogged(
+      sessions: refreshed,
+      undoEntryId: entry.id,
+      appliedAt: entry.appliedAt,
+    );
   }
 
   /// Rebuilds open card [cardId] of [session] from [origin]'s answer with

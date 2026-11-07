@@ -7,8 +7,8 @@ import 'package:fb_mobile/features/buddy/application/buddy_thread_state.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
+import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
 import 'package:fb_mobile/features/buddy/data/chat_message_repository.dart';
-import 'package:fb_mobile/features/buddy/data/interpret_request_reader.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_mappers.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_repository.dart';
@@ -173,7 +173,13 @@ final class BuddyThreadRestorer {
               ProposalLifecycle.superseded => CardResolution.superseded,
             },
             rebuilt: moved && message.replyToMessageId == null,
-            origin: !moved || answer == null
+            // The revision the phone showed (A66 D6), kept with the holder.
+            revision: switch (answer?[AgentCardWriter.revisionKey]) {
+              final int r when r >= 1 => r,
+              _ => 1,
+            },
+            // Each card's own answer (an agent card's holder holds one).
+            origin: answer == null
                 ? null
                 : CardOrigin(
                     interpretation: answer,
@@ -183,6 +189,27 @@ final class BuddyThreadRestorer {
           ),
         );
       }
+    }
+    // The latest turns, with or without cards (A66 review 9): user rows,
+    // their reply rows and the reply's local question and trace.
+    final recent = await _messages.recent(historyRows);
+    final users = [
+      for (final m in recent)
+        if (m.role == ChatMessageRole.user) m,
+    ];
+    for (final user in users.skip(
+      users.length > historyTurns ? users.length - historyTurns : 0,
+    )) {
+      turns[user.id] ??= _TurnDraft(user, null, null);
+    }
+    for (final m in recent) {
+      final to = m.replyToMessageId;
+      if (m.role != ChatMessageRole.assistant || to == null) continue;
+      final turn = turns[to];
+      if (turn == null || m.budgetJson != null || turn.reply != null) continue;
+      turn
+        ..reply = m
+        ..meta = await _answer(m);
     }
     final ordered = turns.values.toList()
       ..sort(
@@ -196,6 +223,12 @@ final class BuddyThreadRestorer {
       orphans: orphans,
     );
   }
+
+  /// The chat rows read for history, and the turns shown from them.
+  static const historyRows = 120;
+
+  /// See [historyRows].
+  static const historyTurns = 20;
 
   /// The local interpret answer of [message] (A23 D14), or `null`.
   Future<Map<String, Object?>?> _answer(ChatMessage message) async {
@@ -260,8 +293,14 @@ final class _TurnDraft {
   new(this.user, this.assistant, this.answer);
 
   final ChatMessage user;
-  final ChatMessage assistant;
+
+  /// The first card holder (or the A23 reply holding the session).
+  final ChatMessage? assistant;
   final Map<String, Object?>? answer;
+
+  /// The reply text row (no budget), and its local question/trace.
+  ChatMessage? reply;
+  Map<String, Object?>? meta;
   final List<BuddyCard> cards = [];
   final List<UnrestorableCard> unrestorable = [];
 
@@ -273,13 +312,45 @@ final class _TurnDraft {
       text: user.text,
       time: time(restorer),
     ),
-    phase: BuddyTurnPhase.replied,
-    assistantMessageId: assistant.id,
+    phase: switch (user.status) {
+      ChatMessageStatus.done => BuddyTurnPhase.replied,
+      ChatMessageStatus.failed => BuddyTurnPhase.failed,
+      // Waiting or interrupted: the queue resumes this install's own rows.
+      ChatMessageStatus.queued ||
+      ChatMessageStatus.processing ||
+      ChatMessageStatus.pendingOffline => BuddyTurnPhase.pending,
+    },
+    assistantMessageId: reply?.id ?? assistant?.id,
     interpretation: answer,
     // Creation order: card IDs are UUIDv7s allocated in order.
     cards: cards..sort((a, b) => a.id.compareTo(b.id)),
     unrestorable: unrestorable,
     profileGeneration: generation,
+    question: switch (meta?['question']) {
+      {'text': final String text, 'options': final List<Object?> options} =>
+        BuddyQuestion(text, [...options.whereType<String>()]),
+      _ => null,
+    },
+    trace: [
+      if (meta?['trace'] case final List<Object?> steps)
+        for (final step in steps)
+          if (step case {
+            'tool': final String tool,
+            'args': final String args,
+            'resultSummary': final String result,
+            'ms': final int ms,
+            'tokens': final int tokens,
+            'usd': final num usd,
+          })
+            TraceStepView(
+              tool: tool,
+              args: args,
+              resultSummary: result,
+              ms: ms,
+              tokens: tokens,
+              usd: usd.toDouble(),
+            ),
+    ],
   );
 }
 

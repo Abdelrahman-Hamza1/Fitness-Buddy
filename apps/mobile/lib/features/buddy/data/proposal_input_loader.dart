@@ -4,11 +4,16 @@ import 'package:drift/drift.dart';
 import 'package:fb_api_client/fb_api_client.dart' show ClientConfig;
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
+import 'package:fb_mobile/core/config/client_config.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
+import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/features/diary/diary.dart' show DiaryReads;
 import 'package:fb_mobile/features/foods/foods.dart'
     show FoodChoice, personalFoodOf;
 import 'package:fb_text/fb_text.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'proposal_input_loader.g.dart';
 
 /// Read-only, one-shot local adapter. The request owns every subsequent fact;
 /// recompute has no reference to this loader, database or configuration port.
@@ -354,4 +359,13 @@ ProposalFood _proposalFood(CatalogFood f) => ProposalFood(
         f.servingRanges[s.code]?.$2,
       ),
   ],
+);
+
+/// The proposal loader of the open profile, with the client config snapshot
+/// at load time (thresholds) and the installed catalog.
+@Riverpod(keepAlive: true)
+ProposalInputLoader proposalInputLoader(Ref ref) => ProposalInputLoader(
+  ref.watch(appDatabaseProvider),
+  catalog: ref.watch(offlineCatalogProvider),
+  config: () => ref.read(clientConfigProvider),
 );

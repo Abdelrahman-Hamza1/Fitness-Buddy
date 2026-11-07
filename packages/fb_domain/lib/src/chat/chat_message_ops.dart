@@ -199,6 +199,67 @@ final class ReleaseChatMessageAnswer extends ChatMessageOp {
   String toString() => 'ReleaseChatMessageAnswer($id)';
 }
 
+/// Saves (or, with `null`, clears) user message [id]'s local turn
+/// checkpoint (A66 D4, TD-102: the `request_json` column): what the turn
+/// last posted and the cards it received, so a turn resumes after a
+/// restart. Local-only, never synced or logged; user rows only. A status
+/// change to `done` or `failed` clears it too.
+final class SaveTurnCheckpoint extends ChatMessageOp {
+  /// [id]'s checkpoint [json] (`null` clears it).
+  new(this.id, this.json) : super._() {
+    checkUuid(id, 'id');
+  }
+
+  /// Row ID.
+  final String id;
+
+  /// The checkpoint, a JSON object within the local bound, or `null`.
+  final String? json;
+
+  /// The rule this op breaks, or `null`.
+  InvalidChatMessage? validate() => switch (json) {
+    final j? when !isLocalJsonObject(j) => InvalidChatMessage.answer,
+    _ => null,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is SaveTurnCheckpoint && other.id == id && other.json == json;
+
+  @override
+  int get hashCode => Object.hash(SaveTurnCheckpoint, id, json);
+
+  @override
+  String toString() => 'SaveTurnCheckpoint($id)';
+}
+
+/// Keeps card revision [revision] (A66 D6) in holder message [id]'s local
+/// answer, so a local adjustment's revision survives a restart. Local-only;
+/// nothing is written once the answer was released (no card waits) or when
+/// it already holds a revision as high.
+final class SaveCardRevision extends ChatMessageOp {
+  /// [id]'s card at [revision].
+  new(this.id, this.revision) : super._() {
+    checkUuid(id, 'id');
+  }
+
+  /// The holder row.
+  final String id;
+
+  /// The revision, from 1.
+  final int revision;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SaveCardRevision && other.id == id && other.revision == revision;
+
+  @override
+  int get hashCode => Object.hash(SaveCardRevision, id, revision);
+
+  @override
+  String toString() => 'SaveCardRevision($id, r$revision)';
+}
+
 /// Whether [json] is a well-formed JSON object within the local input bound
 /// ([ProposalPolicyConstants.maxInputBytes] UTF-8 bytes): the rule for the
 /// local-only JSON columns (A23 D5).

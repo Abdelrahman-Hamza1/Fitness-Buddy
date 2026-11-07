@@ -160,6 +160,8 @@ void main() {
       SetChatMessageStatus(:final status) => 'status ${status.code}',
       SetChatMessageBudget(:final id) => 'budget $id',
       ReleaseChatMessageAnswer(:final id) => 'release $id',
+      SaveTurnCheckpoint(:final id) => 'checkpoint $id',
+      SaveCardRevision(:final id) => 'revision $id',
     };
     expect(describe(create), 'create $_v7');
     expect(describe(status), 'status done');

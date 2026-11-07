@@ -17,6 +17,9 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         proposalRepositoryProvider.overrideWithValue(ProposalRepository(h.db)),
+        chatMessageRepositoryProvider.overrideWithValue(
+          ChatMessageRepository(h.db),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -39,6 +42,7 @@ void main() {
     await pumpEventQueue();
     expect(seen.last, 1);
     // Equal counts in a row are not re-emitted.
-    expect(seen, [0, 2, 1]);
+    // Cards arrive one by one (A66).
+    expect(seen, [0, 1, 2, 1]);
   });
 }

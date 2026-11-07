@@ -572,19 +572,6 @@
   "@buddyReplyCardClosed": {
     "description": "Buddy's fixed English reply when a follow-up's card was logged or discarded before the answer arrived (AI-044, AI-143)."
   },
-  "buddyFollowUpTarget": "Updating {slot} card",
-  "@buddyFollowUpTarget": {
-    "description": "Chip above the composer: the next message will update this open card (AI-044, UX-023).",
-    "placeholders": {"slot": {"type": "String", "example": "Breakfast"}}
-  },
-  "buddyFollowUpTargetNoSlot": "Updating the open card",
-  "@buddyFollowUpTargetNoSlot": {
-    "description": "Chip above the composer when the open card's meal has no name."
-  },
-  "buddyFollowUpClear": "Send as a new message",
-  "@buddyFollowUpClear": {
-    "description": "Tooltip and screen-reader label of the ✕ on the follow-up chip: the next message starts a new card."
-  },
   "buddyReplyMedical": "I can't help with medical questions. A doctor or pharmacist is the right person to ask.",
   "@buddyReplyMedical": {
     "description": "Buddy's fixed English reply to a medical question (A22 D16)."
@@ -601,33 +588,140 @@
   "@buddyReplyUnsupported": {
     "description": "Buddy's fixed English reply to a request a newer app version handles (04 §4.2)."
   },
-  "buddyFailureOffline": "You're offline. Food search still works.",
-  "@buddyFailureOffline": {
-    "description": "Under a Buddy message that could not be sent: no connection (A22 D6)."
-  },
-  "buddyFailureTimeout": "Buddy didn't answer in time.",
-  "@buddyFailureTimeout": {
-    "description": "Under a Buddy message: no answer in time (A22 D6)."
-  },
   "buddyFailureServer": "Buddy couldn't answer just now.",
   "@buddyFailureServer": {
     "description": "Under a Buddy message: a server error (A22 D6)."
   },
-  "buddyFailureUnavailable": "Buddy is busy right now.",
-  "@buddyFailureUnavailable": {
-    "description": "Under a Buddy message: the service was unavailable once (A22 D6)."
-  },
-  "buddyFailureUnavailableFinal": "Buddy is still busy. Your text is back in the box below.",
-  "@buddyFailureUnavailableFinal": {
-    "description": "Under a Buddy message: unavailable a second time; the text went back to the composer (A22 D6)."
-  },
-  "buddyFailureRejected": "Buddy couldn't read that message.",
-  "@buddyFailureRejected": {
-    "description": "Under a Buddy message the server refused (A22 D6)."
-  },
   "buddyFailureRateLimited": "You've reached today's Buddy limit. Search still works.",
   "@buddyFailureRateLimited": {
     "description": "Under a Buddy message: today's limit is reached (A22 D6)."
+  },
+  "buddyWaitingOnline": "Waiting. Buddy will process this when you're online.",
+  "@buddyWaitingOnline": {
+    "description": "Under a message that couldn't reach Buddy yet (offline or Buddy unavailable, AI-047/AI-153): it runs again on its own."
+  },
+  "buddyTryNow": "Try now",
+  "@buddyTryNow": {
+    "description": "Button under a waiting message: try to send it to Buddy now."
+  },
+  "buddyStepSearchingFoods": "Searching foods…",
+  "@buddyStepSearchingFoods": {
+    "description": "Live step while Buddy looks up foods (AI-170)."
+  },
+  "buddyStepReadingDiary": "Checking your diary…",
+  "@buddyStepReadingDiary": {
+    "description": "Live step while Buddy reads the diary (AI-170)."
+  },
+  "buddyStepReadingYourFoods": "Looking at your foods…",
+  "@buddyStepReadingYourFoods": {
+    "description": "Live step while Buddy reads the user's own foods (AI-170)."
+  },
+  "buddyStepReadingBody": "Checking your weight…",
+  "@buddyStepReadingBody": {
+    "description": "Live step while Buddy reads weight or measurements (AI-170)."
+  },
+  "buddyStepReadingWorkouts": "Checking your workouts…",
+  "@buddyStepReadingWorkouts": {
+    "description": "Live step while Buddy reads workouts (AI-170)."
+  },
+  "buddyStepReadingMemory": "Checking what I remember…",
+  "@buddyStepReadingMemory": {
+    "description": "Live step while Buddy reads its memory (AI-170)."
+  },
+  "buddyStepComputing": "Working it out…",
+  "@buddyStepComputing": {
+    "description": "Live step while Buddy computes amounts (AI-170)."
+  },
+  "buddyStepCheckingFit": "Working out what fits…",
+  "@buddyStepCheckingFit": {
+    "description": "Live step while Buddy checks what fits the day (AI-170)."
+  },
+  "buddyStepWritingReply": "Writing…",
+  "@buddyStepWritingReply": {
+    "description": "Live step while Buddy writes its reply (AI-170)."
+  },
+  "buddyStepSummarizing": "Tidying up our chat…",
+  "@buddyStepSummarizing": {
+    "description": "Live step while Buddy summarises older chat (AI-165)."
+  },
+  "buddyStepWorking": "Working…",
+  "@buddyStepWorking": {
+    "description": "Live step for a step this version doesn't name."
+  },
+  "buddyStop": "Stop",
+  "@buddyStop": {
+    "description": "Button while Buddy works: stops it; cards already shown stay (AI-171)."
+  },
+  "buddyPossibleDuplicate": "This may repeat a card you already logged from this message.",
+  "@buddyPossibleDuplicate": {
+    "description": "Note on a card whose food, meal and amount match a card logged earlier in the same turn."
+  },
+  "buddyChangedMeanwhile": "You changed this card, so Buddy's update wasn't applied.",
+  "@buddyChangedMeanwhile": {
+    "description": "Note on a card whose update from Buddy was dropped because the user changed it first (AI-044)."
+  },
+  "buddyTrace": "Trace",
+  "@buddyTrace": {
+    "description": "Developer button under a Buddy turn: opens its trace (AI-172, dev and owner builds only)."
+  },
+  "buddyTraceTitle": "What Buddy did",
+  "@buddyTraceTitle": {
+    "description": "Title of the trace sheet (AI-172)."
+  },
+  "buddyTraceEmpty": "No steps were recorded for this message.",
+  "@buddyTraceEmpty": {
+    "description": "Trace sheet without steps."
+  },
+  "buddyRemembersTitle": "Buddy remembers",
+  "@buddyRemembersTitle": {
+    "description": "Me › Your data row: Buddy's summary of older chat (AI-165)."
+  },
+  "buddyRemembersEmpty": "Nothing yet. Buddy keeps a short summary of longer chats here.",
+  "@buddyRemembersEmpty": {
+    "description": "Subtitle of the Buddy remembers row without a summary."
+  },
+  "buddyRemembersClear": "Clear",
+  "@buddyRemembersClear": {
+    "description": "Button that clears Buddy's summary of older chat."
+  },
+  "buddyRemembersClearBody": "Buddy forgets its summary of your older chat. Your diary and your messages don't change.",
+  "@buddyRemembersClearBody": {
+    "description": "Confirmation body before clearing the summary."
+  },
+  "buddyRemembersCleared": "Summary cleared.",
+  "@buddyRemembersCleared": {
+    "description": "Confirmation after the summary was cleared."
+  },
+  "buddyCancel": "Cancel",
+  "@buddyCancel": {
+    "description": "Cancels a Buddy confirmation."
+  },
+  "buddyApplyAll": "{count, plural, other{Log all {count}}}",
+  "@buddyApplyAll": {
+    "description": "Button under a reply with several open cards: logs them all in one tap, one Undo (AI-162).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "buddyTraceStep": "{tool} · {ms} ms · {tokens} tokens · {usd}",
+  "@buddyTraceStep": {
+    "description": "One trace step line: tool name, duration, tokens and cost in US dollars (dev only).",
+    "placeholders": {
+      "tool": {
+        "type": "String"
+      },
+      "ms": {
+        "type": "int"
+      },
+      "tokens": {
+        "type": "int"
+      },
+      "usd": {
+        "type": "String"
+      }
+    }
   },
   "buddyTryAgain": "Try again",
   "@buddyTryAgain": {

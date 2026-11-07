@@ -9,29 +9,32 @@ part of 'buddy_thread_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Buddy's thread for this app process (D11): dismissing the sheet keeps it;
-/// a restart starts empty (durable restore is A23's).
+/// pending cards and waiting messages come back after a restart (A23, A66).
 ///
-/// Orchestrates the send path, card adjustments, single-flight confirm,
-/// discard and the one undo per confirm. Writes only through the use cases
-/// (single writer).
+/// Orchestrates agent turns (A66: one at a time, the runner, the message
+/// queue), card adjustments, single-flight confirm and Apply all, discard
+/// and the one undo per confirm. Writes only through the use cases (single
+/// writer); a `proposal` event only ever becomes a pending card.
 
 @ProviderFor(BuddyThreadController)
 final buddyThreadControllerProvider = BuddyThreadControllerProvider._();
 
 /// Buddy's thread for this app process (D11): dismissing the sheet keeps it;
-/// a restart starts empty (durable restore is A23's).
+/// pending cards and waiting messages come back after a restart (A23, A66).
 ///
-/// Orchestrates the send path, card adjustments, single-flight confirm,
-/// discard and the one undo per confirm. Writes only through the use cases
-/// (single writer).
+/// Orchestrates agent turns (A66: one at a time, the runner, the message
+/// queue), card adjustments, single-flight confirm and Apply all, discard
+/// and the one undo per confirm. Writes only through the use cases (single
+/// writer); a `proposal` event only ever becomes a pending card.
 final class BuddyThreadControllerProvider
     extends $NotifierProvider<BuddyThreadController, BuddyThread> {
   /// Buddy's thread for this app process (D11): dismissing the sheet keeps it;
-  /// a restart starts empty (durable restore is A23's).
+  /// pending cards and waiting messages come back after a restart (A23, A66).
   ///
-  /// Orchestrates the send path, card adjustments, single-flight confirm,
-  /// discard and the one undo per confirm. Writes only through the use cases
-  /// (single writer).
+  /// Orchestrates agent turns (A66: one at a time, the runner, the message
+  /// queue), card adjustments, single-flight confirm and Apply all, discard
+  /// and the one undo per confirm. Writes only through the use cases (single
+  /// writer); a `proposal` event only ever becomes a pending card.
   BuddyThreadControllerProvider._()
     : super(
         from: null,
@@ -60,14 +63,15 @@ final class BuddyThreadControllerProvider
 }
 
 String _$buddyThreadControllerHash() =>
-    r'26fa7fcac2e79cac80f0519e6c0ee36ed0945a76';
+    r'735b5e18bc4d6de521bf4a287331a6aa9b22de29';
 
 /// Buddy's thread for this app process (D11): dismissing the sheet keeps it;
-/// a restart starts empty (durable restore is A23's).
+/// pending cards and waiting messages come back after a restart (A23, A66).
 ///
-/// Orchestrates the send path, card adjustments, single-flight confirm,
-/// discard and the one undo per confirm. Writes only through the use cases
-/// (single writer).
+/// Orchestrates agent turns (A66: one at a time, the runner, the message
+/// queue), card adjustments, single-flight confirm and Apply all, discard
+/// and the one undo per confirm. Writes only through the use cases (single
+/// writer); a `proposal` event only ever becomes a pending card.
 
 abstract class _$BuddyThreadController extends $Notifier<BuddyThread> {
   BuddyThread build();

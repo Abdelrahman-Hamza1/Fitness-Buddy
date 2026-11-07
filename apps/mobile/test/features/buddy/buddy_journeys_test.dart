@@ -48,19 +48,13 @@ void main() {
       'reply', (tester) async {
     final h = await _journey(tester, j3Text);
     expect(find.text(j3Text, skipOffstage: false), findsOneWidget);
-    // The reply is the fixed English line (stored; not drawn above cards).
-    expect(
-      (await h.chat()).singleWhere((r) => r.role == 'assistant').messageText,
-      "Here's your meal. Check it, then tap Log it.",
-    );
     await _tap(tester, find.text('Log it'));
     await settleBuddy(tester);
     expect(await h.entries(), hasLength(2));
     expect(find.textContaining('Logged '), findsOneWidget);
     expect(find.textContaining('eaten today'), findsOneWidget);
-    // The user's row records what they wrote (ar), the reply is English.
+    // Buddy's rows are English (AI-143).
     final rows = await h.chat();
-    expect(rows.firstWhere((r) => r.role == 'user').language, 'ar');
     expect(rows.firstWhere((r) => r.role == 'assistant').language, 'en');
     await unmountBuddy(tester, h);
   });

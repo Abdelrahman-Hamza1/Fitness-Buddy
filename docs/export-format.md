@@ -144,6 +144,21 @@ Buddy's cards (A23): one per meal, waiting for you or already logged or discarde
 | `proposals.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
 | `proposals.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
 
+## buddy-summaries (`buddySummary`, `buddy_summaries`)
+
+Buddy's short summary of your older chat (A66, AI-165): what Buddy keeps of a long conversation. Shown and clearable under "Buddy remembers".
+
+| Column | Type / unit | Meaning |
+|---|---|---|
+| `buddy-summaries.id` | text | UUIDv7 for user-created rows, a deterministic UUIDv5 for natural keys (`core/db/natural_id.dart`). Lowercase canonical text. |
+| `buddy-summaries.summary_text` | text | The summary. User content. |
+| `buddy-summaries.revision` | integer | The summary's revision, from 1; a newer summary has a higher one. |
+| `buddy-summaries.watermark` | text | The id of the last chat message the summary covers. |
+| `buddy-summaries.created_at` | UTC ISO-8601 | Creation time, UTC ISO-8601 text (seed rows use the epoch). |
+| `buddy-summaries.edited_by_user` | boolean | Provenance: the user overrode a value that came from another source (AI-072, the "edited by you" badge). Set only by ops. |
+| `buddy-summaries.version` | integer | 1 on insert, +1 per write: the local optimistic concurrency check. JSON only. |
+| `buddy-summaries.origin` | text | `direct`, `proposal:<uuid>`, `undo:<changeSetId>` or `system`. JSON only. |
+
 ## dish-groups (`dishGroup`, `dish_groups`)
 
 | Column | Type / unit | Meaning |

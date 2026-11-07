@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/sync/sync_codec.dart';
+import 'package:fb_mobile/core/db/synced_tables.dart';
 import 'package:fb_mobile/core/db/tables/chat_tables.dart';
 import 'package:fb_mobile/features/buddy/data/chat_message_mappers.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_mappers.dart';
@@ -153,9 +154,54 @@ final class ProposalSyncCodec implements SyncEntityCodec {
   Map<String, Expression<Object>> get tombstoneLocalColumns => const {};
 }
 
+/// `buddySummary` v1 (B25, A66 D9): the generic column codec with the
+/// `summary_text` column as the wire's `text`.
+final class BuddySummarySyncCodec implements SyncEntityCodec {
+  /// The codec over [db]'s `buddy_summaries`.
+  new(AppDatabase db)
+    : _columns = ColumnSyncCodec(
+        SyncedTable<$BuddySummariesTable, BuddySummaryRow>(
+          db.buddySummaries,
+          buddySummaryEntity,
+        ),
+      );
+
+  final ColumnSyncCodec _columns;
+
+  @override
+  String get entity => buddySummaryEntity;
+
+  @override
+  int get uploadVersion => 1;
+
+  @override
+  Map<String, Object?> encode(Map<String, Object?> sqlRow) => {
+    for (final MapEntry(:key, :value) in _columns.encode(sqlRow).entries)
+      key == 'summaryText' ? 'text' : key: value,
+  };
+
+  @override
+  Map<String, Expression<Object>> decode(
+    Map<String, Object?> payload, {
+    required String id,
+    required bool deleted,
+  }) => _columns.decode(
+    {
+      for (final MapEntry(:key, :value) in payload.entries)
+        if (key != 'summaryText') key == 'text' ? 'summaryText' : key: value,
+    },
+    id: id,
+    deleted: deleted,
+  );
+
+  @override
+  Map<String, Expression<Object>> get tombstoneLocalColumns => const {};
+}
+
 /// The Buddy feature's sync codecs, by entity (composed by
 /// `app/app_scope.dart`).
 Map<String, SyncEntityCodec> buddySyncCodecs(AppDatabase db) => {
   chatMessageEntity: ChatMessageSyncCodec(db),
   proposalEntity: ProposalSyncCodec(db),
+  buddySummaryEntity: BuddySummarySyncCodec(db),
 };

@@ -398,17 +398,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'That card was already logged or discarded, so I left it as it is.';
 
   @override
-  String buddyFollowUpTarget(String slot) {
-    return 'Updating $slot card';
-  }
-
-  @override
-  String get buddyFollowUpTargetNoSlot => 'Updating the open card';
-
-  @override
-  String get buddyFollowUpClear => 'Send as a new message';
-
-  @override
   String get buddyReplyMedical =>
       'I can\'t help with medical questions. A doctor or pharmacist is the right person to ask.';
 
@@ -425,27 +414,106 @@ class AppLocalizationsEn extends AppLocalizations {
       'Buddy can\'t do that in this version yet. You can log food here.';
 
   @override
-  String get buddyFailureOffline => 'You\'re offline. Food search still works.';
-
-  @override
-  String get buddyFailureTimeout => 'Buddy didn\'t answer in time.';
-
-  @override
   String get buddyFailureServer => 'Buddy couldn\'t answer just now.';
-
-  @override
-  String get buddyFailureUnavailable => 'Buddy is busy right now.';
-
-  @override
-  String get buddyFailureUnavailableFinal =>
-      'Buddy is still busy. Your text is back in the box below.';
-
-  @override
-  String get buddyFailureRejected => 'Buddy couldn\'t read that message.';
 
   @override
   String get buddyFailureRateLimited =>
       'You\'ve reached today\'s Buddy limit. Search still works.';
+
+  @override
+  String get buddyWaitingOnline =>
+      'Waiting. Buddy will process this when you\'re online.';
+
+  @override
+  String get buddyTryNow => 'Try now';
+
+  @override
+  String get buddyStepSearchingFoods => 'Searching foods…';
+
+  @override
+  String get buddyStepReadingDiary => 'Checking your diary…';
+
+  @override
+  String get buddyStepReadingYourFoods => 'Looking at your foods…';
+
+  @override
+  String get buddyStepReadingBody => 'Checking your weight…';
+
+  @override
+  String get buddyStepReadingWorkouts => 'Checking your workouts…';
+
+  @override
+  String get buddyStepReadingMemory => 'Checking what I remember…';
+
+  @override
+  String get buddyStepComputing => 'Working it out…';
+
+  @override
+  String get buddyStepCheckingFit => 'Working out what fits…';
+
+  @override
+  String get buddyStepWritingReply => 'Writing…';
+
+  @override
+  String get buddyStepSummarizing => 'Tidying up our chat…';
+
+  @override
+  String get buddyStepWorking => 'Working…';
+
+  @override
+  String get buddyStop => 'Stop';
+
+  @override
+  String get buddyPossibleDuplicate =>
+      'This may repeat a card you already logged from this message.';
+
+  @override
+  String get buddyChangedMeanwhile =>
+      'You changed this card, so Buddy\'s update wasn\'t applied.';
+
+  @override
+  String get buddyTrace => 'Trace';
+
+  @override
+  String get buddyTraceTitle => 'What Buddy did';
+
+  @override
+  String get buddyTraceEmpty => 'No steps were recorded for this message.';
+
+  @override
+  String get buddyRemembersTitle => 'Buddy remembers';
+
+  @override
+  String get buddyRemembersEmpty =>
+      'Nothing yet. Buddy keeps a short summary of longer chats here.';
+
+  @override
+  String get buddyRemembersClear => 'Clear';
+
+  @override
+  String get buddyRemembersClearBody =>
+      'Buddy forgets its summary of your older chat. Your diary and your messages don\'t change.';
+
+  @override
+  String get buddyRemembersCleared => 'Summary cleared.';
+
+  @override
+  String get buddyCancel => 'Cancel';
+
+  @override
+  String buddyApplyAll(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Log all $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String buddyTraceStep(String tool, int ms, int tokens, String usd) {
+    return '$tool · $ms ms · $tokens tokens · $usd';
+  }
 
   @override
   String get buddyTryAgain => 'Try again';

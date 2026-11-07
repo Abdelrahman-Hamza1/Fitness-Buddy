@@ -1,12 +1,9 @@
-import 'package:fb_design_system/fb_design_system.dart';
-import 'package:fb_mobile/features/buddy/presentation/composer.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_list.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../packages/fb_domain/test/proposals/proposal_fixtures.dart'
     as f;
-import '../../../helpers/layout_stability.dart';
 import '../support/buddy_harness.dart';
 import '../support/buddy_widgets.dart';
 
@@ -22,8 +19,6 @@ Future<BuddyHarness> _threeCards(WidgetTester tester) async {
   for (var i = 0; i < 3; i++) {
     await sendInSheet(tester, 'egg $i');
     await settleBuddy(tester);
-    h.thread.clearFollowUp();
-    await tester.pumpAndSettle();
   }
   return h;
 }
@@ -88,38 +83,5 @@ void main() {
     expect(_atBottom(tester), isTrue);
     expect(_pillShown(tester), isFalse);
     await unmountBuddy(tester, h);
-  });
-
-  testWidgets('A57 T-B4 A08 UX-045 the follow-up chip reveals above the '
-      'composer without moving it', (tester) async {
-    for (final scale in stabilityScales) {
-      final h = BuddyHarness()..answer(f.message());
-      await pumpBuddyHost(tester, h, textScale: scale);
-      await openBuddySheet(tester);
-      expect(find.byType(FbTargetChip).hitTestable(), findsNothing);
-      await expectStable(
-        tester,
-        find.byType(BuddyComposer),
-        () async {
-          await sendInSheet(tester, '2 eggs');
-          await settleBuddy(tester);
-          expect(find.byType(FbTargetChip), findsOneWidget);
-        },
-        anchor: find.byType(BuddyComposer),
-        reason: 'chip shows at $scale',
-      );
-      await expectStable(
-        tester,
-        find.byType(BuddyComposer),
-        () async {
-          h.thread.clearFollowUp();
-          await tester.pumpAndSettle();
-          expect(find.byType(FbTargetChip), findsNothing);
-        },
-        anchor: find.byType(BuddyComposer),
-        reason: 'chip hides at $scale',
-      );
-      await unmountBuddy(tester, h);
-    }
   });
 }

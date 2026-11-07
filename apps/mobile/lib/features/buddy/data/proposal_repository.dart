@@ -26,6 +26,12 @@ final class ProposalRepository {
   Future<List<ProposalRecord>> byBudgetMessage(String messageId) async =>
       _read(await _live((t) => t.budgetMessageId.equals(messageId)).get());
 
+  /// The live cards first made by any of assistant messages [ids] (their
+  /// `originMessageId`), in creation order (A66 history outcomes).
+  Future<List<ProposalRecord>> byOrigins(Set<String> ids) async => ids.isEmpty
+      ? const []
+      : _read(await _live((t) => t.originMessageId.isIn(ids)).get());
+
   /// Every live pending card, oldest first (restore, the pending strip);
   /// with [kind], only that kind.
   Future<List<ProposalRecord>> pending({String? kind}) async =>

@@ -92,6 +92,8 @@ Future<void> sendInSheet(WidgetTester tester, String text) async {
 /// [h]'s undo expiry timers (as the app rigs do).
 Future<void> unmountBuddy(WidgetTester tester, [BuddyHarness? h]) async {
   h?.undo.dispose();
+  // The message queue's retry timer goes with the thread (A66 D12).
+  h?.container.dispose();
   await tester.pumpWidget(const SizedBox());
   await tester.pump(const Duration(seconds: 1));
   await tester.pump(const Duration(seconds: 1));

@@ -103,3 +103,23 @@ class Proposals extends Table with SyncColumns {
 
 /// Sync registry name (`proposal` v1, B18).
 const proposalEntity = 'proposal';
+
+/// Buddy's conversation summary (A66 D9, `06` §6.1, AI-165): one live row
+/// (the highest revision wins), synced as `buddySummary` v1.
+/// The server writes it only into a `summary` event; the phone stores it
+/// when its revision still matches. User content: never logged.
+@DataClassName('BuddySummaryRow')
+class BuddySummaries extends Table with SyncColumns {
+  /// The summary (≤ 1500 UTF-16 units; the wire field `text`, mapped by
+  /// the buddy sync codec: a column named `text` would shadow drift's).
+  TextColumn get summaryText => text()();
+
+  /// The summary revision, from 1.
+  IntColumn get revision => integer().check(revision.isBiggerOrEqualValue(1))();
+
+  /// The last summarised chat message ID.
+  TextColumn get watermark => text()();
+}
+
+/// Sync registry name (`buddySummary` v1, B25).
+const buddySummaryEntity = 'buddySummary';

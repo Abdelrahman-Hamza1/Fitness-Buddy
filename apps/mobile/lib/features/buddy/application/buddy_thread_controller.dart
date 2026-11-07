@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/account/profile_generation.dart';
+import 'package:fb_mobile/core/changes/apply_result.dart';
+import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
+import 'package:fb_mobile/core/settings/settings_store.dart';
+import 'package:fb_mobile/core/storage/device_id_store.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
@@ -13,23 +18,32 @@ import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_write_lane.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
-import 'package:fb_mobile/features/buddy/data/buddy_api.dart';
+import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
+import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
+import 'package:fb_mobile/features/buddy/data/buddy_turn_api.dart';
+import 'package:fb_mobile/features/buddy/data/buddy_turn_context_reader.dart';
+import 'package:fb_mobile/features/buddy/data/chat_message_repository.dart';
+import 'package:fb_mobile/features/buddy/data/phone_tools.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
+import 'package:fb_mobile/features/buddy/data/proposal_repository.dart';
+import 'package:fb_mobile/features/buddy/data/turn/buddy_turn_runner.dart';
+import 'package:fb_mobile/features/buddy/data/turn/turn_checkpoint.dart';
 import 'package:fb_mobile/features/foods/foods.dart' show FoodChoice;
+import 'package:fb_mobile/features/settings/settings.dart' show AppSettings;
+import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:fb_mobile/features/buddy/application/buddy_thread_state.dart';
-export 'package:fb_mobile/features/buddy/data/buddy_api.dart'
-    show BuddySendFailure;
 
 part 'buddy_thread_controller.g.dart';
 
 /// Buddy's thread for this app process (D11): dismissing the sheet keeps it;
-/// a restart starts empty (durable restore is A23's).
+/// pending cards and waiting messages come back after a restart (A23, A66).
 ///
-/// Orchestrates the send path, card adjustments, single-flight confirm,
-/// discard and the one undo per confirm. Writes only through the use cases
-/// (single writer).
+/// Orchestrates agent turns (A66: one at a time, the runner, the message
+/// queue), card adjustments, single-flight confirm and Apply all, discard
+/// and the one undo per confirm. Writes only through the use cases (single
+/// writer); a `proposal` event only ever becomes a pending card.
 @Riverpod(keepAlive: true)
 class BuddyThreadController extends _$BuddyThreadController {
   /// A save in flight, before its turn exists (keeps Send single-flight).
@@ -56,6 +70,31 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// The profile generation this thread belongs to (A33 round 4).
   int _generation = 0;
 
+  /// The running turns' runners (one at a time), by turn ID.
+  final Map<String, BuddyTurnRunner> _runners = {};
+
+  /// The reply templates the sheet last handed over (A22 D16).
+  BuddyReplyTexts? _texts;
+
+  /// Whether the app is in the foreground: the queue runs only then (G2).
+  bool _foreground = true;
+
+  /// The queue's retry timer and how many waits it has done (A66 D12).
+  Timer? _retry;
+  int _waits = 0;
+  bool _draining = false;
+
+  /// The backoff between queue attempts (A66 D12).
+  static const _backoff = [
+    Duration(seconds: 5),
+    Duration(seconds: 15),
+    Duration(minutes: 1),
+    Duration(minutes: 5),
+  ];
+
+  /// How long a waiting message is replayed on its own (A23b D17).
+  static const _replayFor = Duration(hours: 23);
+
   /// Whether work started in generation [gen] may still change the thread.
   bool _current(int gen) => ref.mounted && gen == _generation;
 
@@ -68,6 +107,14 @@ class BuddyThreadController extends _$BuddyThreadController {
     _lane = ProposalWriteLane();
     _undoing = {};
     _restored = null;
+    // A turn of another profile never writes here (A33).
+    for (final runner in _runners.values) {
+      runner.stop();
+    }
+    _runners.clear();
+    _retry?.cancel();
+    _waits = 0;
+    _draining = false;
     if (_started) {
       // A profile switch after the first frame: this profile's cards come
       // back too (A23 D12).
@@ -98,9 +145,27 @@ class BuddyThreadController extends _$BuddyThreadController {
               e.entities.contains('proposal'),
         )
         .listen((_) => unawaited(_restoreAgain()));
+    AppLifecycleListener? lifecycle;
+    try {
+      // Foreground only (G2): a resumed app tries waiting messages again.
+      lifecycle = AppLifecycleListener(
+        onResume: () {
+          _foreground = true;
+          unawaited(wake());
+        },
+        onPause: () {
+          _foreground = false;
+          _retry?.cancel();
+        },
+      );
+      // No binding (a plain unit test): the sheet and Try now still wake.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {}
     ref
       ..onDispose(changes.cancel)
-      ..onDispose(remote.cancel);
+      ..onDispose(remote.cancel)
+      ..onDispose(() => lifecycle?.dispose())
+      ..onDispose(() => _retry?.cancel());
     return const BuddyThread();
   }
 
@@ -120,7 +185,8 @@ class BuddyThreadController extends _$BuddyThreadController {
   Future<void> ensureRestored(int generation) {
     _started = true;
     if (!ref.mounted || generation != _generation) return Future.value();
-    return _restored ??= _restore(generation);
+    return _restored ??= _restore(generation)
+        .then((_) => _resumeWaiting(generation));
   }
 
   /// Re-runs the restore after a remote apply, once the first restore of
@@ -183,10 +249,18 @@ class BuddyThreadController extends _$BuddyThreadController {
 
   ProposalResolution get _resolution => ref.read(proposalResolutionProvider);
 
-  /// Saves [raw], shows the turn at once (skeleton), then interprets it.
-  /// Ignored while a send is in flight or for blank text.
+  /// Saves [raw] and runs it as a turn (A66): the live step line at once,
+  /// cards as they come. Ignored while a turn runs or for blank text; a
+  /// message waiting offline is tried first.
   Future<void> send(String raw, BuddyReplyTexts texts) async {
-    if (state.sending || _saving) return;
+    _texts = texts;
+    if (state.sending || _saving || _draining) {
+      // One turn at a time: the text goes back to the composer, never lost.
+      if (raw.trim().isNotEmpty) {
+        state = state.copyWith(composerRestore: raw);
+      }
+      return;
+    }
     final gen = _generation;
     // The use case of this generation (its applier is bound to it).
     final send = _send;
@@ -208,56 +282,70 @@ class BuddyThreadController extends _$BuddyThreadController {
       }
       return;
     }
-    // A message sent while a card is open updates that card (AI-044).
-    final target = state.followUpCard;
     state = state.copyWith(
       turns: [
         ...state.turns,
-        BuddyTurn(
-          message: message,
-          profileGeneration: gen,
-          followUpCardId: target?.id,
-        ),
+        BuddyTurn(message: message, profileGeneration: gen),
       ],
       clearComposer: true,
     );
-    try {
-      final request = await send.prepare(message, followUp: target?.card);
-      if (!_current(gen)) return;
-      _update(message.id, (t) => t.copyWith(request: request));
-      await _dispatch(message.id, texts, gen);
-      // A throw must never leave the turn "sending" (Send stays disabled
-      // forever): it fails as a server error, retryable when the request
-      // was prepared (A22a review). Nothing of it is logged.
-      // ignore: avoid_catches_without_on_clauses
-    } catch (_) {
-      if (_current(gen)) _failed(message.id);
-    }
+    await _begin(message.id, gen);
   }
 
-  void _failed(String userMessageId) => _update(
-    userMessageId,
-    (t) => t.copyWith(
-      phase: BuddyTurnPhase.failed,
-      failure: BuddySendFailure.server,
-    ),
-  );
+  /// A question chip (AI-166): the chip's text is the next message.
+  Future<void> answer(String option, BuddyReplyTexts texts) =>
+      send(option, texts);
 
-  /// Replays a failed turn's frozen request (same Idempotency-Key), when
-  /// [BuddyTurn.canRetry].
-  Future<void> retry(String userMessageId, BuddyReplyTexts texts) async {
+  /// Try again on a failed turn: its text as a new message (a new turn,
+  /// 06 §3.4).
+  Future<void> tryAgain(String userMessageId, BuddyReplyTexts texts) async {
     final turn = _turn(userMessageId);
-    if (turn == null || !turn.canRetry || state.sending) return;
+    if (turn == null || turn.phase != BuddyTurnPhase.failed) return;
+    await send(turn.message.text, texts);
+  }
+
+  /// Stops the running turn [userMessageId] (AI-171): what it was preparing
+  /// is never applied; cards already shown stay.
+  void stop(String userMessageId) {
+    final runner = _runners[userMessageId];
+    if (runner == null) return;
+    runner.stop();
+    // The stop is durable at once (a kill right after Stop never resumes
+    // the turn, 06 §3.4); not behind the lane: a card still being prepared
+    // there checks the stop right before it commits and writes nothing.
     final gen = _generation;
-    if (turn.profileGeneration != gen) return;
-    _update(userMessageId, (t) => t.copyWith(phase: BuddyTurnPhase.sending));
-    try {
-      await _dispatch(userMessageId, texts, gen);
-      // See [send].
-      // ignore: avoid_catches_without_on_clauses
-    } catch (_) {
-      if (_current(gen)) _failed(userMessageId);
-    }
+    unawaited(
+      Future(() async {
+        if (!_current(gen)) return;
+        final messages = ref.read(chatMessageRepositoryProvider);
+        final checkpoint = TurnCheckpoint.decode(
+          await messages.checkpointOf(userMessageId),
+          userMessageId,
+        );
+        if (checkpoint == null || checkpoint.stopped) return;
+        await ref
+            .read(changeSetApplierProvider)
+            .apply(
+              ChangeSet([
+                SaveTurnCheckpoint(
+                  userMessageId,
+                  checkpoint.copyWith(stopped: true).encode(),
+                ),
+              ], origin: Origin.system),
+            );
+      }).catchError((Object _) {}),
+    );
+  }
+
+  /// Whether turn [turnId]'s runner was stopped (checked right before
+  /// every card write).
+  bool _stoppedTurn(String turnId) => _runners[turnId]?.stopped ?? false;
+
+  /// Tries waiting messages now (sheet opened, app resumed, Try now).
+  Future<void> wake([BuddyReplyTexts? texts]) async {
+    if (texts != null) _texts = texts;
+    _retry?.cancel();
+    await _drain(_generation);
   }
 
   /// The composer's text to restore, once (then cleared).
@@ -269,18 +357,735 @@ class BuddyThreadController extends _$BuddyThreadController {
     return text;
   }
 
-  /// The next message starts a new card instead of updating the open one
-  /// (✕ on the follow-up chip, D21).
-  void clearFollowUp() {
-    final card = state.followUpCard;
-    if (card == null) return;
-    state = BuddyThread(
-      turns: state.turns,
-      composerRestore: state.composerRestore,
-      followUpOff: card.id,
-      membership: state.membership,
-      orphans: state.orphans,
+  /// The open cards a start request lists (`snapshot.openCards`).
+  List<OpenCardRef> _openCards() => [
+    for (final t in state.turns)
+      for (final c in t.cards)
+        if (c.resolution == CardResolution.open)
+          (
+            cardId: c.id,
+            revision: c.revision,
+            label: AgentCardWriter.labelOf(c.card),
+          ),
+  ];
+
+  /// Builds turn [turnId]'s start request, marks it `processing` with its
+  /// checkpoint and runs it.
+  Future<void> _begin(String turnId, int gen) async {
+    try {
+      final turn = _turn(turnId)!;
+      final settings = ref.read(settingsStoreProvider);
+      final units = await settings.read(AppSettings.unitSystem);
+      final halal = await settings.read(AppSettings.halal);
+      final body = await ref
+          .read(buddyTurnContextReaderProvider)
+          .start(
+            turnId: turnId,
+            text: turn.message.text,
+            now: turn.message.time,
+            openCards: _openCards(),
+            units: units,
+            halal: halal,
+            trace: ref.read(buddyTraceEnabledProvider),
+          );
+      if (!_current(gen)) return;
+      final json = jsonDecode(jsonEncode(body.toJson())) as Map<String, Object?>
+        ..remove('priorAttempt');
+      final checkpoint = TurnCheckpoint.start(
+        turnId,
+        json,
+        createdAtMs: ref.read(clockProvider).nowUtc().millisecondsSinceEpoch,
+      );
+      if (!await _setStatus(
+        turnId,
+        ChatMessageStatus.processing,
+        checkpoint: checkpoint,
+      )) {
+        _failed(turnId);
+        return;
+      }
+      await _run(turnId, checkpoint, gen);
+      // A throw never leaves the turn running (Send would stay disabled).
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+      if (_current(gen)) {
+        _failed(turnId);
+        await _setStatus(turnId, ChatMessageStatus.failed);
+      }
+    }
+  }
+
+  void _failed(String userMessageId) => _update(
+    userMessageId,
+    (t) => t.copyWith(phase: BuddyTurnPhase.failed, clearStep: true),
+  );
+
+  /// Runs turn [turnId] from [checkpoint] and saves how it ended.
+  Future<void> _run(
+    String turnId,
+    TurnCheckpoint checkpoint,
+    int gen, {
+    bool resumed = false,
+  }) async {
+    final host = _Host(
+      this,
+      turnId,
+      gen,
+      writer: ref.read(agentCardWriterProvider),
+      apply: ref.read(changeSetApplierProvider).apply,
     );
+    final runner = BuddyTurnRunner(
+      host,
+      api: ref.read(buddyTurnApiProvider),
+      tools: ref.read(phoneToolsProvider),
+      today:
+          _turn(turnId)?.message.time.localDate ??
+          EntryTime.now(ref.read(clockProvider)).localDate,
+    );
+    _runners[turnId] = runner;
+    _update(turnId, (t) => t.copyWith(phase: BuddyTurnPhase.sending));
+    TurnEnd end;
+    try {
+      end = await runner.run(checkpoint, resumed: resumed);
+      // Anything unexpected fails the turn (its cards stay).
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+      end = const TurnEnd(TurnEndKind.failed);
+    } finally {
+      if (identical(_runners[turnId], runner)) _runners.remove(turnId);
+    }
+    if (!_current(gen)) return;
+    await _finish(turnId, end, gen);
+  }
+
+  /// Saves the end of turn [turnId] (A66 D3, D8): the reply row and `done`,
+  /// `pending_offline` (the checkpoint kept), or `failed`.
+  Future<void> _finish(String turnId, TurnEnd end, int gen) async {
+    final turn = _turn(turnId);
+    if (turn == null) return;
+    switch (end.kind) {
+      case TurnEndKind.pending:
+        await _setStatus(turnId, ChatMessageStatus.pendingOffline);
+        _update(
+          turnId,
+          (t) => t.copyWith(phase: BuddyTurnPhase.pending, clearStep: true),
+        );
+        _schedule(gen);
+      case TurnEndKind.failed:
+      case TurnEndKind.rateLimited:
+        await _setStatus(turnId, ChatMessageStatus.failed);
+        _update(
+          turnId,
+          (t) => t.copyWith(
+            phase: BuddyTurnPhase.failed,
+            limited: end.kind == TurnEndKind.rateLimited,
+            clearStep: true,
+          ),
+        );
+      case TurnEndKind.done:
+      case TurnEndKind.stopped:
+        _waits = 0;
+        final texts = _texts;
+        final now = _turn(turnId)!;
+        final parts = [
+          if (now.replyText.trim() case final t when t.isNotEmpty) t,
+          if (now.question?.text.trim() case final q? when q.isNotEmpty) q,
+        ];
+        var body = parts.isEmpty ? null : parts.join('\n\n');
+        if (body == null &&
+            end.kind == TurnEndKind.done &&
+            now.cards.isEmpty &&
+            !now.unsupported) {
+          body = texts?.noCard;
+        }
+        if (now.unsupported && texts != null) {
+          body = body == null
+              ? texts.unsupported
+              : '$body ${texts.unsupported}';
+        }
+        final local = <String, Object?>{
+          if (now.question case final q?)
+            'question': {'text': q.text, 'options': q.options},
+          if (now.trace.isNotEmpty)
+            'trace': [for (final step in now.trace) step.toJson()],
+        };
+        final replyId = body == null
+            ? null
+            : ref.read(idGeneratorProvider).next();
+        final row = await ref.read(chatMessageRepositoryProvider).byId(turnId);
+        if (row == null || !_current(gen)) return;
+        final answer = local.isEmpty ? null : jsonEncode(local);
+        await ref
+            .read(changeSetApplierProvider)
+            .apply(
+              ChangeSet([
+                SetChatMessageStatus(
+                  row.id,
+                  row.version,
+                  ChatMessageStatus.done,
+                ),
+                if (replyId != null)
+                  CreateChatMessage(
+                    replyId,
+                    ChatMessageDraft(
+                      role: ChatMessageRole.assistant,
+                      text: ChatText.sanitize(body!),
+                      status: ChatMessageStatus.done,
+                      language: ChatLanguage.english,
+                      replyToMessageId: row.id,
+                    ),
+                    answerJson: answer != null && isLocalJsonObject(answer)
+                        ? answer
+                        : null,
+                  ),
+              ], origin: Origin.system),
+            );
+        if (!_current(gen)) return;
+        _update(
+          turnId,
+          (t) => t.copyWith(
+            phase: BuddyTurnPhase.replied,
+            // Without a reply text, the first card's holder row stands for
+            // the reply (it's never drawn as a bubble).
+            assistantMessageId:
+                replyId ?? t.cards.firstOrNull?.card.budgetMessageId,
+            clearStep: true,
+          ),
+        );
+        // The next waiting message, if any.
+        unawaited(_drain(gen));
+    }
+  }
+
+  /// Moves user row [id] to [status] (with [checkpoint], when given, in the
+  /// same change set); whether it was written.
+  Future<bool> _setStatus(
+    String id,
+    ChatMessageStatus status, {
+    TurnCheckpoint? checkpoint,
+  }) async {
+    final row = await ref.read(chatMessageRepositoryProvider).byId(id);
+    if (row == null) return false;
+    final result = await ref
+        .read(changeSetApplierProvider)
+        .apply(
+          ChangeSet([
+            SetChatMessageStatus(row.id, row.version, status),
+            if (checkpoint != null) SaveTurnCheckpoint(id, checkpoint.encode()),
+          ], origin: Origin.system),
+        );
+    return result is Applied;
+  }
+
+  /// The next queue attempt after a wait (5 s → 15 s → 1 min → 5 min).
+  void _schedule(int gen) {
+    _retry?.cancel();
+    final wait = _backoff[_waits.clamp(0, _backoff.length - 1)];
+    _waits++;
+    if (!_foreground) return;
+    _retry = Timer(wait, () {
+      if (_current(gen) && _foreground) unawaited(_drain(gen));
+    });
+  }
+
+  /// Runs this profile's waiting turns one at a time, oldest first (A66
+  /// D12); stops at the first that is still waiting.
+  Future<void> _drain(int gen) async {
+    if (_draining ||
+        state.sending ||
+        _saving ||
+        !_foreground ||
+        !_current(gen)) {
+      return;
+    }
+    _draining = true;
+    try {
+      final messages = ref.read(chatMessageRepositoryProvider);
+      final clock = ref.read(clockProvider);
+      // Only this install's rows (A23b D22): another phone's stay its own.
+      final device = await ref.read(deviceIdStoreProvider).deviceId();
+      final own = {
+        for (final (m, owner) in await messages.waiting())
+          if (owner == device) m.id,
+      };
+      for (final turn in [
+        for (final t in state.turns)
+          if (t.phase == BuddyTurnPhase.pending &&
+              own.contains(t.userMessageId))
+            t,
+      ]) {
+        if (!_current(gen)) return;
+        final checkpoint = TurnCheckpoint.decode(
+          await messages.checkpointOf(turn.userMessageId),
+          turn.userMessageId,
+        );
+        if (checkpoint == null ||
+            clock.nowUtc().millisecondsSinceEpoch - checkpoint.createdAtMs >
+                _replayFor.inMilliseconds) {
+          _failed(turn.userMessageId);
+          await _setStatus(turn.userMessageId, ChatMessageStatus.failed);
+          continue;
+        }
+        // Paused meanwhile: the rest waits for the next wake (G2).
+        if (!_foreground || !_current(gen)) return;
+        await _setStatus(turn.userMessageId, ChatMessageStatus.processing);
+        await _run(turn.userMessageId, checkpoint, gen);
+        if (_turn(turn.userMessageId)?.phase == BuddyTurnPhase.pending) return;
+      }
+      // Bookkeeping only: the next wake tries again.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+    } finally {
+      if (_current(gen)) _draining = false;
+    }
+  }
+
+  /// After a restart (once per generation, after the restore): this
+  /// install's unfinished turns resume (06 §3.4). A `processing` row with a
+  /// checkpoint is the one retry; a waiting one runs from the queue; one
+  /// without a checkpoint (a crash before it was prepared) fails once.
+  /// Rows from another phone are never touched (A23b D22).
+  Future<void> _resumeWaiting(int gen) async {
+    try {
+      final messages = ref.read(chatMessageRepositoryProvider);
+      final device = await ref.read(deviceIdStoreProvider).deviceId();
+      final clock = ref.read(clockProvider);
+      for (final (row, owner) in await messages.waiting()) {
+        if (!_current(gen)) return;
+        if (owner != device) continue;
+        if (_turn(row.id) == null) {
+          state = state.copyWith(
+            turns:
+                [
+                  ...state.turns,
+                  BuddyTurn(
+                    message: SavedBuddyMessage(
+                      id: row.id,
+                      text: row.text,
+                      time: EntryTime.at(row.createdAt, clock),
+                    ),
+                    profileGeneration: gen,
+                  ),
+                ]..sort(
+                  (a, b) => a.message.time.occurredAtUtc.compareTo(
+                    b.message.time.occurredAtUtc,
+                  ),
+                ),
+          );
+        }
+        final checkpoint = TurnCheckpoint.decode(
+          await messages.checkpointOf(row.id),
+          row.id,
+        );
+        if (checkpoint == null) {
+          _failed(row.id);
+          await _setStatus(row.id, ChatMessageStatus.failed);
+          continue;
+        }
+        // Every card the turn already made, resolved ones too, so the
+        // retry's priorAttempt and the duplicate check see them (review 2).
+        await _hydrate(row.id, checkpoint, gen);
+        if (checkpoint.stopped) {
+          await _finish(row.id, const TurnEnd(TurnEndKind.stopped), gen);
+          continue;
+        }
+        if (row.status == ChatMessageStatus.pendingOffline) {
+          _update(row.id, (t) => t.copyWith(phase: BuddyTurnPhase.pending));
+          continue;
+        }
+        // In the background it waits for the next wake (G2); as a
+        // processing row it is still the one retry when it runs.
+        if (!_foreground) {
+          _update(row.id, (t) => t.copyWith(phase: BuddyTurnPhase.pending));
+          continue;
+        }
+        await _run(row.id, checkpoint, gen, resumed: true);
+      }
+      await _drain(gen);
+      // A resume that fails leaves the rows for the next launch.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {}
+  }
+
+  /// Reads every card [checkpoint] names back from storage into turn
+  /// [turnId] (logged, discarded or open, at the checkpoint's revision).
+  Future<void> _hydrate(
+    String turnId,
+    TurnCheckpoint checkpoint,
+    int gen,
+  ) async {
+    final proposals = ref.read(proposalRepositoryProvider);
+    final restorer = ref.read(buddyThreadRestorerProvider);
+    for (final c in checkpoint.cards) {
+      final turn = _turn(turnId);
+      if (!_current(gen) || turn == null) return;
+      final shown = _card(c.cardId);
+      if (shown != null) {
+        if (shown.$2.revision < c.revision) {
+          _setCard(
+            shown.$1.userMessageId,
+            shown.$2.copyWith(revision: c.revision),
+          );
+        }
+        continue;
+      }
+      final record = await proposals.byId(c.cardId);
+      final budget = record?.budgetMessageId;
+      if (budget == null) continue;
+      final session = (await restorer.session(
+        budget,
+        referenceTime: turn.message.time,
+      )).value;
+      final card = session?.cards.where((x) => x.id == c.cardId).firstOrNull;
+      if (session == null || card == null || !_current(gen)) continue;
+      _update(
+        turnId,
+        (t) => t.copyWith(
+          cards: [
+            ...t.cards,
+            BuddyCard(
+              id: c.cardId,
+              session: session,
+              revision: c.revision,
+              resolution: switch (card.lifecycle) {
+                ProposalLifecycle.active => CardResolution.open,
+                ProposalLifecycle.confirmed => CardResolution.logged,
+                ProposalLifecycle.discarded => CardResolution.discarded,
+                ProposalLifecycle.superseded => CardResolution.superseded,
+              },
+            ),
+          ]..sort((a, b) => a.id.compareTo(b.id)),
+        ),
+      );
+    }
+  }
+
+  /// Writes a `proposal` event as a pending card (A66 D5–D7): a new card,
+  /// or an update of an open card at the revision the event names. Never a
+  /// diary op: only a user tap confirms. The new checkpoint, or `null`.
+  Future<TurnCheckpoint?> _proposal(
+    String turnId,
+    TurnProposal proposal,
+    TurnCheckpoint Function(CheckpointCard) withCard,
+    int gen,
+    AgentCardWriter writer,
+  ) async {
+    final turn = _turn(turnId);
+    if (turn == null || !_current(gen)) return null;
+    final lane = _lane;
+    if (proposal.replaces case final replaces?) {
+      final cardId =
+          proposal.target?.cardId ??
+          (_card(replaces.proposalId) == null ? null : replaces.proposalId);
+      if (cardId == null) return null;
+      return await lane.run(() async {
+        await lane.drain(_writeLatest(_resolution, gen));
+        final found = _card(cardId);
+        if (!_current(gen) || found == null || _stoppedTurn(turnId)) {
+          return null;
+        }
+        final (owner, card) = found;
+        if (card.resolution != CardResolution.open ||
+            replaces.expectedRevision != card.revision) {
+          // Changed here meanwhile (or resolved): Buddy's update is dropped.
+          if (card.resolution == CardResolution.open) {
+            _setCard(
+              owner.userMessageId,
+              card.copyWith(changedMeanwhile: true),
+            );
+          }
+          return null;
+        }
+        final next = withCard(
+          CheckpointCard(
+            proposalId: proposal.target?.proposalId ?? replaces.proposalId,
+            cardId: cardId,
+            revision: proposal.revision,
+            round: proposal.target?.round ?? proposal.round,
+            attempt: proposal.target?.attempt ?? proposal.attempt,
+          ),
+        );
+        final written = await writer.update(
+          card: card.card,
+          from: card.session,
+          membership: state.membership,
+          intent: proposal.intent,
+          revision: proposal.revision,
+          userId: turnId,
+          referenceTime: owner.message.time,
+          checkpoint: next.encode(),
+          cancelled: () => _stoppedTurn(turnId) || !_current(gen),
+        );
+        if (written == null || !_current(gen)) return null;
+        state = state.copyWith(
+          membership: state.membership.followedUp(
+            cardId,
+            card.card.budgetMessageId,
+            written.holderId,
+          ),
+        );
+        _setCard(
+          owner.userMessageId,
+          BuddyCard(
+            id: cardId,
+            session: written.session,
+            changeToken: Object(),
+            removed: card.removed,
+            revision: proposal.revision,
+            origin: CardOrigin(
+              interpretation: written.answer,
+              messageId: written.holderId,
+              referenceTime: owner.message.time,
+            ),
+          ),
+        );
+        return next;
+      });
+    }
+    if (!AgentCardWriter.buildable.contains(proposal.intent['kind'])) {
+      _update(turnId, (t) => t.copyWith(unsupported: true));
+      return null;
+    }
+    final cardId = ref.read(idGeneratorProvider).next();
+    return await lane.run(() async {
+      if (!_current(gen) || _stoppedTurn(turnId)) return null;
+      final next = withCard(
+        CheckpointCard(
+          proposalId: proposal.proposalId,
+          cardId: cardId,
+          revision: proposal.revision,
+          round: proposal.round,
+          attempt: proposal.attempt,
+        ),
+      );
+      final written = await writer.create(
+        intent: proposal.intent,
+        revision: proposal.revision,
+        cardId: cardId,
+        userId: turnId,
+        referenceTime: turn.message.time,
+        checkpoint: next.encode(),
+        cancelled: () => _stoppedTurn(turnId) || !_current(gen),
+      );
+      if (!_current(gen)) return null;
+      if (written == null) {
+        _update(turnId, (t) => t.copyWith(unsupported: true));
+        return null;
+      }
+      final duplicate = _confirmedAlike(turnId, written.card);
+      _update(
+        turnId,
+        (t) => t.copyWith(
+          cards: [
+            ...t.cards,
+            BuddyCard(
+              id: cardId,
+              session: written.session,
+              revision: proposal.revision,
+              possibleDuplicate: duplicate,
+              origin: CardOrigin(
+                interpretation: written.answer,
+                messageId: written.holderId,
+                referenceTime: t.message.time,
+              ),
+            ),
+          ],
+        ),
+      );
+      return next;
+    });
+  }
+
+  /// Whether [card]'s food, meal and amounts match a card already logged in
+  /// turn [turnId] (06 §3.4 "possible duplicate").
+  bool _confirmedAlike(String turnId, ProposalCard card) {
+    String key(ProposalCard c) => [
+      c.preview.date,
+      c.lines.firstOrNull?.entry.slotId,
+      ...([
+        for (final l in c.lines)
+          [
+            l.selectedFood?.key ?? l.entry.food.names.en,
+            l.entry.amount.input.amount,
+            l.entry.amount.input.unitCode,
+          ].join(':'),
+      ]..sort()),
+    ].join('|');
+    final mine = key(card);
+    final turn = _turn(turnId);
+    return turn?.cards.any(
+          (c) => c.resolution == CardResolution.logged && key(c.card) == mine,
+        ) ??
+        false;
+  }
+
+  /// Drops the still-pending cards [cardIds] an earlier attempt made (a
+  /// retry replaced them, 06 §3.4); logged ones stay.
+  Future<void> _supersede(
+    String turnId,
+    List<String> cardIds,
+    int gen,
+    AgentCardWriter writer,
+  ) async {
+    final lane = _lane;
+    for (final id in cardIds) {
+      await lane.run(() async {
+        await lane.drain(_writeLatest(_resolution, gen));
+        final found = _card(id);
+        if (!_current(gen) ||
+            found == null ||
+            found.$2.resolution != CardResolution.open) {
+          return;
+        }
+        final done = await writer.supersede(
+          found.$2.session,
+          id,
+          state.membership,
+        );
+        if (done == null || !_current(gen)) return;
+        _update(
+          found.$1.userMessageId,
+          (t) => t.copyWith(
+            cards: [
+              for (final c in t.cards)
+                if (c.id != id) c,
+            ],
+          ),
+        );
+      });
+    }
+  }
+
+  /// Stores a `summary` event when the stored revision is still the one
+  /// the compaction named (06 §6.1); a stale one is dropped.
+  Future<void> _summary(
+    String summary,
+    int revision,
+    String watermark,
+    int gen,
+  ) async {
+    if (!_current(gen)) return;
+    final text = ChatText.sanitize(summary, limit: BuddySummaryOp.maxText);
+    try {
+      await ref
+          .read(changeSetApplierProvider)
+          .apply(
+            ChangeSet([
+              SaveBuddySummary(
+                text: text,
+                revision: revision,
+                watermark: watermark,
+                expectedRevision: revision - 1,
+              ),
+            ], origin: Origin.system),
+          );
+      // A refused summary is asked for again by the next compaction.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {}
+  }
+
+  /// Clears the conversation summary ("Buddy remembers", AI-165).
+  Future<bool> clearSummary() async {
+    final result = await ref
+        .read(changeSetApplierProvider)
+        .apply(ChangeSet([const ClearBuddySummary()], origin: Origin.direct));
+    return result is Applied;
+  }
+
+  /// Logs every still-open card of turn [userMessageId] as currently shown
+  /// in one change set with one Undo (AI-162). Only cards still pending at
+  /// their current revision are applied; nothing else is touched.
+  Future<void> applyAll(String userMessageId) async {
+    final turn = _turn(userMessageId);
+    final gen = _generation;
+    if (turn == null || turn.profileGeneration != gen) return;
+    final targets = turn.applicable;
+    if (targets.length < 2) return;
+    final resolution = _resolution;
+    final lane = _lane;
+    for (final c in targets) {
+      _setCard(
+        userMessageId,
+        c.copyWith(resolution: CardResolution.confirming, couldNotLog: false),
+      );
+    }
+    final ids = {for (final c in targets) c.id};
+    try {
+      await lane.run(() async {
+        await lane.drain(_writeLatest(resolution, gen));
+        if (!_current(gen)) return;
+        final latest = [
+          for (final id in ids)
+            if (_card(id)?.$2 case final c?
+                when c.resolution == CardResolution.confirming &&
+                    c.card.canConfirm)
+              c,
+        ];
+        final outcome = latest.length < 2
+            ? null
+            : await resolution.confirmAll(
+                [for (final c in latest) (c.session, c.id)],
+                _origin(turn).referenceTime,
+                membership: state.membership,
+              );
+        if (!_current(gen)) return;
+        if (outcome == null) {
+          for (final id in ids) {
+            final now = _card(id)?.$2;
+            if (now != null && now.resolution == CardResolution.confirming) {
+              _setCard(
+                userMessageId,
+                now.copyWith(
+                  resolution: CardResolution.open,
+                  couldNotLog: latest.length >= 2,
+                ),
+              );
+            }
+          }
+          return;
+        }
+        for (final c in latest) {
+          final session = outcome.sessions[c.id] ?? c.session;
+          final before = c.card;
+          _replaceSession(turn, c.session, session, null);
+          _setCard(
+            userMessageId,
+            _card(c.id)!.$2.copyWith(
+              resolution: CardResolution.logged,
+              undoEntryId: outcome.undoEntryId,
+              resolvedFrom: c.session,
+              logged: LoggedSummary(
+                kcal: before.totals.kcal,
+                preview:
+                    session.cards
+                        .where((x) => x.id == c.id)
+                        .firstOrNull
+                        ?.preview ??
+                    before.preview,
+                estimate: before.lines.any(
+                  (l) => l.range != null || l.entry.food.provenance.isEstimate,
+                ),
+                loggedAt: outcome.appliedAt,
+              ),
+            ),
+          );
+        }
+      });
+      // A throw never leaves cards "confirming".
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+      for (final id in ids) {
+        final now = _card(id)?.$2;
+        if (now != null && now.resolution == CardResolution.confirming) {
+          _setCard(
+            userMessageId,
+            now.copyWith(resolution: CardResolution.open, couldNotLog: true),
+          );
+        }
+      }
+      return;
+    }
+    if (_current(gen)) await _refreshOthersSafely('', gen);
   }
 
   /// Applies a chip/answer [adjustment] to open card [cardId] and recomputes
@@ -289,7 +1094,6 @@ class BuddyThreadController extends _$BuddyThreadController {
     final found = _card(cardId);
     if (found == null ||
         found.$2.resolution != CardResolution.open ||
-        state.isUpdating(cardId) ||
         _undoing.containsKey(SessionMembership.messageOf(found.$2.session))) {
       return;
     }
@@ -303,6 +1107,17 @@ class BuddyThreadController extends _$BuddyThreadController {
       }
     }
     _replaceSession(found.$1, found.$2.session, update.session, update.diff);
+    // A change made here outranks Buddy's pending update of the card
+    // (A66 D6): its next revision is what an update must name.
+    if (!update.diff.isEmpty) {
+      final now = _card(cardId);
+      if (now != null) {
+        _setCard(
+          now.$1.userMessageId,
+          now.$2.copyWith(revision: now.$2.revision + 1),
+        );
+      }
+    }
   }
 
   /// − / + on an assumed amount (AI-040, A22b E3): the next amount from
@@ -442,9 +1257,7 @@ class BuddyThreadController extends _$BuddyThreadController {
     final found = _card(cardId);
     if (found == null) return;
     final (turn, card) = found;
-    if (card.resolution != CardResolution.open ||
-        !card.card.canConfirm ||
-        state.isUpdating(cardId)) {
+    if (card.resolution != CardResolution.open || !card.card.canConfirm) {
       return;
     }
     final gen = _generation;
@@ -597,7 +1410,26 @@ class BuddyThreadController extends _$BuddyThreadController {
     if (!_current(gen)) return false;
     final session = _latestSession(messageId);
     if (session == null) return true;
-    return await resolution.persist(session, state.membership);
+    final written = await resolution.persist(session, state.membership);
+    // The adjusted cards' revisions go with their holders (A66 D6).
+    var revision = 1;
+    for (final t in state.turns) {
+      for (final c in t.cards) {
+        if (identical(c.session, session) && c.revision > revision) {
+          revision = c.revision;
+        }
+      }
+    }
+    if (written && revision > 1 && _current(gen)) {
+      await ref
+          .read(changeSetApplierProvider)
+          .apply(
+            ChangeSet([
+              SaveCardRevision(messageId, revision),
+            ], origin: Origin.system),
+          );
+    }
+    return written;
   };
 
   /// The newest in-memory session of message [messageId], if any card
@@ -630,9 +1462,7 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// one undoable change set (A23 D10), a lane job like a confirm.
   Future<void> discard(String cardId) async {
     final found = _card(cardId);
-    if (found == null ||
-        found.$2.resolution != CardResolution.open ||
-        state.isUpdating(cardId)) {
+    if (found == null || found.$2.resolution != CardResolution.open) {
       return;
     }
     final gen = _generation;
@@ -895,6 +1725,30 @@ class BuddyThreadController extends _$BuddyThreadController {
       );
       return outcome;
     }
+    // Apply all logged several cards under this one entry (AI-162): every
+    // one of them opens again.
+    final group = [
+      for (final t in state.turns)
+        for (final c in t.cards)
+          if (c.undoEntryId == entry && c.id != cardId) (t, c),
+    ];
+    await _reopen(cardId, found, now, restorer, gen);
+    for (final (t, c) in group) {
+      if (!_current(gen)) break;
+      await _reopen(c.id, t, c, restorer, gen);
+    }
+    return outcome;
+  }
+
+  /// Opens card [cardId] (shown as [now] in turn [found]) again after its
+  /// confirm or discard was reverted, from the database when it can be read.
+  Future<void> _reopen(
+    String cardId,
+    BuddyTurn found,
+    BuddyCard now,
+    BuddyThreadRestorer restorer,
+    int gen,
+  ) async {
     // The database is the truth after a revert: the card's session as
     // stored now (the card pending again).
     final message = SessionMembership.messageOf(
@@ -907,7 +1761,7 @@ class BuddyThreadController extends _$BuddyThreadController {
         referenceTime: found.message.time,
       )).value;
     }
-    if (!_current(gen)) return outcome;
+    if (!_current(gen)) return;
     // The stored rows equal the session before the resolve (it was written
     // first): when their facts can't be verified here (a food not in this
     // phone's pack), that in-memory session reopens instead.
@@ -916,8 +1770,9 @@ class BuddyThreadController extends _$BuddyThreadController {
     final reopened = confirmable(stored) || now.resolvedFrom == null
         ? stored
         : now.resolvedFrom;
-    final turn = _turn(found.userMessageId)!;
-    if (reopened != null &&
+    final turn = _turn(found.userMessageId);
+    if (turn != null &&
+        reopened != null &&
         reopened.cards.any(
           (c) => c.id == cardId && c.lifecycle == ProposalLifecycle.active,
         )) {
@@ -930,10 +1785,10 @@ class BuddyThreadController extends _$BuddyThreadController {
           origin: now.origin,
           removed: now.removed,
           rebuilt: now.rebuilt,
+          revision: now.revision,
         ),
       );
     }
-    return outcome;
   }
 
   /// [_refreshOthers], where a failure only leaves sibling previews as they
@@ -945,149 +1800,6 @@ class BuddyThreadController extends _$BuddyThreadController {
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
       // Previews refresh on the next change.
-    }
-  }
-
-  Future<void> _dispatch(
-    String userMessageId,
-    BuddyReplyTexts texts,
-    int gen,
-  ) async {
-    if (!_current(gen)) return;
-    final turn = _turn(userMessageId)!;
-    final send = _send;
-    final lane = _lane;
-    final followUpId = turn.followUpCardId;
-    await send.dispatch(
-      turn.message,
-      turn.request!,
-      texts,
-      // Read when the answer is saved, from the latest thread (A23 D7).
-      followUp: followUpId == null ? null : () => _followUpState(followUpId),
-      // The save and the thread update are one lane job, so no later job
-      // reads the thread before it.
-      lane: (save) => lane.run(() async {
-        final reply = await save();
-        _onReply(userMessageId, turn, reply, gen);
-        return reply;
-      }),
-    );
-  }
-
-  /// Where follow-up card [cardId] stands now: open (its latest session and
-  /// membership) or closed, logged or discarded before this (retried)
-  /// follow-up: the card is left alone and the reply says so, never
-  /// "Updated" (review 7).
-  FollowUpState _followUpState(String cardId) {
-    final target = _card(cardId);
-    if (target == null) return (target: null, closed: false);
-    if (target.$2.resolution != CardResolution.open) {
-      return (target: null, closed: true);
-    }
-    return (
-      target: FollowUpTarget(
-        card: target.$2.card,
-        session: target.$2.session,
-        referenceTime: target.$1.message.time,
-        membership: state.membership,
-      ),
-      closed: false,
-    );
-  }
-
-  /// The thread after [reply] to [turn] (inside the lane job that saved
-  /// it).
-  void _onReply(
-    String userMessageId,
-    BuddyTurn turn,
-    BuddyReply reply,
-    int gen,
-  ) {
-    // A reply that arrives after a profile switch is dropped (A33 round 4).
-    if (!_current(gen)) return;
-    switch (reply) {
-      case BuddyFollowedUp(
-        :final assistantMessageId,
-        :final session,
-        :final diff,
-        :final interpretation,
-      ):
-        _update(
-          userMessageId,
-          (t) => t.copyWith(
-            phase: BuddyTurnPhase.replied,
-            assistantMessageId: assistantMessageId,
-            interpretation: interpretation,
-          ),
-        );
-        // The card stays where it is, rebuilt with the same ID and
-        // highlighted (UX-024); it moved to the follow-up's message (A23
-        // D7).
-        final cardId = session.cards.single.id;
-        final now = _card(cardId);
-        if (now != null && now.$2.resolution == CardResolution.open) {
-          state = state.copyWith(
-            membership: state.membership.followedUp(
-              cardId,
-              now.$2.card.budgetMessageId,
-              assistantMessageId,
-            ),
-          );
-          _setCard(
-            now.$1.userMessageId,
-            BuddyCard(
-              id: now.$2.id,
-              session: session,
-              diff: diff,
-              changeToken: Object(),
-              removed: now.$2.removed,
-              origin: CardOrigin(
-                interpretation: interpretation,
-                messageId: assistantMessageId,
-                referenceTime: now.$1.message.time,
-              ),
-            ),
-          );
-        }
-      case BuddyReplied(:final assistantMessageId, :final session):
-        _update(
-          userMessageId,
-          (t) => t.copyWith(
-            phase: BuddyTurnPhase.replied,
-            assistantMessageId: assistantMessageId,
-            interpretation: reply.interpretation,
-            cards: [
-              if (session != null)
-                for (final c in session.cards)
-                  BuddyCard(id: c.id, session: session),
-            ],
-          ),
-        );
-      case BuddyReplyFailed(:final failure):
-        final unavailable =
-            turn.unavailableCount +
-            (failure == BuddySendFailure.unavailable ? 1 : 0);
-        _update(
-          userMessageId,
-          (t) => t.copyWith(
-            phase: BuddyTurnPhase.failed,
-            failure: failure,
-            unavailableCount: unavailable,
-          ),
-        );
-        if (unavailable >= 2) {
-          // The text goes back to the composer; a new send is a new message
-          // with a new key.
-          state = state.copyWith(composerRestore: turn.message.text);
-        }
-      case BuddyReplyNotSaved():
-        _update(
-          userMessageId,
-          (t) => t.copyWith(
-            phase: BuddyTurnPhase.failed,
-            failure: BuddySendFailure.rejected,
-          ),
-        );
     }
   }
 
@@ -1175,4 +1887,113 @@ class BuddyThreadController extends _$BuddyThreadController {
       ],
     ),
   );
+}
+
+/// The thread side of one running turn (A66): live display into the
+/// thread, writes through the generation's use cases (bound when the turn
+/// starts, so a profile switch never writes into another profile), and
+/// phone tools. Everything is dropped once the generation changed.
+final class _Host implements TurnHost {
+  new(
+    this._thread,
+    this._turnId,
+    this._gen, {
+    required this._writer,
+    required this._apply,
+  });
+
+  final BuddyThreadController _thread;
+  final String _turnId;
+  final int _gen;
+  final AgentCardWriter _writer;
+  final Future<ApplyResult> Function(ChangeSet) _apply;
+
+  bool get _live => _thread._current(_gen);
+
+  void _update(BuddyTurn Function(BuddyTurn) change) {
+    if (_live) _thread._update(_turnId, change);
+  }
+
+  @override
+  Future<void> save(TurnCheckpoint checkpoint) async {
+    if (!_live) return;
+    await _apply(
+      ChangeSet([
+        SaveTurnCheckpoint(_turnId, checkpoint.encode()),
+      ], origin: Origin.system),
+    );
+  }
+
+  @override
+  void step(String code) => _update((t) => t.copyWith(step: code));
+
+  @override
+  void text(String chunk) =>
+      _update((t) => t.copyWith(replyText: t.replyText + chunk));
+
+  @override
+  void resetText() => _update((t) => t.copyWith(replyText: ''));
+
+  @override
+  void question(String text, List<String> options) => _update(
+    (t) => t.copyWith(question: BuddyQuestion(text, options.take(4).toList())),
+  );
+
+  @override
+  void trace(List<TraceLine> steps) => _update(
+    (t) => t.copyWith(
+      trace: [
+        ...t.trace,
+        for (final s in steps)
+          TraceStepView(
+            tool: s.tool,
+            args: s.args,
+            resultSummary: s.resultSummary,
+            ms: s.ms,
+            tokens: s.tokens,
+            usd: s.usd,
+          ),
+      ],
+    ),
+  );
+
+  @override
+  Future<TurnCheckpoint?> proposal(
+    TurnProposal proposal,
+    TurnCheckpoint Function(CheckpointCard card) withCard,
+  ) async => _live
+      ? await _thread._proposal(_turnId, proposal, withCard, _gen, _writer)
+      : null;
+
+  @override
+  Future<void> supersede(List<String> cardIds) async {
+    if (_live) await _thread._supersede(_turnId, cardIds, _gen, _writer);
+  }
+
+  @override
+  ({PriorCardState status, String line, int revision})? priorCard(
+    String cardId,
+  ) {
+    final found = _thread._card(cardId);
+    if (found == null) return null;
+    final card = found.$2;
+    return (
+      status: switch (card.resolution) {
+        CardResolution.logged => PriorCardState.confirmed,
+        CardResolution.discarded ||
+        CardResolution.superseded => PriorCardState.discarded,
+        CardResolution.open ||
+        CardResolution.confirming => PriorCardState.pending,
+      },
+      line: AgentCardWriter.labelOf(card.card),
+      revision: card.revision,
+    );
+  }
+
+  @override
+  Future<void> summary(String text, int revision, String watermark) =>
+      _thread._summary(text, revision, watermark, _gen);
+
+  @override
+  String toString() => '_Host($_turnId)';
 }

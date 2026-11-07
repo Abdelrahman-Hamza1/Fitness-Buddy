@@ -499,3 +499,24 @@ CREATE TRIGGER proposals_no_delete BEFORE DELETE ON proposals
 BEGIN
   SELECT RAISE(ABORT, 'tombstone, never delete');
 END;
+
+-- buddy_summaries (entity 'buddySummary', A66)
+CREATE TRIGGER buddy_summaries_outbox_ai AFTER INSERT ON buddy_summaries
+WHEN (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('buddySummary', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER buddy_summaries_outbox_au AFTER UPDATE ON buddy_summaries
+WHEN NEW.updated_hlc IS NOT OLD.updated_hlc
+  AND (SELECT value FROM sync_state WHERE "key" = 'outbox.capture') IS NOT '0'
+BEGIN
+  INSERT INTO sync_outbox (entity, row_id, hlc, deleted)
+  VALUES ('buddySummary', NEW.id, NEW.updated_hlc, NEW.deleted_at IS NOT NULL);
+END;
+
+CREATE TRIGGER buddy_summaries_no_delete BEFORE DELETE ON buddy_summaries
+BEGIN
+  SELECT RAISE(ABORT, 'tombstone, never delete');
+END;

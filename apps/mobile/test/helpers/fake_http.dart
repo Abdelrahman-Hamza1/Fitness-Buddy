@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show SocketException;
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -43,6 +44,8 @@ ResponseBody offline(RequestOptions request) =>
     throw DioException.connectionError(
       requestOptions: request,
       reason: 'offline (test)',
+      // As dio raises it: the connection couldn't be opened.
+      error: const SocketException('offline (test)'),
     );
 
 /// The server doesn't answer in time.
@@ -91,3 +94,46 @@ Map<String, Object?> configBody(String minimumAppVersion) => {
 /// A successful `/v1/config` answer.
 FakeResponder config(String minimumAppVersion) =>
     json(configBody(minimumAppVersion));
+
+/// A Buddy turn round answered as `text/event-stream` (TD-125): the
+/// [events] for the request's `turnId` and `round` (0 for a start), each
+/// with its `{turnId}:{round}:{seq}` id. Synthetic only.
+FakeResponder turnEvents(
+  List<Map<String, Object?>> Function(String turnId, int round) events,
+) => (request) {
+  final body = request.data;
+  final turnId = body is Map ? body['turnId'] as String? ?? '' : '';
+  final round = body is Map ? body['round'] as int? ?? 0 : 0;
+  final out = StringBuffer();
+  for (final (seq, event) in events(turnId, round).indexed) {
+    out.write('id: $turnId:$round:$seq\ndata: ${jsonEncode(event)}\n\n');
+  }
+  return ResponseBody.fromString(
+    out.toString(),
+    200,
+    headers: {
+      Headers.contentTypeHeader: ['text/event-stream'],
+    },
+  );
+};
+
+/// A turn that proposes each intent of interpretation [answer] (the A22
+/// fixtures' shape) as its own card, then ends: the agent's fast path.
+FakeResponder turnOf(Map<String, Object?> answer) => turnEvents(
+  (turnId, round) => [
+    {'type': 'step', 'code': 'searchingFoods'},
+    for (final (i, intent) in (answer['intents']! as List<Object?>).indexed)
+      {
+        'type': 'proposal',
+        'proposalId': '$turnId-p$i',
+        'revision': 1,
+        'replaces': null,
+        'intent': intent,
+      },
+    {
+      'type': 'done',
+      'reason': 'answered',
+      'usage': {'sends': 1, 'inputTokens': 0, 'outputTokens': 0},
+    },
+  ],
+);

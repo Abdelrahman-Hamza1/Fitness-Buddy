@@ -7,8 +7,10 @@ import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_messages.dart';
 import 'package:fb_mobile/features/buddy/application/food_card_view.dart';
+import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/food_proposal_card.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_direction.dart';
+import 'package:fb_mobile/features/buddy/presentation/trace_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -127,7 +129,9 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
   /// The thread's shape: what changed since the last follow.
   String _keyOf(BuddyThread thread) => [
     ref.read(buddyThreadMessagesProvider).value?.length ?? 0,
-    for (final turn in thread.turns) '${turn.phase.name}${turn.cards.length}',
+    // The streamed reply's growth follows too (A67).
+    for (final turn in thread.turns)
+      '${turn.phase.name}${turn.cards.length}:${turn.replyText.length}',
   ].join();
 
   /// Records [thread] as followed; returns the cards that just arrived.
@@ -334,6 +338,19 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
     final reply = turn.assistantMessageId == null
         ? null
         : rows[turn.assistantMessageId];
+    final running = turn.phase == BuddyTurnPhase.sending;
+    final controller = ref.read(buddyThreadControllerProvider.notifier);
+    final thread = ref.read(buddyThreadControllerProvider);
+    final last = thread.turns.lastOrNull?.userMessageId == turn.userMessageId;
+    final applicable = turn.applicable;
+    final trace = ref.watch(buddyTraceEnabledProvider);
+    Widget buddyBubble(String text) => FbMessageBubble(
+      text: text,
+      fromUser: false,
+      semanticLabel: l10n.buddyBubbleBuddy(text),
+      // Who is talking, as on the canvas (A44); decorative.
+      leading: const FbBuddyAvatar(size: 24),
+    );
     return [
       (
         'user:${turn.userMessageId}',
@@ -344,33 +361,36 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
           semanticLabel: l10n.buddyBubbleYou(userText),
         ),
       ),
-      // The plain "here's your meal" line adds nothing above its cards; it
-      // stays stored (the transcript) but isn't drawn.
+      // A card's holder row (it has a budget) is never a bubble (A66 D5);
+      // nor is the plain "here's your meal" line above its cards.
       if (reply != null &&
+          reply.budgetJson == null &&
           !(turn.cards.isNotEmpty && reply.draft.text == l10n.buddyReplyCards))
+        ('reply:${reply.id}', buddyBubble(reply.draft.text))
+      // The reply as it streams in (AI-170).
+      else if (running && turn.replyText.trim().isNotEmpty)
+        ('stream:${turn.userMessageId}', buddyBubble(turn.replyText)),
+      // The live step and Stop while Buddy works (AI-170, AI-171).
+      if (running)
         (
-          'reply:${reply.id}',
-          FbMessageBubble(
-            text: reply.draft.text,
-            fromUser: false,
-            semanticLabel: l10n.buddyBubbleBuddy(reply.draft.text),
-            // Who is talking, as on the canvas (A44); decorative.
-            leading: const FbBuddyAvatar(size: 24),
+          'step:${turn.userMessageId}',
+          _StepLine(
+            text: stepText(l10n, turn.step),
+            onStop: () => controller.stop(turn.userMessageId),
           ),
         ),
-      // A follow-up updates its card in place ("Updating…" on the card), so
-      // it gets no skeleton of its own.
-      if (turn.phase == BuddyTurnPhase.sending && turn.followUpCardId == null)
+      if (running && turn.cards.isEmpty && turn.replyText.trim().isEmpty)
         (
           'working:${turn.userMessageId}',
           FbProposalCard.skeleton(semanticLabel: l10n.buddyWorking),
         ),
-      if (turn.phase == BuddyTurnPhase.failed)
+      if (turn.phase == BuddyTurnPhase.failed ||
+          turn.phase == BuddyTurnPhase.pending)
         (
           'failed:${turn.userMessageId}',
           _Failure(turn: turn, onSearch: onSearch),
         ),
-      for (final card in turn.cards)
+      for (final card in turn.cards) ...[
         (
           'card:${card.id}',
           FoodProposalCard(
@@ -379,17 +399,117 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
             view: FoodCardView.of(
               card,
               referenceDate: turn.message.time.localDate,
-              updating: ref
-                  .read(buddyThreadControllerProvider)
-                  .isUpdating(card.id),
               turnAnswer: turn.interpretation,
             ),
+          ),
+        ),
+        if (card.resolution == CardResolution.open &&
+            (card.possibleDuplicate || card.changedMeanwhile))
+          (
+            'note:${card.id}',
+            FbInlineBanner(
+              kind: FbInlineBannerKind.info,
+              message: card.changedMeanwhile
+                  ? l10n.buddyChangedMeanwhile
+                  : l10n.buddyPossibleDuplicate,
+            ),
+          ),
+      ],
+      // Several open cards: log them all, one Undo (AI-162).
+      if (applicable.length >= 2)
+        (
+          'all:${turn.userMessageId}',
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: FbButton.primary(
+              label: l10n.buddyApplyAll(applicable.length),
+              icon: FbIcons.check,
+              onPressed: () =>
+                  unawaited(controller.applyAll(turn.userMessageId)),
+            ),
+          ),
+        ),
+      // Buddy's question: a chip is the next message (AI-166).
+      if (turn.question case final question? when last && !running)
+        (
+          'ask:${turn.userMessageId}',
+          Wrap(
+            spacing: FbSpace.s2,
+            runSpacing: FbSpace.s2,
+            children: [
+              for (final option in question.options)
+                FbAnswerChip(
+                  label: option,
+                  onTap: () => unawaited(
+                    controller.answer(option, buddyReplyTexts(l10n)),
+                  ),
+                ),
+            ],
           ),
         ),
       // Stored cards that couldn't be reopened (A23 D13).
       for (final card in turn.unrestorable)
         ('lost:${card.id}', UnrestorableCardRow(card: card)),
+      // The dev trace (AI-172): dev and owner builds only, local only.
+      if (trace && turn.trace.isNotEmpty)
+        (
+          'trace:${turn.userMessageId}',
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: FbButton.text(
+              label: l10n.buddyTrace,
+              icon: FbIcons.info,
+              onPressed: () => unawaited(showBuddyTrace(context, turn.trace)),
+            ),
+          ),
+        ),
     ];
+  }
+}
+
+/// The live step's words (AI-170), one ARB text per step code.
+String stepText(AppLocalizations l10n, String? code) => switch (code) {
+  'searchingFoods' => l10n.buddyStepSearchingFoods,
+  'readingDiary' => l10n.buddyStepReadingDiary,
+  'readingYourFoods' => l10n.buddyStepReadingYourFoods,
+  'readingBody' => l10n.buddyStepReadingBody,
+  'readingWorkouts' => l10n.buddyStepReadingWorkouts,
+  'readingMemory' => l10n.buddyStepReadingMemory,
+  'computing' => l10n.buddyStepComputing,
+  'checkingFit' => l10n.buddyStepCheckingFit,
+  'writingReply' => l10n.buddyStepWritingReply,
+  'summarizing' => l10n.buddyStepSummarizing,
+  _ => l10n.buddyStepWorking,
+};
+
+/// "Searching foods…" with Stop, while a turn runs.
+class _StepLine extends StatelessWidget {
+  const new({required this.text, required this.onStop});
+
+  final String text;
+  final VoidCallback onStop;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Expanded(
+          child: Semantics(
+            liveRegion: true,
+            child: Text(
+              text,
+              style: FbType.body.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ),
+        FbButton.text(
+          label: context.l10n.buddyStop,
+          icon: FbIcons.close,
+          onPressed: onStop,
+        ),
+      ],
+    );
   }
 }
 
@@ -403,42 +523,28 @@ class _Failure extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final failure = turn.failure ?? BuddySendFailure.server;
-    final secondUnavailable =
-        failure == BuddySendFailure.unavailable && turn.unavailableCount >= 2;
-    final message = switch (failure) {
-      BuddySendFailure.offline => l10n.buddyFailureOffline,
-      BuddySendFailure.timeout => l10n.buddyFailureTimeout,
-      BuddySendFailure.server => l10n.buddyFailureServer,
-      BuddySendFailure.unavailable =>
-        secondUnavailable
-            ? l10n.buddyFailureUnavailableFinal
-            : l10n.buddyFailureUnavailable,
-      BuddySendFailure.rejected => l10n.buddyFailureRejected,
-      BuddySendFailure.rateLimited => l10n.buddyFailureRateLimited,
-    };
-    final retry = turn.canRetry && failure != BuddySendFailure.offline;
-    // Search works offline and after Buddy gives up: offer it then too.
-    final search = !retry;
+    final pending = turn.phase == BuddyTurnPhase.pending;
+    final message = pending
+        ? l10n.buddyWaitingOnline
+        : turn.limited
+        ? l10n.buddyFailureRateLimited
+        : l10n.buddyFailureServer;
+    final controller = ref.read(buddyThreadControllerProvider.notifier);
     return FbInlineBanner(
-      kind: failure == BuddySendFailure.offline
-          ? FbInlineBannerKind.offline
-          : FbInlineBannerKind.info,
+      kind: pending ? FbInlineBannerKind.offline : FbInlineBannerKind.info,
       message: message,
-      actionLabel: retry
-          ? l10n.buddyTryAgain
-          : search
+      actionLabel: pending
+          ? l10n.buddyTryNow
+          : turn.limited
           ? l10n.buddySearchFoods
-          : null,
-      onAction: retry
-          ? () => unawaited(
-              ref
-                  .read(buddyThreadControllerProvider.notifier)
-                  .retry(turn.userMessageId, buddyReplyTexts(l10n)),
-            )
-          : search
+          : l10n.buddyTryAgain,
+      onAction: pending
+          ? () => unawaited(controller.wake(buddyReplyTexts(l10n)))
+          : turn.limited
           ? onSearch
-          : null,
+          : () => unawaited(
+              controller.tryAgain(turn.userMessageId, buddyReplyTexts(l10n)),
+            ),
     );
   }
 }

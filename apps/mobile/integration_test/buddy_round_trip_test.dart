@@ -51,7 +51,7 @@ int percentile(List<int> values, double p) {
 
 /// A22 D19 device round trip, **manual, never in CI**: the real app and
 /// sheet against the configured API (dev flavor: the laptop server over
-/// `adb reverse`), 20 real interpret calls (paid: needs the owner's scope).
+/// `adb reverse`), 20 real agent turns (paid: needs the owner's scope).
 /// Measures Send tap → the first frame after the thread's state has the
 /// reply (card, template or failure) and prints only `case-index ms`, the
 /// median and p90.

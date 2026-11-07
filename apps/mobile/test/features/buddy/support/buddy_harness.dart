@@ -8,6 +8,7 @@ import 'package:fb_mobile/core/api/client_config_repository.dart';
 import 'package:fb_mobile/core/api/dio_factory.dart';
 import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/changes/apply_result.dart';
+import 'package:fb_mobile/core/changes/change_providers.dart';
 import 'package:fb_mobile/core/changes/change_set_applier.dart';
 import 'package:fb_mobile/core/changes/row_ops.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
@@ -26,9 +27,10 @@ import 'package:fb_mobile/features/buddy/application/proposal_persistence_contri
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
+import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
+import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
-import 'package:fb_mobile/features/buddy/data/buddy_api.dart';
-import 'package:fb_mobile/features/buddy/data/interpret_request_reader.dart';
+import 'package:fb_mobile/features/buddy/data/buddy_turn_api.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
@@ -142,6 +144,7 @@ final class BuddyHarness {
       tables: db.syncedTables,
       handlers: (db) => [
         ChatMessageOpHandler(db),
+        BuddySummaryOpHandler(db),
         ProposalOpHandler(db),
         DiaryOpHandler(db),
         MealSlotOpHandler(db),
@@ -170,32 +173,17 @@ final class BuddyHarness {
       clock: clock,
     );
     addTearDown(undo.dispose);
-    Future<ApplyResult> apply(ChangeSet set) async {
+    Future<ApplyResult> apply(ChangeSet set) => _apply(set);
+    _apply = (set) async {
       if (throwOnApply?.call(set) ?? false) {
         throw StateError('applier failed (test)');
       }
       applied.add(set);
       await beforeApply?.call(set);
       return await applier.apply(set);
-    }
+    };
 
-    send = SendBuddyMessage(
-      apply: apply,
-      ids: ids,
-      clock: clock,
-      api: BuddyApi(
-        createApiDio(
-          baseUrl: Uri.parse('https://api.test'),
-          adapter: adapter,
-          interceptors: [],
-        ),
-      ),
-      reader: InterpretRequestReader(db),
-      loader: loader,
-      messages: ChatMessageRepository(db),
-      contributors: contributors,
-      report: issues.add,
-    );
+    send = SendBuddyMessage(apply: apply, ids: ids, clock: clock);
     resolution = ProposalResolution(
       apply: apply,
       undo: undo,
@@ -217,6 +205,26 @@ final class BuddyHarness {
   ProviderContainer _container() => ProviderContainer.test(
     overrides: [
       sendBuddyMessageProvider.overrideWithValue(send),
+      buddyTurnApiProvider.overrideWithValue(
+        BuddyTurnApi(
+          createApiDio(
+            baseUrl: Uri.parse('https://api.test'),
+            adapter: adapter,
+            interceptors: [],
+          ),
+        ),
+      ),
+      proposalInputLoaderProvider.overrideWithValue(loader),
+      agentCardWriterProvider.overrideWithValue(
+        AgentCardWriter(
+          apply: _apply,
+          ids: ids,
+          loader: loader,
+          contributors: contributors,
+        ),
+      ),
+      changeSetApplierProvider.overrideWithValue(applier),
+      buddyTraceEnabledProvider.overrideWithValue(false),
       proposalResolutionProvider.overrideWithValue(resolution),
       buddyThreadRestorerProvider.overrideWithValue(restorer),
       // What the sheet and cards read.
@@ -268,6 +276,7 @@ final class BuddyHarness {
   /// Routes the sheet pushed (food search).
   final RecordingAppNavigator navigator = RecordingAppNavigator();
   late final ChangeSetApplier<AppDatabase> applier;
+  late final Future<ApplyResult> Function(ChangeSet) _apply;
   late final ProposalInputLoader loader;
   late final UndoStack undo;
   late final SendBuddyMessage send;
@@ -282,8 +291,8 @@ final class BuddyHarness {
   /// The thread state.
   BuddyThread get state => container.read(buddyThreadControllerProvider);
 
-  /// Answers interpret calls with [body] (200).
-  void answer(Map<String, Object?> body) => adapter.respond = json(body);
+  /// Answers turns by proposing each intent of [body] as a card (A66).
+  void answer(Map<String, Object?> body) => adapter.respond = turnOf(body);
 
   /// Every chat row, oldest first.
   Future<List<ChatMessageRow>> chat() => (db.select(

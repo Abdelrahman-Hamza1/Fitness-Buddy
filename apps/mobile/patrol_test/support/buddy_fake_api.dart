@@ -13,11 +13,12 @@ import '../../test/fixtures/buddy_fixtures.dart';
 /// An in-app fake of the endpoints Buddy's journeys reach (A22 D18), on the
 /// app's two independent transports: [BuddyFakeAuthAdapter] under the auth
 /// Dio (a synthetic guest session) and [BuddyFakeAdapter] under the API Dio
-/// (the recorded J1–J3 answer for the message's text). Everything else fails
-/// like no connection, so the rest of the app stays offline as in `app_test`.
+/// (the recorded J1–J3 answer for the message's text, streamed as a turn).
+/// Everything else fails like no connection, so the rest of the app stays
+/// offline as in `app_test`.
 /// Nothing leaves the device.
 final class BuddyFakeAdapter extends _FakeAdapter {
-  /// The interpret requests seen, by message text (synthetic only).
+  /// The turn messages seen, by text (synthetic only).
   final List<String> interpreted = [];
 
   @override
@@ -26,14 +27,44 @@ final class BuddyFakeAdapter extends _FakeAdapter {
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
   ) async {
-    if (options.path != '/v1/buddy/interpret') return _offline(options);
+    if (options.path != '/v1/buddy/turns') return _offline(options);
     final body = await _body(options, requestStream);
-    final text = body['text'] as String? ?? '';
+    final turnId = body['turnId'] as String? ?? '';
+    final message = body['message'];
+    final text = message is Map ? message['text'] as String? ?? '' : '';
     interpreted.add(text);
     final answer = buddyFixtureFor(text);
-    return answer == null
-        ? _json({'type': 'about:blank', 'status': 400}, status: 400)
-        : _json(answer);
+    if (answer == null) {
+      return _json({'type': 'about:blank', 'status': 400}, status: 400);
+    }
+    // The agent's fast path (06 §2): one proposal per recorded intent.
+    final events = [
+      {'type': 'step', 'code': 'searchingFoods'},
+      for (final (i, intent) in (answer['intents']! as List<Object?>).indexed)
+        {
+          'type': 'proposal',
+          'proposalId': '$turnId-p$i',
+          'revision': 1,
+          'replaces': null,
+          'intent': intent,
+        },
+      {
+        'type': 'done',
+        'reason': 'answered',
+        'usage': {'sends': 1, 'inputTokens': 0, 'outputTokens': 0},
+      },
+    ];
+    final out = StringBuffer();
+    for (final (seq, event) in events.indexed) {
+      out.write('id: $turnId:0:$seq\ndata: ${jsonEncode(event)}\n\n');
+    }
+    return ResponseBody.fromString(
+      out.toString(),
+      200,
+      headers: {
+        Headers.contentTypeHeader: ['text/event-stream'],
+      },
+    );
   }
 }
 

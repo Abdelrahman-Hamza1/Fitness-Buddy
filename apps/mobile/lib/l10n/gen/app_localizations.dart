@@ -735,24 +735,6 @@ abstract class AppLocalizations {
   /// **'That card was already logged or discarded, so I left it as it is.'**
   String get buddyReplyCardClosed;
 
-  /// Chip above the composer: the next message will update this open card (AI-044, UX-023).
-  ///
-  /// In en, this message translates to:
-  /// **'Updating {slot} card'**
-  String buddyFollowUpTarget(String slot);
-
-  /// Chip above the composer when the open card's meal has no name.
-  ///
-  /// In en, this message translates to:
-  /// **'Updating the open card'**
-  String get buddyFollowUpTargetNoSlot;
-
-  /// Tooltip and screen-reader label of the ✕ on the follow-up chip: the next message starts a new card.
-  ///
-  /// In en, this message translates to:
-  /// **'Send as a new message'**
-  String get buddyFollowUpClear;
-
   /// Buddy's fixed English reply to a medical question (A22 D16).
   ///
   /// In en, this message translates to:
@@ -777,47 +759,179 @@ abstract class AppLocalizations {
   /// **'Buddy can\'t do that in this version yet. You can log food here.'**
   String get buddyReplyUnsupported;
 
-  /// Under a Buddy message that could not be sent: no connection (A22 D6).
-  ///
-  /// In en, this message translates to:
-  /// **'You\'re offline. Food search still works.'**
-  String get buddyFailureOffline;
-
-  /// Under a Buddy message: no answer in time (A22 D6).
-  ///
-  /// In en, this message translates to:
-  /// **'Buddy didn\'t answer in time.'**
-  String get buddyFailureTimeout;
-
   /// Under a Buddy message: a server error (A22 D6).
   ///
   /// In en, this message translates to:
   /// **'Buddy couldn\'t answer just now.'**
   String get buddyFailureServer;
 
-  /// Under a Buddy message: the service was unavailable once (A22 D6).
-  ///
-  /// In en, this message translates to:
-  /// **'Buddy is busy right now.'**
-  String get buddyFailureUnavailable;
-
-  /// Under a Buddy message: unavailable a second time; the text went back to the composer (A22 D6).
-  ///
-  /// In en, this message translates to:
-  /// **'Buddy is still busy. Your text is back in the box below.'**
-  String get buddyFailureUnavailableFinal;
-
-  /// Under a Buddy message the server refused (A22 D6).
-  ///
-  /// In en, this message translates to:
-  /// **'Buddy couldn\'t read that message.'**
-  String get buddyFailureRejected;
-
   /// Under a Buddy message: today's limit is reached (A22 D6).
   ///
   /// In en, this message translates to:
   /// **'You\'ve reached today\'s Buddy limit. Search still works.'**
   String get buddyFailureRateLimited;
+
+  /// Under a message that couldn't reach Buddy yet (offline or Buddy unavailable, AI-047/AI-153): it runs again on its own.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting. Buddy will process this when you\'re online.'**
+  String get buddyWaitingOnline;
+
+  /// Button under a waiting message: try to send it to Buddy now.
+  ///
+  /// In en, this message translates to:
+  /// **'Try now'**
+  String get buddyTryNow;
+
+  /// Live step while Buddy looks up foods (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Searching foods…'**
+  String get buddyStepSearchingFoods;
+
+  /// Live step while Buddy reads the diary (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your diary…'**
+  String get buddyStepReadingDiary;
+
+  /// Live step while Buddy reads the user's own foods (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Looking at your foods…'**
+  String get buddyStepReadingYourFoods;
+
+  /// Live step while Buddy reads weight or measurements (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your weight…'**
+  String get buddyStepReadingBody;
+
+  /// Live step while Buddy reads workouts (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your workouts…'**
+  String get buddyStepReadingWorkouts;
+
+  /// Live step while Buddy reads its memory (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Checking what I remember…'**
+  String get buddyStepReadingMemory;
+
+  /// Live step while Buddy computes amounts (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Working it out…'**
+  String get buddyStepComputing;
+
+  /// Live step while Buddy checks what fits the day (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Working out what fits…'**
+  String get buddyStepCheckingFit;
+
+  /// Live step while Buddy writes its reply (AI-170).
+  ///
+  /// In en, this message translates to:
+  /// **'Writing…'**
+  String get buddyStepWritingReply;
+
+  /// Live step while Buddy summarises older chat (AI-165).
+  ///
+  /// In en, this message translates to:
+  /// **'Tidying up our chat…'**
+  String get buddyStepSummarizing;
+
+  /// Live step for a step this version doesn't name.
+  ///
+  /// In en, this message translates to:
+  /// **'Working…'**
+  String get buddyStepWorking;
+
+  /// Button while Buddy works: stops it; cards already shown stay (AI-171).
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get buddyStop;
+
+  /// Note on a card whose food, meal and amount match a card logged earlier in the same turn.
+  ///
+  /// In en, this message translates to:
+  /// **'This may repeat a card you already logged from this message.'**
+  String get buddyPossibleDuplicate;
+
+  /// Note on a card whose update from Buddy was dropped because the user changed it first (AI-044).
+  ///
+  /// In en, this message translates to:
+  /// **'You changed this card, so Buddy\'s update wasn\'t applied.'**
+  String get buddyChangedMeanwhile;
+
+  /// Developer button under a Buddy turn: opens its trace (AI-172, dev and owner builds only).
+  ///
+  /// In en, this message translates to:
+  /// **'Trace'**
+  String get buddyTrace;
+
+  /// Title of the trace sheet (AI-172).
+  ///
+  /// In en, this message translates to:
+  /// **'What Buddy did'**
+  String get buddyTraceTitle;
+
+  /// Trace sheet without steps.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps were recorded for this message.'**
+  String get buddyTraceEmpty;
+
+  /// Me › Your data row: Buddy's summary of older chat (AI-165).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy remembers'**
+  String get buddyRemembersTitle;
+
+  /// Subtitle of the Buddy remembers row without a summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet. Buddy keeps a short summary of longer chats here.'**
+  String get buddyRemembersEmpty;
+
+  /// Button that clears Buddy's summary of older chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get buddyRemembersClear;
+
+  /// Confirmation body before clearing the summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy forgets its summary of your older chat. Your diary and your messages don\'t change.'**
+  String get buddyRemembersClearBody;
+
+  /// Confirmation after the summary was cleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary cleared.'**
+  String get buddyRemembersCleared;
+
+  /// Cancels a Buddy confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get buddyCancel;
+
+  /// Button under a reply with several open cards: logs them all in one tap, one Undo (AI-162).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{Log all {count}}}'**
+  String buddyApplyAll(int count);
+
+  /// One trace step line: tool name, duration, tokens and cost in US dollars (dev only).
+  ///
+  /// In en, this message translates to:
+  /// **'{tool} · {ms} ms · {tokens} tokens · {usd}'**
+  String buddyTraceStep(String tool, int ms, int tokens, String usd);
 
   /// Under a failed Buddy message: sends the same message again.
   ///

@@ -2,6 +2,7 @@ import 'package:alchemist/alchemist.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/account/account.dart';
 import 'package:fb_mobile/features/account/application/sign_in_controller.dart';
+import 'package:fb_mobile/features/buddy/application/buddy_summary_view.dart';
 import 'package:fb_mobile/features/me/me.dart';
 import 'package:fb_mobile/features/sync/sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,6 +92,15 @@ Future<void> main() async {
         accountStatusProvider.overrideWith((ref) async => status),
         // A34: the sync line shows a settled state.
         syncViewProvider.overrideWithValue(_synced),
+        // A66: "Buddy remembers" without a summary (guest) and with one and
+        // its Clear button (signed in), without opening a database.
+        buddySummaryTextProvider.overrideWith(
+          (ref) => Stream.value(
+            status == AccountStatus.guest
+                ? null
+                : 'Cutting since October, trains four days a week.',
+          ),
+        ),
       ],
       height: 700,
     );

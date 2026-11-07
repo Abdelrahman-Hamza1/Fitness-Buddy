@@ -8,12 +8,12 @@ part of 'send_buddy_message.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The app's send path.
+/// The app's save step.
 
 @ProviderFor(sendBuddyMessage)
 final sendBuddyMessageProvider = SendBuddyMessageProvider._();
 
-/// The app's send path.
+/// The app's save step.
 
 final class SendBuddyMessageProvider
     extends
@@ -23,7 +23,7 @@ final class SendBuddyMessageProvider
           SendBuddyMessage
         >
     with $Provider<SendBuddyMessage> {
-  /// The app's send path.
+  /// The app's save step.
   SendBuddyMessageProvider._()
     : super(
         from: null,
@@ -57,4 +57,4 @@ final class SendBuddyMessageProvider
   }
 }
 
-String _$sendBuddyMessageHash() => r'f33bfc9aa8a9dbb91b935a5b4cbaf112339eb6fd';
+String _$sendBuddyMessageHash() => r'95d44d523e376e4dadec055a631d36ee664ca345';

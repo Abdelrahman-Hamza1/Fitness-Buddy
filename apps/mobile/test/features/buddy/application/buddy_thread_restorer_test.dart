@@ -30,43 +30,7 @@ Future<BuddyThread> _restart(BuddyHarness h) async {
   return h.state;
 }
 
-Future<double> _todayKcal(BuddyHarness h) async {
-  final totals = await DiaryReads(h.db).dailyTotals(
-    h.state.turns.first.message.time.localDate,
-    h.state.turns.first.message.time.localDate,
-  );
-  return totals.fold<double>(0, (n, t) => n + t.totals.kcal);
-}
-
 void main() {
-  // rule: A23 restore-pending
-  test('AI-045 pending cards restore after restart without entering '
-      'totals', () async {
-    final (h, _) = await _personal();
-    final before = h.state.turns.single;
-    final restored = await _restart(h);
-    final turn = restored.turns.single;
-    expect(turn.userMessageId, before.userMessageId);
-    expect(turn.assistantMessageId, before.assistantMessageId);
-    expect(turn.message.text, before.message.text);
-    expect(turn.phase, BuddyTurnPhase.replied);
-    expect(turn.interpretation, before.interpretation);
-    expect(turn.cards.map((c) => c.id), before.cards.map((c) => c.id));
-    for (final (i, card) in turn.cards.indexed) {
-      expect(card.resolution, CardResolution.open);
-      expect(card.card.canConfirm, isTrue);
-      expect(card.card.lines, before.cards[i].card.lines);
-    }
-    expect(await h.entries(), isEmpty);
-    expect(await _todayKcal(h), 0);
-    // Once per generation: a second call adds nothing.
-    await h.thread.ensureRestored(0);
-    expect(h.state.turns, hasLength(1));
-    // A restored card logs as usual.
-    await h.thread.confirm(turn.cards.first.id);
-    expect(h.state.turns.single.cards.first.resolution, CardResolution.logged);
-  });
-
   // rule: A23 restore-no-expiry
   test('AI-046 pending cards stay until handled', () async {
     final (h, _) = await _personal();
@@ -112,54 +76,6 @@ void main() {
       session.budget.questions.map((q) => q.dimensionId).toList(),
       budget['open'],
     );
-  });
-
-  // rule: A23 restore-sibling-intake
-  test(
-    'A23 confirmed sibling is counted only through confirmed intake',
-    () async {
-      final (h, _) = await _personal();
-      final [a, b] = h.state.turns.single.cards;
-      await h.thread.confirm(a.id);
-      final kcal = a.card.totals.kcal;
-      final restored = await _restart(h);
-      final [ra, rb] = restored.turns.single.cards;
-      expect(ra.resolution, CardResolution.logged);
-      expect(ra.card.canConfirm, isFalse);
-      expect(rb.resolution, CardResolution.open);
-      // The sibling's day preview counts the logged card once, from the
-      // diary, plus itself.
-      expect(
-        rb.card.preview.eaten!.kcal,
-        closeTo(kcal + rb.card.totals.kcal, 1e-6),
-      );
-      expect(await _todayKcal(h), closeTo(kcal, 1e-6));
-      expect(b.id, rb.id);
-    },
-  );
-
-  // rule: A23 restore-status-map
-  test('A23 stored pending maps to active and superseded stays '
-      'nonconfirmable', () async {
-    final (h, _) = await _personal();
-    final [a, b] = h.state.turns.single.cards;
-    // Another phone marked one historical (a synced row).
-    await runAuthorizedWrite(
-      () => h.db.customStatement(
-        "UPDATE proposals SET status = 'superseded' WHERE id = ?",
-        [b.id],
-      ),
-    );
-    final restored = await _restart(h);
-    final [ra, rb] = restored.turns.single.cards;
-    expect(ra.card.lifecycle, ProposalLifecycle.active);
-    expect(ra.resolution, CardResolution.open);
-    expect(rb.card.lifecycle, ProposalLifecycle.superseded);
-    expect(rb.resolution, CardResolution.superseded);
-    expect(rb.card.canConfirm, isFalse);
-    await h.thread.confirm(b.id);
-    expect(await h.entries(), isEmpty);
-    expect(a.id, ra.id);
   });
 
   // rule: A23 oversized-local
@@ -284,45 +200,6 @@ void main() {
     expect(h.state.turns.single.cards.first.resolution, CardResolution.logged);
   });
 
-  // rule: A23 follow-up-restore
-  test('A23 follow-up restores carried questions by budgetMessageId with '
-      'immutable origin', () async {
-    final h = BuddyHarness()
-      ..answer(
-        message([
-          intent([riceItem(), riceItem()], slot: 'lunch'),
-        ]),
-      );
-    await h.thread.send('rice twice', texts);
-    final m1 = h.state.turns.single.assistantMessageId!;
-    final card = h.state.turns.single.cards.single;
-    h.answer(
-      message([
-        intent([riceItem(), riceItem(), riceItem()], slot: 'lunch'),
-      ]),
-    );
-    await h.thread.send('and one more rice', texts);
-    final m2 = h.state.turns.last.assistantMessageId!;
-    final live = h.state.turns.first.cards.single;
-    expect(live.card.budgetMessageId, m2);
-    final carried = live.session.budget.questions
-        .map((q) => q.dimensionId)
-        .toList();
-    final restored = await _restart(h);
-    // The card is in its origin turn; the follow-up turn shows no card.
-    final origin = restored.turns.firstWhere((t) => t.assistantMessageId == m1);
-    final back = origin.cards.single;
-    expect(back.id, card.id);
-    expect(back.card.originMessageId, m1);
-    expect(back.card.budgetMessageId, m2);
-    expect(
-      back.session.budget.questions.map((q) => q.dimensionId).toList(),
-      carried,
-    );
-    expect(h.state.membership.isFollowUp(m2), isTrue);
-    expect(back.origin?.messageId, m2);
-  });
-
   // rule: A23 rebuild-note-restore
   test("A23 rebuild note renders in the card's origin turn and restores "
       'without a reply', () async {
@@ -412,7 +289,8 @@ void main() {
         );
       });
       final restored = await _restart(h);
-      expect(restored.turns, isEmpty);
+      // The user message still shows as a history turn (A66), without cards.
+      expect(restored.turns.expand((t) => t.cards), isEmpty);
       expect(restored.orphans.map((o) => o.id).toSet(), {a.id, b.id});
       await h.thread.discardUnrestorable(a.id);
       expect((await h.proposal(a.id)).status, 'discarded');

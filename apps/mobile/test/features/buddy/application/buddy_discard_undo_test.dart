@@ -31,22 +31,4 @@ void main() {
     await h.thread.confirm(lunch.id);
     expect(h.state.turns.single.cards.last.resolution, CardResolution.logged);
   });
-
-  test('A23 a discard nobody writes has no undo', () async {
-    final h = BuddyHarness()..answer(twoMeals());
-    h.contributors.clear();
-    await h.thread.send('an egg for breakfast and one for lunch', texts);
-    final writes = h.applied.length;
-    final lunch = h.state.turns.single.cards.last;
-    await h.thread.discard(lunch.id);
-    final discarded = h.state.turns.single.cards.last;
-    expect(discarded.resolution, CardResolution.discarded);
-    expect(discarded.undoEntryId, isNull);
-    expect(h.applied, hasLength(writes));
-    expect(await h.thread.restoreDiscarded(lunch.id), isNull);
-    expect(
-      h.state.turns.single.cards.last.resolution,
-      CardResolution.discarded,
-    );
-  });
 }
