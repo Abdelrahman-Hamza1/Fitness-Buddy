@@ -38,6 +38,14 @@ internal static class AdminResponses
     public static bool IsHtmx(HttpRequest request) => request.Headers["HX-Request"] == "true";
 
     /// <summary>
+    /// Whether the request loads a page in a tab: browsers say so with <c>Sec-Fetch-Dest: document</c>. Sub-requests (the
+    /// favicon, images, scripts) send another destination and never get the sign-in redirect, which would start a new
+    /// challenge and replace the cookie the page on screen still needs. A client without fetch metadata counts as a page.
+    /// </summary>
+    public static bool IsPageNavigation(HttpRequest request) =>
+        request.Headers["Sec-Fetch-Dest"].ToString() is "" or "document";
+
+    /// <summary>
     /// A redirect that always ends in a full page load. htmx follows a plain 302 inside the XHR and swaps the target's body into
     /// the current document, which keeps the old CSP and runs no scripts: a sign-in or re-auth page would show no Google button.
     /// For htmx requests the answer is <c>HX-Redirect</c> instead, which makes htmx navigate the browser.

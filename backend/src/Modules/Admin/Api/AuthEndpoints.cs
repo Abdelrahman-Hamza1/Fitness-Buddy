@@ -28,6 +28,8 @@ internal static class AuthEndpoints
         if (context.Features.Get<AdminPrincipal>() is not null) { return TypedResults.Redirect(AdminModule.PathBase); }
         // Reached inside htmx (a boosted link, or a redirect it followed): load it as a full page, or Google's button never starts.
         if (AdminResponses.IsHtmx(context.Request)) { return AdminResponses.FullRedirect(context, AdminModule.PathBase + "/signin"); }
+        // Only a page load starts a challenge: a favicon or other sub-request must never replace the cookie of the page on screen.
+        if (!AdminResponses.IsPageNavigation(context.Request)) { return TypedResults.NotFound(); }
         return await SignInStepAsync(context, start, antiforgery, options, clock, null, StatusCodes.Status200OK, cancellationToken);
     }
 

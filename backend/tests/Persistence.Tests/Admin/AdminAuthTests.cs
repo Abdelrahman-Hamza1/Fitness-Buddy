@@ -79,6 +79,28 @@ public sealed class AdminAuthTests(PostgresFixture postgres)
     }
 
     [Fact]
+    public async Task A_favicon_request_after_the_page_keeps_its_challenge()
+    {
+        // The browser asks for /favicon.ico after the sign-in page: no redirect, no new challenge, so the page's nonce still signs in.
+        await using var admin = await AdminApp.StartAsync(postgres, allowList: new
+        {
+            admins = new object[] { new { handle = "owner-" + Guid.NewGuid().ToString("N")[..8], googleSubject = Owner, email = OwnerEmail, role = "operator" } },
+            pending = Array.Empty<object>(),
+        });
+        using var browser = admin.NewBrowser();
+        await browser.GetAsync("/admin/signin", new Dictionary<string, string> { ["Sec-Fetch-Dest"] = "document" });
+        var nonce = browser.Nonce!;
+        var challenge = browser.Cookies[AdminCookies.Challenge];
+        var image = new Dictionary<string, string> { ["Sec-Fetch-Dest"] = "image" };
+        Assert.Equal(HttpStatusCode.Unauthorized, (await browser.GetAsync("/favicon.ico", image)).Status);
+        Assert.Equal(HttpStatusCode.NotFound, (await browser.GetAsync("/admin/signin", image)).Status);
+        Assert.Equal(challenge, browser.Cookies[AdminCookies.Challenge]);
+        var (status, _, _) = await browser.PostAsync("/admin/signin", new Dictionary<string, string?> { ["credential"] = AdminApp.Credential(Owner, OwnerEmail, nonce) });
+        Assert.Equal(HttpStatusCode.Redirect, status);
+        Assert.True(browser.Cookies.ContainsKey(AdminCookies.Session));
+    }
+
+    [Fact]
     public async Task A_challenge_works_once()
     {
         await using var admin = await AdminApp.StartAsync(postgres);

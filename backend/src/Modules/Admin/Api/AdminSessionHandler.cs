@@ -45,7 +45,7 @@ internal sealed class AdminSessionHandler(IOptionsMonitor<AuthenticationSchemeOp
             Response.StatusCode = StatusCodes.Status401Unauthorized;
             Response.Headers["HX-Redirect"] = AdminModule.PathBase + "/signin";
         }
-        else if (HttpMethods.IsGet(Request.Method) || HttpMethods.IsHead(Request.Method))
+        else if ((HttpMethods.IsGet(Request.Method) || HttpMethods.IsHead(Request.Method)) && AdminResponses.IsPageNavigation(Request))
         {
             Response.Redirect(AdminModule.PathBase + "/signin");
         }
