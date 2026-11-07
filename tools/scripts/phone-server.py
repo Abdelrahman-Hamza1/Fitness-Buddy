@@ -346,9 +346,14 @@ def identity_compose_args(state):
         return []
     private(overlay)
     services = read_json(overlay)['services']
-    if services.get('admin') != console_identity(state):
-        # An overlay written before B23b has no console entry; add it (the other services are never changed here).
-        json_write(overlay, {'services': {**services, 'admin': console_identity(state)}})
+    # The console entry exists only when the base compose file defines the console service: a state prepared
+    # before B23 keeps its old compose.yml until the next prepare, and compose rejects an overlay-only service.
+    # An overlay written before B23b has no console entry; add it (the other services are never changed here).
+    base = state / 'compose.yml'
+    base_has_admin = not base.exists() or re.search(r'^  admin:\s*$', base.read_text(), re.M) is not None
+    wanted = {**services, 'admin': console_identity(state)} if base_has_admin else {k: v for k, v in services.items() if k != 'admin'}
+    if wanted != services:
+        json_write(overlay, {'services': wanted})
     safe_dir(state / 'identity')
     safe_dir(state / 'identity' / 'email')
     config = read_json(state / 'identity' / 'config.json')

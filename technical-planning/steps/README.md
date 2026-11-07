@@ -262,8 +262,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [B22](B22-off-sanity-checks.md) | Sanity checks on Open Food Facts products (repair, flag, reject; `checkLabel` note) | B10a, A28a | S–M | FD-012, research §4 |  | ✅ built, awaiting review |
 | [B23](B23-admin-console-1.md) | Admin console 1: monitor and config (D-099, AD-001–016 R1) | B03–B22 | M–L | AD-001–AD-016 |  | ✅ |
 | [B24](B24-admin-console-2.md) | Admin console 2: account controls | B23 | S–M | AD-007, AD-011 |  | ✅ |
-| [B25](B25-buddy-agent-core.md) | Buddy agent core (D-100): turn endpoints + SSE, own tool loop, sealed continuation, server + action tools, guards, summary, trace, per-step limits | B08 ✅, B09a ✅, B10a ✅, B23 ✅ | L | B11 part + new (owner 2026-11-06) | **M3** | ✅ (live smoke with the owner's key pending) |
-| [B26](B26-buddy-agent-breadth.md) | Buddy agent breadth: workouts, measurements, imports, label vision, weekly review, Ramadan; interpret + buddy_eval retired | B25, **A66** (retirement) | M–L | B10b, B11, B12 |  | ✅ (live smoke with the owner's key pending) |
+| [B25](B25-buddy-agent-core.md) | Buddy agent core (D-100): turn endpoints + SSE, own tool loop, sealed continuation, server + action tools, guards, summary, trace, per-step limits | B08 ✅, B09a ✅, B10a ✅, B23 ✅ | L | B11 part + new (owner 2026-11-06) | **M3** | ✅ (live smoke done 2026-11-07) |
+| [B26](B26-buddy-agent-breadth.md) | Buddy agent breadth: workouts, measurements, imports, label vision, weekly review, Ramadan; interpret + buddy_eval retired | B25, **A66** (retirement) | M–L | B10b, B11, B12 |  | ✅ (live smoke done 2026-11-07) |
 
 ```mermaid
 flowchart LR
