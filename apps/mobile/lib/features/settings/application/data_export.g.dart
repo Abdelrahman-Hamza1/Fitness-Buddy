@@ -45,7 +45,7 @@ final class DataExportControllerProvider
 }
 
 String _$dataExportControllerHash() =>
-    r'aab6855862cd2d9b4eccbdca26dfc6c27ad7a9d6';
+    r'758b01dd42d10a525d6834850267a0e586864bb8';
 
 /// One export at a time, with the settings feature's complete key vocabulary.
 

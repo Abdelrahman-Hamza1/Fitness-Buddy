@@ -16,17 +16,19 @@ import 'package:fb_mobile/features/buddy/application/buddy_thread_restorer.dart'
 import 'package:fb_mobile/features/buddy/application/buddy_thread_state.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_write_lane.dart';
+import 'package:fb_mobile/features/buddy/application/query/buddy_query_answers.dart';
 import 'package:fb_mobile/features/buddy/application/records/record_cards.dart';
 import 'package:fb_mobile/features/buddy/application/records/record_food_draft.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
+import 'package:fb_mobile/features/buddy/application/suggestions/buddy_suggestions.dart';
 import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
 import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
+import 'package:fb_mobile/features/buddy/application/turn/turn_ramadan.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_turn_api.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_turn_context_reader.dart';
 import 'package:fb_mobile/features/buddy/data/chat_message_repository.dart';
 import 'package:fb_mobile/features/buddy/data/memory_repository.dart';
-import 'package:fb_mobile/features/buddy/data/phone_tools.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_repository.dart';
 import 'package:fb_mobile/features/buddy/data/records/record_intents.dart';
@@ -418,6 +420,7 @@ class BuddyThreadController extends _$BuddyThreadController {
             units: units,
             halal: halal,
             trace: ref.read(buddyTraceEnabledProvider),
+            ramadan: await turnRamadan(ref, turn.message.time.localDate),
           );
       if (!_current(gen)) return;
       final json = jsonDecode(jsonEncode(body.toJson())) as Map<String, Object?>
@@ -468,7 +471,7 @@ class BuddyThreadController extends _$BuddyThreadController {
     final runner = BuddyTurnRunner(
       host,
       api: ref.read(buddyTurnApiProvider),
-      tools: ref.read(phoneToolsProvider),
+      tools: ref.read(buddyPhoneToolsProvider),
       today:
           _turn(turnId)?.message.time.localDate ??
           EntryTime.now(ref.read(clockProvider)).localDate,
@@ -523,7 +526,10 @@ class BuddyThreadController extends _$BuddyThreadController {
           if (now.question?.text.trim() case final q? when q.isNotEmpty) q,
         ];
         var body = parts.isEmpty ? null : parts.join('\n\n');
-        if (body == null &&
+        if (body == null && now.suggestion != null) {
+          // The suggestion is kept with a reply row (never drawn).
+          body = BuddyReplyTexts.suggestionRecord;
+        } else if (body == null &&
             end.kind == TurnEndKind.done &&
             now.cards.isEmpty &&
             now.records.isEmpty &&
@@ -540,6 +546,10 @@ class BuddyThreadController extends _$BuddyThreadController {
             'question': {'text': q.text, 'options': q.options},
           if (now.trace.isNotEmpty)
             'trace': [for (final step in now.trace) step.toJson()],
+          if (now.links.isNotEmpty)
+            'links': [for (final link in now.links) link.toJson()],
+          if (now.suggestion case final suggestion?)
+            'suggestion': suggestion.toJson(),
         };
         final replyId = body == null
             ? null
@@ -841,6 +851,12 @@ class BuddyThreadController extends _$BuddyThreadController {
   ) async {
     final turn = _turn(turnId);
     if (turn == null || !_current(gen)) return null;
+    // A suggestion is never a card: its options show under the reply and a
+    // tap makes the card (A68 D5).
+    if (proposal.intent['kind'] == 'suggestion') {
+      await _suggestion(turnId, proposal.intent, gen, writer);
+      return null;
+    }
     final lane = _lane;
     if (RecordKind.fromCode(proposal.intent['kind']) != null ||
         (proposal.replaces != null &&
@@ -969,6 +985,91 @@ class BuddyThreadController extends _$BuddyThreadController {
       );
       return next;
     });
+  }
+
+  /// Shows a `suggestion` event's options that fit (A68 D5, AI-120,
+  /// FD-082): each built as a card preview, never written.
+  Future<void> _suggestion(
+    String turnId,
+    Map<String, Object?> intent,
+    int gen,
+    AgentCardWriter writer,
+  ) async {
+    final now = EntryTime.now(ref.read(clockProvider));
+    final halal = await ref.read(settingsStoreProvider).read(AppSettings.halal);
+    final suggestion = await BuddySuggestion.of(
+      intent,
+      preview: (foodLog) => writer.preview(foodLog, now),
+      halal: halal,
+    );
+    if (suggestion == null || !_current(gen) || _stoppedTurn(turnId)) return;
+    _update(turnId, (t) => t.copyWith(suggestion: suggestion));
+  }
+
+  /// Turns option [index] of turn [userMessageId]'s suggestion into a
+  /// pending food card for now (AI-121): the tap writes the card only,
+  /// never the diary; the card's own Confirm logs it.
+  Future<void> pickSuggestion(String userMessageId, int index) async {
+    final turn = _turn(userMessageId);
+    final gen = _generation;
+    final option = turn?.suggestion?.options.elementAtOrNull(index);
+    if (turn == null ||
+        option == null ||
+        option.picked ||
+        turn.phase == BuddyTurnPhase.sending ||
+        turn.profileGeneration != gen) {
+      return;
+    }
+    final writer = ref.read(agentCardWriterProvider);
+    final lane = _lane;
+    final cardId = ref.read(idGeneratorProvider).next();
+    final now = EntryTime.now(ref.read(clockProvider));
+    _update(
+      userMessageId,
+      (t) =>
+          t.copyWith(suggestion: t.suggestion?.withPicked(index, picked: true)),
+    );
+    final written = await lane.run(
+      () async => _current(gen)
+          ? await writer.create(
+              intent: option.intent,
+              revision: 1,
+              cardId: cardId,
+              userId: userMessageId,
+              referenceTime: now,
+              checkpoint: null,
+              cancelled: () => !_current(gen),
+            )
+          : null,
+    );
+    if (!_current(gen)) return;
+    if (written == null) {
+      // Not written: the option can be tapped again.
+      _update(
+        userMessageId,
+        (t) => t.copyWith(
+          suggestion: t.suggestion?.withPicked(index, picked: false),
+        ),
+      );
+      return;
+    }
+    _update(
+      userMessageId,
+      (t) => t.copyWith(
+        cards: [
+          ...t.cards,
+          BuddyCard(
+            id: cardId,
+            session: written.session,
+            origin: CardOrigin(
+              interpretation: written.answer,
+              messageId: written.holderId,
+              referenceTime: now,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Whether [card]'s food, meal and amounts match a card already logged in
@@ -2656,6 +2757,13 @@ final class _Host implements TurnHost {
             usd: s.usd,
           ),
       ],
+    ),
+  );
+
+  @override
+  void links(List<QueryLink> links) => _update(
+    (t) => t.copyWith(
+      links: {...t.links, ...links}.take(BuddyTurn.maxLinks).toList(),
     ),
   );
 

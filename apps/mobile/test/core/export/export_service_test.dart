@@ -200,6 +200,8 @@ void main() {
       ...AppSettings.all.map((k) => k.name),
       // A41a: the per-date fasting keys of every Ramadan in the table.
       ...AppSettings.fastingKeyNames,
+      // A68: the per-week Buddy review keys.
+      ...AppSettings.weeklyReviewKeyNames,
     ]);
   });
   test('export dir is wiped before each export', () async {

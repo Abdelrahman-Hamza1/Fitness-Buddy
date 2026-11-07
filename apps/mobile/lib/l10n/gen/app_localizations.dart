@@ -831,6 +831,84 @@ abstract class AppLocalizations {
   /// **'Working out what fits…'**
   String get buddyStepCheckingFit;
 
+  /// Title of Buddy's weekly review on top of the weekly summary (AI-130).
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy\'s review'**
+  String get weeklyReviewTitle;
+
+  /// While Buddy writes the weekly review; the summary below is already shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy is writing your review…'**
+  String get weeklyReviewWriting;
+
+  /// The weekly review couldn't be written (offline, unavailable, limit); with Try again.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy couldn\'t write this week\'s review.'**
+  String get weeklyReviewFailed;
+
+  /// Title of Buddy's food suggestions; a tap on one makes a food card to confirm (AI-120).
+  ///
+  /// In en, this message translates to:
+  /// **'Ideas that fit'**
+  String get buddySuggestionTitle;
+
+  /// A suggestion's numbers, computed by the app (AI-175).
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal · {protein} g protein'**
+  String buddySuggestionFacts(int kcal, int protein);
+
+  /// Shown when every option Buddy suggested would go over today's target (AI-120).
+  ///
+  /// In en, this message translates to:
+  /// **'None of these fit what\'s left today.'**
+  String get buddySuggestionNoneFit;
+
+  /// Screen-reader label of a suggestion's add icon: a tap makes a food card (AI-121).
+  ///
+  /// In en, this message translates to:
+  /// **'Make a card'**
+  String get buddySuggestionPick;
+
+  /// Screen-reader label of a suggestion already turned into a card.
+  ///
+  /// In en, this message translates to:
+  /// **'Card added'**
+  String get buddySuggestionPicked;
+
+  /// Chip under a Buddy answer that opens the diary day it is about (AI-112).
+  ///
+  /// In en, this message translates to:
+  /// **'Open diary'**
+  String get buddyLinkDiary;
+
+  /// Chip under a Buddy answer that opens the Progress charts (AI-112).
+  ///
+  /// In en, this message translates to:
+  /// **'Open Progress'**
+  String get buddyLinkProgress;
+
+  /// Chip under a Buddy answer that opens the weight graph (AI-112).
+  ///
+  /// In en, this message translates to:
+  /// **'Open weight graph'**
+  String get buddyLinkWeightGraph;
+
+  /// Chip under a Buddy answer that opens the exercise's page (AI-112).
+  ///
+  /// In en, this message translates to:
+  /// **'Open exercise'**
+  String get buddyLinkExercise;
+
+  /// Chip under a Buddy answer that opens the logged workout it is about (AI-112).
+  ///
+  /// In en, this message translates to:
+  /// **'Open workout'**
+  String get buddyLinkWorkout;
+
   /// Live step while Buddy writes its reply (AI-170).
   ///
   /// In en, this message translates to:

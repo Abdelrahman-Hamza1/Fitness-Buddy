@@ -110,14 +110,15 @@ final class AgentCardWriter {
 
   /// Builds card [cardId] from [intent] for user message [userId] at
   /// [referenceTime] and writes it with [checkpoint] (the user row's turn
-  /// checkpoint), or `null` when it can't be a card or wasn't written.
+  /// checkpoint; none for a card made after the turn, a suggestion tap), or
+  /// `null` when it can't be a card or wasn't written.
   Future<AgentCard?> create({
     required Map<String, Object?> intent,
     required int revision,
     required String cardId,
     required String userId,
     required EntryTime referenceTime,
-    required String checkpoint,
+    required String? checkpoint,
     bool Function() cancelled = _never,
   }) async {
     if (!buildable.contains(intent['kind'])) return null;
@@ -149,6 +150,25 @@ final class AgentCardWriter {
     return written
         ? AgentCard(session: session, holderId: holderId, answer: answer)
         : null;
+  }
+
+  /// The card [intent] would make at [referenceTime], built but never
+  /// written (a suggestion's fit check, A68 D5), or `null` when it can't be
+  /// one.
+  Future<ProposalCard?> preview(
+    Map<String, Object?> intent,
+    EntryTime referenceTime,
+  ) async {
+    if (!buildable.contains(intent['kind'])) return null;
+    final session = await _build(
+      answerOf(intent),
+      _ids.next(),
+      GeneratorProposalIds(_ids),
+      referenceTime,
+    );
+    return session == null || session.cards.length != 1
+        ? null
+        : session.cards.single;
   }
 
   /// Rebuilds open [card] of [from] with [intent] (an update by `replaces`)
@@ -271,7 +291,7 @@ final class AgentCardWriter {
     String label,
     Map<String, Object?> answer,
     List<ChangeOp> ops,
-    String checkpoint,
+    String? checkpoint,
     bool Function() cancelled,
   ) async {
     if (ops.isEmpty) return false;
@@ -293,7 +313,7 @@ final class AgentCardWriter {
           answerJson: isLocalJsonObject(json) ? json : null,
         ),
         ...ops,
-        SaveTurnCheckpoint(userId, checkpoint),
+        if (checkpoint != null) SaveTurnCheckpoint(userId, checkpoint),
       ], origin: Origin.system),
     );
     return result is Applied;

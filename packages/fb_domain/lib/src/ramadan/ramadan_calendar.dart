@@ -82,6 +82,19 @@ final class RamadanCalendar {
     return best;
   }
 
+  /// The first day of the latest Ramadan (on or not, with the user's
+  /// shifts) that started on or before [today], or null before the table
+  /// (Buddy's "since Ramadan", A68).
+  LocalDate? lastStartBy(LocalDate today) {
+    LocalDate? best;
+    for (final year in table.keys) {
+      final start = period(year)?.start;
+      if (start == null || start.isAfter(today)) continue;
+      if (best == null || start.isAfter(best)) best = start;
+    }
+    return best;
+  }
+
   /// The Ramadan (on or not) containing [date], or null.
   RamadanPeriod? periodContaining(LocalDate date) {
     for (final year in table.keys) {

@@ -3,6 +3,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/adaptive/adaptive.dart';
+import 'package:fb_mobile/features/buddy/buddy.dart' show WeeklyReviewCard;
 import 'package:fb_mobile/features/progress/application/weekly_summary_providers.dart';
 import 'package:fb_mobile/features/progress/presentation/progress_text.dart';
 import 'package:fb_mobile/features/progress/presentation/week_summary_tiles.dart';
@@ -43,6 +44,9 @@ class WeeklySummaryScreen extends ConsumerWidget {
       // A link to a future week shows this week.
       final shown = asked.isAfter(current) ? current : asked;
       final first = calendar.weekStartOf(earliest ?? current);
+      // This week's check-in, attached to last week's review (AI-130).
+      final checkIn = ref.watch(checkInCardProvider).value;
+      final pending = checkIn?.kind == CheckInCardKind.pending;
       void open(LocalDate week) =>
           ref.read(appNavigatorProvider).go(WeeklySummaryRoute(start: week));
       body = Column(
@@ -75,6 +79,14 @@ class WeeklySummaryScreen extends ConsumerWidget {
                     : null,
               ),
             ],
+          ),
+          // Buddy's review on top (IN-001, AI-132).
+          WeeklyReviewCard(
+            weekStart: shown,
+            summary: ref.watch(weeklySummaryProvider(shown)).value,
+            writes: shown == current.plusDays(-7),
+            fromKcal: pending ? checkIn!.draft.fromKcal : null,
+            toKcal: pending ? checkIn!.draft.toKcal : null,
           ),
           WeekSummaryTiles(weekStart: shown, current: shown == current),
           // This week's check-in reviews the weeks up to last week.

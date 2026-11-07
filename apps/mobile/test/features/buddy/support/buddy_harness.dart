@@ -16,6 +16,7 @@ import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/events/domain_event_bus.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/body/body.dart' show WeighInOpHandler;
@@ -152,6 +153,7 @@ final class BuddyHarness {
         DiaryOpHandler(db),
         MealSlotOpHandler(db),
         PersonalFoodOpHandler(db),
+        SettingsOpHandler(db.settingsKv),
         MemoryItemOpHandler(db),
         WeighInOpHandler(db),
         const ScriptHandler(),

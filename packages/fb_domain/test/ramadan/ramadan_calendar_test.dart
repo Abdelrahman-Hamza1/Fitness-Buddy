@@ -48,6 +48,13 @@ void main() {
       }
     });
 
+    test('AI-110 "since Ramadan" starts at the latest Ramadan begun', () {
+      expect(_cal().lastStartBy(_d(2026, 11, 7)), _d(2026, 2, 18));
+      expect(_cal().lastStartBy(_d(2027, 2, 8)), _d(2027, 2, 8));
+      expect(_cal().lastStartBy(_d(2027, 2, 7)), _d(2026, 2, 18));
+      expect(_cal().lastStartBy(_d(1990, 1, 1)), isNull);
+    });
+
     test('outside the table there is no Ramadan', () {
       expect(_cal().calendarPeriod(1300), isNull);
       expect(_cal().relevant(_d(2090, 1, 1)), isNull);

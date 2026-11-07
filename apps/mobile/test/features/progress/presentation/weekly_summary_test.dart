@@ -3,8 +3,6 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/features/adaptive/adaptive.dart';
 import 'package:fb_mobile/features/progress/progress.dart';
-import 'package:fb_mobile/features/workouts/application/exercise_library.dart'
-    show ExerciseLibrary, exerciseLibraryProvider;
 import 'package:fb_mobile/features/workouts/application/workout_views.dart'
     show workoutPlanProvider;
 import 'package:fb_mobile/features/workouts/workouts.dart';

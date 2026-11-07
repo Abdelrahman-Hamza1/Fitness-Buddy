@@ -144,3 +144,7 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 320 | A67 | Saved-meal shares ("half the usual", "we were 4") and whole-day copies as record cards; today both get "can't do that yet" | minor | next Buddy step | open |
 | 321 | A67 | Resolve Buddy time hints ("at 8pm") on moves, copies, saved meals and weigh-ins; R1 resolves day hints only and the card says it keeps its time of day | nit | next Buddy step | open |
 | 322 | A67 | A which-one pick (AI-091) survives a restart: it lives in memory today, so a reopened card asks again | nit | next Buddy step | open |
+| 323 | A68 | A measurement link target in the contract (`BuddyLinkScreen`), so measurement answers open the measurement page; today they carry no link | nit | next Buddy contract change | open |
+| 324 | A68 | Answer links survive a mid-turn restart: they come only from the live phone round, so a resumed turn loses them | nit | next Buddy step | open |
+| 325 | A68 | Persist a picked suggestion option (it shows as picked only in this session; after a restart a tap makes another card) | nit | next Buddy step | open |
+| 326 | A68 | Write the weekly review in the background at the NT-004 notification time instead of when the summary opens | minor | next Buddy step | open |

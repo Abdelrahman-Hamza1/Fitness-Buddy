@@ -2,6 +2,8 @@
 /// (`03-architecture.md` §3.2).
 library;
 
+export 'application/exercise_library.dart'
+    show ExerciseLibrary, LibraryExercise, exerciseLibraryProvider;
 export 'application/workout_providers.dart';
 export 'application/workout_views.dart'
     show

@@ -134,6 +134,24 @@ abstract final class AppSettings {
     }
   }
 
+  /// AI-132 (A68 D6): Buddy's weekly review of the week from [weekStart],
+  /// one setting per week (`buddy.weeklyReview.d<yyyymmdd>`), so reviews of
+  /// different weeks never overwrite each other. Unset: none written yet.
+  static SettingKey<String?> weeklyReview(LocalDate weekStart) => SettingKey(
+    'buddy.weeklyReview.d${'$weekStart'.replaceAll('-', '')}',
+    codec: SettingCodec.optionalString,
+    defaultValue: null,
+  );
+
+  /// Every per-week review key a week from 2026 to 2035 can use (any day
+  /// may start a week), for export's natural-id reverse lookup.
+  static Iterable<String> get weeklyReviewKeyNames sync* {
+    final last = LocalDate(2035, 12, 31);
+    for (var d = LocalDate(2026, 1, 1); !d.isAfter(last); d = d.plusDays(1)) {
+      yield weeklyReview(d).name;
+    }
+  }
+
   /// LC-033 / G12: how Fajr and Maghrib are computed (A41a D2).
   static final SettingKey<PrayerMethod> prayerMethod = SettingKey.enumeration(
     'prayer.method',

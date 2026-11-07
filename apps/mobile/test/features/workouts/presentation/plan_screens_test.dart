@@ -10,7 +10,6 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
-import 'package:fb_mobile/features/workouts/application/exercise_library.dart';
 import 'package:fb_mobile/features/workouts/application/workout_actions.dart';
 import 'package:fb_mobile/features/workouts/presentation/plan_setup_screen.dart';
 import 'package:fb_mobile/features/workouts/presentation/template_editor_screen.dart';

@@ -7,6 +7,7 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
+import 'package:fb_mobile/features/buddy/application/suggestions/buddy_suggestions.dart';
 import 'package:fb_mobile/features/buddy/data/records/record_intents.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
@@ -346,6 +347,8 @@ final class BuddyTurn {
     this.unsupported = false,
     this.records = const [],
     this.notices = const [],
+    this.links = const [],
+    this.suggestion,
   });
 
   /// The turn's record cards (A67): edits, copies, saved meals, batches,
@@ -395,6 +398,17 @@ final class BuddyTurn {
   /// Buddy proposed something this version can't show yet (A67–A69).
   final bool unsupported;
 
+  /// The screens the answer links to (AI-112): the turn's answered
+  /// `queryData` links, at most [maxLinks].
+  final List<QueryLink> links;
+
+  /// How many links an answer shows.
+  static const int maxLinks = 2;
+
+  /// Buddy's food suggestions (AI-120): the options that fit; a tap makes
+  /// a food card (AI-121).
+  final BuddySuggestion? suggestion;
+
   /// The user row's ID (the turn ID).
   String get userMessageId => message.id;
 
@@ -430,6 +444,8 @@ final class BuddyTurn {
     bool? unsupported,
     List<RecordCard>? records,
     List<BuddyNotice>? notices,
+    List<QueryLink>? links,
+    BuddySuggestion? suggestion,
   }) => BuddyTurn(
     message: message,
     phase: phase ?? this.phase,
@@ -446,6 +462,8 @@ final class BuddyTurn {
     unsupported: unsupported ?? this.unsupported,
     records: records ?? this.records,
     notices: notices ?? this.notices,
+    links: links ?? this.links,
+    suggestion: suggestion ?? this.suggestion,
   );
 
   @override

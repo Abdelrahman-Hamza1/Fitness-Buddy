@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'phone_tools.dart';
+part of 'buddy_query_answers.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -8,30 +8,30 @@ part of 'phone_tools.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The app's phone tools.
+/// Buddy's phone tools with the QueryEngine behind `queryData` (A68 D4).
 
-@ProviderFor(phoneTools)
-final phoneToolsProvider = PhoneToolsProvider._();
+@ProviderFor(buddyPhoneTools)
+final buddyPhoneToolsProvider = BuddyPhoneToolsProvider._();
 
-/// The app's phone tools.
+/// Buddy's phone tools with the QueryEngine behind `queryData` (A68 D4).
 
-final class PhoneToolsProvider
+final class BuddyPhoneToolsProvider
     extends $FunctionalProvider<PhoneTools, PhoneTools, PhoneTools>
     with $Provider<PhoneTools> {
-  /// The app's phone tools.
-  PhoneToolsProvider._()
+  /// Buddy's phone tools with the QueryEngine behind `queryData` (A68 D4).
+  BuddyPhoneToolsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'phoneToolsProvider',
+        name: r'buddyPhoneToolsProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$phoneToolsHash();
+  String debugGetCreateSourceHash() => _$buddyPhoneToolsHash();
 
   @$internal
   @override
@@ -40,7 +40,7 @@ final class PhoneToolsProvider
 
   @override
   PhoneTools create(Ref ref) {
-    return phoneTools(ref);
+    return buddyPhoneTools(ref);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -52,4 +52,4 @@ final class PhoneToolsProvider
   }
 }
 
-String _$phoneToolsHash() => r'66e56ffd6c06039a5731e074c31f64f4e326b295';
+String _$buddyPhoneToolsHash() => r'078004f10d30ea962511f160358c74f4899839f1';

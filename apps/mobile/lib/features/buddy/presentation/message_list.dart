@@ -8,9 +8,11 @@ import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dar
 import 'package:fb_mobile/features/buddy/application/buddy_thread_messages.dart';
 import 'package:fb_mobile/features/buddy/application/food_card_view.dart';
 import 'package:fb_mobile/features/buddy/application/turn/buddy_trace.dart';
+import 'package:fb_mobile/features/buddy/presentation/answer_links.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/buddy_notice_row.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/food_proposal_card.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/record_proposal_card.dart';
+import 'package:fb_mobile/features/buddy/presentation/cards/suggestion_card.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_direction.dart';
 import 'package:fb_mobile/features/buddy/presentation/trace_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -371,7 +373,9 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
       // nor is the plain "here's your meal" line above its cards.
       if (reply != null &&
           reply.budgetJson == null &&
-          !(turn.cards.isNotEmpty && reply.draft.text == l10n.buddyReplyCards))
+          !(turn.cards.isNotEmpty &&
+              reply.draft.text == l10n.buddyReplyCards) &&
+          reply.draft.text != BuddyReplyTexts.suggestionRecord)
         ('reply:${reply.id}', buddyBubble(reply.draft.text))
       // The reply as it streams in (AI-170).
       else if (running && turn.replyText.trim().isNotEmpty)
@@ -395,6 +399,16 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
         (
           'failed:${turn.userMessageId}',
           _Failure(turn: turn, onSearch: onSearch),
+        ),
+      // Buddy's suggestions: a tap makes a food card (AI-120, AI-121).
+      if (turn.suggestion case final suggestion?)
+        (
+          'suggest:${turn.userMessageId}',
+          SuggestionCard(
+            suggestion: suggestion,
+            enabled: !running,
+            onPick: (i) => controller.pickSuggestion(turn.userMessageId, i),
+          ),
         ),
       for (final card in turn.cards) ...[
         (
@@ -476,6 +490,9 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
             ],
           ),
         ),
+      // The screens the answer is about (AI-112).
+      if (turn.links.isNotEmpty && !running)
+        ('links:${turn.userMessageId}', AnswerLinks(links: turn.links)),
       // Stored cards that couldn't be reopened (A23 D13).
       for (final card in turn.unrestorable)
         ('lost:${card.id}', UnrestorableCardRow(card: card)),

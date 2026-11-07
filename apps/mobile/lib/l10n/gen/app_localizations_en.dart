@@ -452,6 +452,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buddyStepCheckingFit => 'Working out what fits…';
 
   @override
+  String get weeklyReviewTitle => 'Buddy\'s review';
+
+  @override
+  String get weeklyReviewWriting => 'Buddy is writing your review…';
+
+  @override
+  String get weeklyReviewFailed => 'Buddy couldn\'t write this week\'s review.';
+
+  @override
+  String get buddySuggestionTitle => 'Ideas that fit';
+
+  @override
+  String buddySuggestionFacts(int kcal, int protein) {
+    final intl.NumberFormat kcalNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String kcalString = kcalNumberFormat.format(kcal);
+    final intl.NumberFormat proteinNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String proteinString = proteinNumberFormat.format(protein);
+
+    return '$kcalString kcal · $proteinString g protein';
+  }
+
+  @override
+  String get buddySuggestionNoneFit => 'None of these fit what\'s left today.';
+
+  @override
+  String get buddySuggestionPick => 'Make a card';
+
+  @override
+  String get buddySuggestionPicked => 'Card added';
+
+  @override
+  String get buddyLinkDiary => 'Open diary';
+
+  @override
+  String get buddyLinkProgress => 'Open Progress';
+
+  @override
+  String get buddyLinkWeightGraph => 'Open weight graph';
+
+  @override
+  String get buddyLinkExercise => 'Open exercise';
+
+  @override
+  String get buddyLinkWorkout => 'Open workout';
+
+  @override
   String get buddyStepWritingReply => 'Writing…';
 
   @override

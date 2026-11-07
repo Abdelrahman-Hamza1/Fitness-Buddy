@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart' show CancelToken;
 import 'package:fb_api_client/fb_api_client.dart' hide LocalDate;
-import 'package:fb_domain/fb_domain.dart' show LocalDate;
+import 'package:fb_domain/fb_domain.dart' show LocalDate, QueryLink;
 import 'package:fb_mobile/features/buddy/data/buddy_turn_api.dart';
 import 'package:fb_mobile/features/buddy/data/phone_tools.dart';
 import 'package:fb_mobile/features/buddy/data/turn/turn_checkpoint.dart';
@@ -28,11 +28,14 @@ enum TurnEndKind {
 
 /// The end of a turn.
 final class TurnEnd {
-  /// An end.
-  const new(this.kind);
+  /// An end; [reason] is `done`'s reason (`answered`, `limit`, …).
+  const new(this.kind, {this.reason});
 
   /// How it ended.
   final TurnEndKind kind;
+
+  /// For [TurnEndKind.done]: the `done` event's reason wire code, or null.
+  final String? reason;
 
   @override
   String toString() => 'TurnEnd(${kind.name})';
@@ -158,6 +161,9 @@ abstract interface class TurnHost {
   /// Trace steps (dev only).
   void trace(List<TraceLine> steps);
 
+  /// The links of this round's answered `queryData` calls (AI-112).
+  void links(List<QueryLink> links);
+
   /// Writes [proposal] as a new card (with a fresh card ID) or an update of
   /// its target, together with the checkpoint [withCard] builds from the
   /// card it wrote. The new checkpoint, or `null` when nothing was written
@@ -255,7 +261,7 @@ final class BuddyTurnRunner {
           cp = outcome.checkpoint;
           switch (outcome.next) {
             case _Next.done:
-              return const TurnEnd(TurnEndKind.done);
+              return TurnEnd(TurnEndKind.done, reason: outcome.reason);
             case _Next.round:
               continue;
             case _Next.retry:
@@ -434,6 +440,7 @@ final class BuddyTurnRunner {
               bytes: cp.bytes,
             );
             if (_stopped) break;
+            if (ran.links.isNotEmpty) _host.links(ran.links);
             await reconcile();
             final next = cp.copyWith(
               kind: TurnRoundKind.resume,
@@ -451,9 +458,9 @@ final class BuddyTurnRunner {
             );
             await _host.save(next);
             return _RoundOutcome(next, _Next.round);
-          case BuddyTurnEventDone():
+          case BuddyTurnEventDone(:final reason):
             await reconcile();
-            return _RoundOutcome(cp, _Next.done);
+            return _RoundOutcome(cp, _Next.done, reason: reason.json);
           case BuddyTurnEventError(:final code):
             return _RoundOutcome(cp, switch (code) {
               BuddyTurnErrorCode.unavailable ||
@@ -478,8 +485,9 @@ final class BuddyTurnRunner {
 enum _Next { done, round, retry, failed }
 
 final class _RoundOutcome {
-  const new(this.checkpoint, this.next);
+  const new(this.checkpoint, this.next, {this.reason});
 
   final TurnCheckpoint checkpoint;
   final _Next next;
+  final String? reason;
 }

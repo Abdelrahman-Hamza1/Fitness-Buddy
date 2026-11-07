@@ -45,6 +45,10 @@ final class BuddyReplyTexts {
   static const cardRebuiltRecord =
       'I updated this card with your current food details.';
 
+  /// The transcript text of a reply that only carries suggestions (A68
+  /// D5): stored with them, never drawn as a bubble.
+  static const suggestionRecord = 'Here are a few ideas that fit.';
+
   @override
   String toString() => 'BuddyReplyTexts';
 }

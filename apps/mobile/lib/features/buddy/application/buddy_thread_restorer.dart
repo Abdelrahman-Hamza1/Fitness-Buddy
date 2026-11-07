@@ -8,6 +8,7 @@ import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/records/record_cards.dart';
 import 'package:fb_mobile/features/buddy/application/send_buddy_message.dart';
 import 'package:fb_mobile/features/buddy/application/session_membership.dart';
+import 'package:fb_mobile/features/buddy/application/suggestions/buddy_suggestions.dart';
 import 'package:fb_mobile/features/buddy/application/turn/agent_card_writer.dart';
 import 'package:fb_mobile/features/buddy/data/chat_message_repository.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
@@ -417,6 +418,12 @@ final class _TurnDraft {
         BuddyQuestion(text, [...options.whereType<String>()]),
       _ => null,
     },
+    suggestion: BuddySuggestion.fromJson(meta?['suggestion']),
+    links: [
+      if (meta?['links'] case final List<Object?> links)
+        for (final link in links.take(BuddyTurn.maxLinks))
+          ?QueryLink.fromJson(link),
+    ],
     trace: [
       if (meta?['trace'] case final List<Object?> steps)
         for (final step in steps)

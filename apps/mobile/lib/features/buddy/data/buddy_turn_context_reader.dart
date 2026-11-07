@@ -26,6 +26,16 @@ typedef OpenCardRef = ({
   String label,
 });
 
+/// Today's Ramadan state for a turn (A68 D7, B26 D12): a fasting day, its
+/// fajr and maghrib as device-local "HH:mm" (when a city is chosen), and the
+/// meal slots in use (suhoor/iftar on a fasting day).
+typedef TurnRamadan = ({
+  bool fasting,
+  String? fajr,
+  String? maghrib,
+  SlotMode slots,
+});
+
 /// The start request's bounds (`06` §3.1, the contract).
 abstract final class TurnBounds {
   /// History entries.
@@ -77,6 +87,7 @@ final class BuddyTurnContextReader {
     required UnitSystem units,
     required bool halal,
     required bool trace,
+    TurnRamadan? ramadan,
   }) async {
     final context = await _loader.refreshContext(referenceTime: now);
     return await _db.readSnapshot(() async {
@@ -150,9 +161,9 @@ final class BuddyTurnContextReader {
             energy: BuddyEnergyUnit.kcal,
           ),
           ramadan: BuddyRamadan(
-            active: context?.dayContext?.ramadan ?? false,
-            fajr: null,
-            maghrib: null,
+            active: ramadan?.fasting ?? context?.dayContext?.ramadan ?? false,
+            fajr: ramadan?.fasting ?? false ? ramadan!.fajr : null,
+            maghrib: ramadan?.fasting ?? false ? ramadan!.maghrib : null,
           ),
         ),
         snapshot: BuddyTurnSnapshot(
@@ -160,7 +171,9 @@ final class BuddyTurnContextReader {
           tzOffsetMin: now.tzOffsetMin,
           slots: [
             for (final slot in slots)
-              if (slot.active && slot.mode == SlotMode.normal) ?_slot(slot),
+              if (slot.active &&
+                  slot.mode == (ramadan?.slots ?? SlotMode.normal))
+                ?_slot(slot),
           ].take(TurnBounds.slots).toList(),
           today: _today(context, now.localDate),
           openCards: [

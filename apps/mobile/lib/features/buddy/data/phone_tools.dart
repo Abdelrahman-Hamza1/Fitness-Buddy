@@ -5,9 +5,7 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/features/buddy/data/buddy_phone_reads.dart';
 import 'package:fb_mobile/features/buddy/data/memory_slice.dart';
 import 'package:fb_mobile/features/buddy/data/personal_slice.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'phone_tools.g.dart';
+import 'package:fb_mobile/features/buddy/data/query_plan_codec.dart';
 
 /// The scopes the phone enforces whatever a call asks for (`06` §4.2,
 /// TD-127) and the per-turn disclosure budget.
@@ -61,6 +59,14 @@ abstract final class PhoneToolScopes {
   static const int turnBytes = 48 * 1024;
 }
 
+/// Answers a QueryPlan from the phone's data (A68 D4): the QueryEngine's
+/// answer on the turn's day, or `null` when the plan can't be answered
+/// (`unsupportedPlan`). Aggregates only.
+abstract interface class QueryAnswers {
+  /// The answer to [plan].
+  Future<QueryAnswer?> answer(QueryPlan plan, LocalDate today);
+}
+
 /// Buddy's phone tools (A66 D11, `06` §4.2): each call is answered from
 /// local data under its scope, inside the turn's disclosure budget
 /// (≤ [PhoneToolScopes.turnRows] rows and [PhoneToolScopes.turnBytes]
@@ -68,15 +74,26 @@ abstract final class PhoneToolScopes {
 /// carry local IDs (the server swaps them for handles). Read-only; nothing
 /// here logs.
 final class PhoneTools {
-  /// The tools over [_reads].
-  const new(this._reads);
+  /// The tools over [_reads]; `queryData` through [_queries] (none:
+  /// `unsupportedPlan`).
+  const new(this._reads, {this._queries});
 
   final BuddyPhoneReads _reads;
+  final QueryAnswers? _queries;
 
   /// Answers [calls] (raw JSON) for a turn on [today] that already
   /// disclosed [rows] rows and [bytes] bytes: one raw result per call, in
-  /// order, and the new totals.
-  Future<({List<Map<String, Object?>> results, int rows, int bytes})> run(
+  /// order, the new totals and the links of the answered `queryData` calls
+  /// (AI-112).
+  Future<
+    ({
+      List<Map<String, Object?>> results,
+      int rows,
+      int bytes,
+      List<QueryLink> links,
+    })
+  >
+  run(
     List<Map<String, Object?>> calls, {
     required LocalDate today,
     required int rows,
@@ -85,6 +102,7 @@ final class PhoneTools {
     var usedRows = rows;
     var usedBytes = bytes;
     final results = <Map<String, Object?>>[];
+    final links = <QueryLink>[];
     for (final raw in calls) {
       final name = raw['name'];
       final callId = raw['callId'];
@@ -140,10 +158,15 @@ final class PhoneTools {
       } else if (ok) {
         usedRows += count;
         usedBytes += size;
+        if (call is BuddyPhoneToolCallQueryData) {
+          if (QueryLink.fromJson(_linkOf(data)) case final link?) {
+            links.add(link);
+          }
+        }
       }
       results.add(result);
     }
-    return (results: results, rows: usedRows, bytes: usedBytes);
+    return (results: results, rows: usedRows, bytes: usedBytes, links: links);
   }
 
   static const _known = {
@@ -181,12 +204,34 @@ final class PhoneTools {
       case BuddyPhoneToolCallReadMemory(:final args):
         final items = MemorySlice.read(await _reads.memory(), args.topic);
         return (_json(BuddyReadMemoryData(items: items)), items.length);
-      case BuddyPhoneToolCallQueryData():
-      // The QueryEngine is A68's.
+      case BuddyPhoneToolCallQueryData(:final args):
+        return await _query(args, today);
       case BuddyPhoneToolCallUnrecognized():
         return (null, 0);
     }
   }
+
+  /// A `queryData` answer (A68): aggregates only, one disclosed row.
+  Future<(Map<String, Object?>?, int)> _query(
+    BuddyQueryPlan args,
+    LocalDate today,
+  ) async {
+    final queries = _queries;
+    final plan = QueryPlanCodec.plan(args);
+    if (queries == null || plan == null) return (null, 0);
+    final answer = await queries.answer(plan, today);
+    if (answer == null) return (null, 0);
+    return (_json(QueryPlanCodec.result(answer)), 1);
+  }
+
+  /// The link of a `queryData` result's [data], in the engine's JSON form.
+  static Map<String, Object?>? _linkOf(Map<String, Object?>? data) =>
+      switch (data?['link']) {
+        final Map<String, Object?> link => {
+          for (final MapEntry(:key, :value) in link.entries) key: ?value,
+        },
+        _ => null,
+      };
 
   /// [range] clamped to at most [days] days ending no later than [today];
   /// `null` when it can't be read.
@@ -385,8 +430,3 @@ final class PhoneTools {
   @override
   String toString() => 'PhoneTools';
 }
-
-/// The app's phone tools.
-@Riverpod(keepAlive: true)
-PhoneTools phoneTools(Ref ref) =>
-    PhoneTools(ref.watch(buddyPhoneReadsProvider));

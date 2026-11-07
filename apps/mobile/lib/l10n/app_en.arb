@@ -636,6 +636,62 @@
   "@buddyStepCheckingFit": {
     "description": "Live step while Buddy checks what fits the day (AI-170)."
   },
+  "weeklyReviewTitle": "Buddy's review",
+  "@weeklyReviewTitle": {
+    "description": "Title of Buddy's weekly review on top of the weekly summary (AI-130)."
+  },
+  "weeklyReviewWriting": "Buddy is writing your review…",
+  "@weeklyReviewWriting": {
+    "description": "While Buddy writes the weekly review; the summary below is already shown."
+  },
+  "weeklyReviewFailed": "Buddy couldn't write this week's review.",
+  "@weeklyReviewFailed": {
+    "description": "The weekly review couldn't be written (offline, unavailable, limit); with Try again."
+  },
+  "buddySuggestionTitle": "Ideas that fit",
+  "@buddySuggestionTitle": {
+    "description": "Title of Buddy's food suggestions; a tap on one makes a food card to confirm (AI-120)."
+  },
+  "buddySuggestionFacts": "{kcal} kcal · {protein} g protein",
+  "@buddySuggestionFacts": {
+    "description": "A suggestion's numbers, computed by the app (AI-175).",
+    "placeholders": {
+      "kcal": {"type": "int", "format": "decimalPattern"},
+      "protein": {"type": "int", "format": "decimalPattern"}
+    }
+  },
+  "buddySuggestionNoneFit": "None of these fit what's left today.",
+  "@buddySuggestionNoneFit": {
+    "description": "Shown when every option Buddy suggested would go over today's target (AI-120)."
+  },
+  "buddySuggestionPick": "Make a card",
+  "@buddySuggestionPick": {
+    "description": "Screen-reader label of a suggestion's add icon: a tap makes a food card (AI-121)."
+  },
+  "buddySuggestionPicked": "Card added",
+  "@buddySuggestionPicked": {
+    "description": "Screen-reader label of a suggestion already turned into a card."
+  },
+  "buddyLinkDiary": "Open diary",
+  "@buddyLinkDiary": {
+    "description": "Chip under a Buddy answer that opens the diary day it is about (AI-112)."
+  },
+  "buddyLinkProgress": "Open Progress",
+  "@buddyLinkProgress": {
+    "description": "Chip under a Buddy answer that opens the Progress charts (AI-112)."
+  },
+  "buddyLinkWeightGraph": "Open weight graph",
+  "@buddyLinkWeightGraph": {
+    "description": "Chip under a Buddy answer that opens the weight graph (AI-112)."
+  },
+  "buddyLinkExercise": "Open exercise",
+  "@buddyLinkExercise": {
+    "description": "Chip under a Buddy answer that opens the exercise's page (AI-112)."
+  },
+  "buddyLinkWorkout": "Open workout",
+  "@buddyLinkWorkout": {
+    "description": "Chip under a Buddy answer that opens the logged workout it is about (AI-112)."
+  },
   "buddyStepWritingReply": "Writing…",
   "@buddyStepWritingReply": {
     "description": "Live step while Buddy writes its reply (AI-170)."

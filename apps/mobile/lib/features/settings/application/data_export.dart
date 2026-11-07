@@ -66,6 +66,7 @@ class DataExportController extends _$DataExportController {
           settingNames: [
             ...AppSettings.all.map((key) => key.name),
             ...AppSettings.fastingKeyNames,
+            ...AppSettings.weeklyReviewKeyNames,
           ],
           isCancelled: () => attempt.cancelled,
         );
