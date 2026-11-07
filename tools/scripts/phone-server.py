@@ -370,8 +370,18 @@ def identity_compose_args(state):
     return ['-f', str(overlay)]
 
 
-def buddy_overlay(state, agent=True):
+# B27 (TD-129): the Buddy provider and the key file name in the read-only /buddy mount; only the active key is copied and checked.
+BUDDY_KEYS = {'openai': 'openai-api-key', 'anthropic': 'anthropic-api-key'}
+BUDDY_KEY_LABELS = {'openai': 'OpenAI', 'anthropic': 'Anthropic'}
+
+
+def buddy_overlay(state, agent=True, provider='openai', max_input=None):
     environment = {'Buddy__Enabled': 'true', 'Buddy__ApiKeyFile': '/buddy/openai-api-key'}
+    if provider == 'anthropic':
+        environment.update({'Buddy__Provider': 'anthropic', 'Buddy__AnthropicApiKeyFile': '/buddy/anthropic-api-key'})
+    if max_input is not None:
+        # B27: an owner-approved turn input budget (TD-124 default 64k); a Claude send is ~20k input tokens, mostly cached.
+        environment['Buddy__Agent__MaxInputTokens'] = str(max_input)
     if agent:
         # B25: the agent's continuation seal key (32 random bytes, base64) and the dev trace view (AI-172) on the owner's server.
         environment.update({'Buddy__Agent__SealKeyFile': '/buddy/agent-seal-key', 'Buddy__Agent__TraceEnabled': 'true'})
@@ -395,36 +405,60 @@ def buddy_compose_args(state):
     if not overlay.exists():
         return []
     current = read_json(overlay)
+    provider, max_input = overlay_provider(current), overlay_max_input(current)
     if current == buddy_overlay(state, agent=False):
         # A B08-era overlay: add the agent's seal key and settings in place (B25), so `up` keeps working.
         safe_dir(state / 'buddy')
         ensure_seal_key(state)
         json_write(overlay, buddy_overlay(state))
         current = read_json(overlay)
-    if current != buddy_overlay(state):
+    if current != buddy_overlay(state, provider=provider, max_input=max_input):
         raise Failure('Invalid API-only Buddy overlay')
     safe_dir(state / 'buddy')
-    private(state / 'buddy' / 'openai-api-key')
+    private(state / 'buddy' / BUDDY_KEYS[provider])
     private(state / 'buddy' / 'agent-seal-key')
     return ['-f', str(overlay)]
 
 
-def configure_buddy(state, key_path):
+def overlay_provider(current):
+    try:
+        provider = current['services']['api']['environment'].get('Buddy__Provider', 'openai')
+    except (KeyError, TypeError, AttributeError):
+        return 'openai'
+    return provider if provider in BUDDY_KEYS else 'openai'
+
+
+def overlay_max_input(current):
+    try:
+        value = current['services']['api']['environment'].get('Buddy__Agent__MaxInputTokens')
+    except (KeyError, TypeError, AttributeError):
+        return None
+    return int(value) if isinstance(value, str) and value.isdigit() and 1000 <= int(value) <= 400000 else None
+
+
+def configure_buddy(state, key_path, provider='openai', max_input=None):
+    if provider not in BUDDY_KEYS:
+        raise Failure('Unknown Buddy provider')
+    if max_input is not None and not 1000 <= max_input <= 400000:
+        raise Failure('--max-input-tokens must be 1000-400000')
+    label = BUDDY_KEY_LABELS[provider]
     init(state)
     if not (state / 'identity-compose.json').exists():
         raise Failure('Configure private identity before Buddy')
     identity_compose_args(state)
     key_path = key_path.expanduser().absolute()
+    if not key_path.exists() and not key_path.is_symlink():
+        raise Failure(f'{label} key file not found: create {key_path} (one line, mode 600) first')
     private(key_path)
     key = key_path.read_bytes().strip()
     if not re.fullmatch(rb'[A-Za-z0-9_-]{20,512}', key):
-        raise Failure('Invalid OpenAI credential file')
+        raise Failure(f'Invalid {label} credential file')
     safe_dir(state / 'buddy')
-    atomic(state / 'buddy' / 'openai-api-key', key)
+    atomic(state / 'buddy' / BUDDY_KEYS[provider], key)
     ensure_seal_key(state)
-    json_write(state / 'buddy-compose.json', buddy_overlay(state))
+    json_write(state / 'buddy-compose.json', buddy_overlay(state, provider=provider, max_input=max_input))
     buddy_compose_args(state)
-    print('Private API-only Buddy configuration prepared; takes effect on next main-image deployment')
+    print(f'Private API-only Buddy configuration prepared ({label}); takes effect on next main-image deployment')
 
 
 def recovery_compose_args(state):
@@ -1028,6 +1062,9 @@ def main():
     parser.add_argument('--subject', default=None)
     parser.add_argument('--version', default='')
     parser.add_argument('--openai-key-file', type=Path, default=Path.home() / '.config/fitness-buddy/openai-api-key')
+    parser.add_argument('--provider', choices=sorted(BUDDY_KEYS), default='openai', help='configure-buddy: the Buddy provider (B27)')
+    parser.add_argument('--anthropic-key-file', type=Path, default=Path.home() / '.config/fitness-buddy/anthropic-api-key')
+    parser.add_argument('--max-input-tokens', type=int, default=None, help='configure-buddy: turn input budget (default 64000, TD-124)')
     parser.add_argument('--catalog-dir', type=Path, default=Path('build/catalog'))
     args = parser.parse_args()
     os.umask(0o077)
@@ -1039,7 +1076,7 @@ def main():
             private(lock)
         with lock.open('a') as handle:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            {'configure-buddy': lambda target: configure_buddy(target, args.openai_key_file), 'catalog-import': lambda target: catalog_import(target, args.catalog_dir), 'configure-identity': lambda target: configure_identity(target, args.google_clients), 'prepare': prepare, 'policy': policy, 'confirm-policy': confirm_policy, 'up': up,
+            {'configure-buddy': lambda target: configure_buddy(target, args.anthropic_key_file if args.provider == 'anthropic' else args.openai_key_file, args.provider, args.max_input_tokens), 'catalog-import': lambda target: catalog_import(target, args.catalog_dir), 'configure-identity': lambda target: configure_identity(target, args.google_clients), 'prepare': prepare, 'policy': policy, 'confirm-policy': confirm_policy, 'up': up,
              'accept-unencrypted-storage': accept_unencrypted_storage,
              'stop': stop, 'backup': backup, 'restore-check': restore_check,
              'install-timer': install_timer, 'status': status,

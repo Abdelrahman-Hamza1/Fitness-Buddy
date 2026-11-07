@@ -66,6 +66,39 @@ class PhoneServerTests(unittest.TestCase):
         self.assertTrue(seal.exists())
         self.assertEqual(phone.buddy_overlay(self.state), phone.read_json(self.state / 'buddy-compose.json'))
 
+    def test_buddy_anthropic_provider_copies_only_its_private_key_and_switches_back(self):
+        # B27: --provider anthropic copies the Anthropic key (never printed or in the overlay) and checks only the active key.
+        self.configure_identity()
+        missing = self.state / 'absent-anthropic'
+        with self.assertRaisesRegex(phone.Failure, 'Anthropic key file not found'):
+            phone.configure_buddy(self.state, missing, 'anthropic')
+        source = self.state / 'source-anthropic'
+        phone.atomic(source, b'synthetic-claude-' + b'c' * 40)
+        phone.configure_buddy(self.state, source, 'anthropic')
+        overlay = phone.read_json(self.state / 'buddy-compose.json')
+        environment = overlay['services']['api']['environment']
+        self.assertEqual('anthropic', environment['Buddy__Provider'])
+        self.assertEqual('/buddy/anthropic-api-key', environment['Buddy__AnthropicApiKeyFile'])
+        self.assertNotIn('synthetic-claude', json.dumps(overlay))
+        self.assertEqual(0o600, stat.S_IMODE((self.state / 'buddy/anthropic-api-key').stat().st_mode))
+        self.assertFalse((self.state / 'buddy/openai-api-key').exists())
+        self.assertIn(str(self.state / 'buddy-compose.json'), phone.buddy_compose_args(self.state))
+        (self.state / 'buddy/anthropic-api-key').chmod(0o644)
+        with self.assertRaises(phone.Failure):
+            phone.buddy_compose_args(self.state)
+        (self.state / 'buddy/anthropic-api-key').chmod(0o600)
+        with self.assertRaises(phone.Failure):
+            phone.configure_buddy(self.state, source, 'anthropic', 400001)
+        phone.configure_buddy(self.state, source, 'anthropic', 200000)
+        environment = phone.read_json(self.state / 'buddy-compose.json')['services']['api']['environment']
+        self.assertEqual('200000', environment['Buddy__Agent__MaxInputTokens'])
+        self.assertIn(str(self.state / 'buddy-compose.json'), phone.buddy_compose_args(self.state))
+        openai = self.state / 'source-openai'
+        phone.atomic(openai, b'synthetic' + b'd' * 40)
+        phone.configure_buddy(self.state, openai)
+        self.assertEqual(phone.buddy_overlay(self.state), phone.read_json(self.state / 'buddy-compose.json'))
+        self.assertNotIn('Buddy__Provider', json.dumps(phone.buddy_overlay(self.state)))
+
     def test_catalog_import_uses_read_only_mount_and_always_removes_overlay(self):
         release = self.state / 'public-release'
         release.mkdir()

@@ -20,9 +20,14 @@ public sealed class BuddyModule : IModule
     {
         services.AddValidation();
         services.AddOptions<BuddyOptions>().Bind(configuration.GetSection("Buddy"))
-            .Validate(o => !o.Enabled || Path.IsPathFullyQualified(o.ApiKeyFile), "Invalid Buddy configuration.").ValidateOnStart();
-        services.AddHttpClient("buddy-openai", client => client.Timeout = Timeout.InfiniteTimeSpan)
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+            .Validate(o => o.Valid(), "Invalid Buddy configuration.").ValidateOnStart();
+        foreach (var name in new[] { "buddy-openai", "buddy-anthropic" })
+        {
+            services.AddHttpClient(name, client => client.Timeout = Timeout.InfiniteTimeSpan)
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+        }
+        // TD-129: the configured provider (openai default, anthropic) shapes every request; one IChatClient for it.
+        services.AddSingleton(s => BuddyProvider.From(s.GetRequiredService<Microsoft.Extensions.Options.IOptions<BuddyOptions>>().Value));
         services.AddSingleton(BuddyClientRegistration.Create);
         services.AddScoped<IOutboxHandler, BuddyErasure>(); services.AddScoped<IJobHandler, BuddyCleanup>();
         // B25: the agent turn routes (06 §2–§3). The seal key is read lazily; without it the routes answer 503.

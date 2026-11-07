@@ -46,6 +46,11 @@ internal static class LabelRules
 {
     private static readonly BuddyLabelValue None = new(null, BuddyLabelConfidence.Low);
 
+    /// <summary>The transcription is whole: every nested object and array element present (the parser checks the rest).</summary>
+    public static bool Complete(LabelReading r) => r.Name is not null && r.Nutrients is { } n
+        && new object?[] { n.Kcal, n.Kj, n.ProteinG, n.CarbsG, n.FatG, n.FiberG, n.SugarG, n.SaturatedFatG, n.TransFatG, n.Sodium, n.Salt, n.Cholesterol }.All(v => v is not null)
+        && (r.Others ?? []).All(o => o is { Name: not null, Unit: not null });
+
     public static BuddyLabelExtraction Extract(LabelReading r)
     {
         if (!r.Found)

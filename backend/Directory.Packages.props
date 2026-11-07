@@ -28,6 +28,8 @@
   <ItemGroup Label="AI">
     <!-- TD-035: standard IChatClient and official Responses SDK; MIT, pinned outside the 7-day cooldown. -->
     <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="10.10.1" />
+    <!-- TD-129: official Claude SDK (Apache-2.0) with its IChatClient adapter; 13.3.0 is the newest outside the 7-day cooldown. -->
+    <PackageVersion Include="Anthropic" Version="13.3.0" />
     <PackageVersion Include="OpenAI" Version="2.14.0" />
   </ItemGroup>
 

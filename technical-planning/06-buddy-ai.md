@@ -17,7 +17,7 @@ _How Buddy meets `10-ai-assistant.md` (§1–§15) as an **agent**: a tool loop 
 sequenceDiagram
   participant P as Phone (turn runner)
   participant S as API · Buddy agent
-  participant M as Model (gpt-6-luna)
+  participant M as Model (gpt-6-luna or claude-sonnet-5-5)
   P->>S: POST /v1/buddy/turns {turnId, message, history, compact?, personal, profile, snapshot}
   S->>M: step 1 (system prompt agent-v1 + context + tools)
   M-->>S: calls propose_food_log(mentions)
@@ -216,11 +216,12 @@ Explicit memory items and learned habits live on the phone; a ≤ 30-item memory
 
 ## 9. Provider, privacy, cost
 
-- **Model:** OpenAI `gpt-6-luna` through the Responses API (`store:false`, low effort) via `IChatClient`; routing task `agent` (plus `label`). Other providers need the owner (paid vendor gate). No retries or fallback (TD-067).
+- **Model (TD-129):** one setting, `Buddy:Provider`. **`openai`** (default): `gpt-6-luna` through the Responses API (`store:false`, low effort). **`anthropic`**: Claude Sonnet 5.5 (`claude-sonnet-5-5`) through the official SDK's `IChatClient` (Beta Messages): `thinking: between_tools` (no up-front thinking; thinking blocks are never sent back, so history rebuilt from the continuation is always valid), `output_config.effort` medium (`Buddy:AnthropicEffort`; label low), no sampling parameters, `tool_choice` auto or none only (Sonnet 5.5 rejects forced tool use), a tool-less rewrite still declares the tools with `tool_choice: none`; a `refusal` stop takes the existing failure path. Both via `IChatClient` and a per-provider strategy (`Infrastructure/BuddyProvider.cs`); routing task `agent` (plus `label`: OpenAI strict JSON schema; Claude gets the schema in its cached system prompt and answers JSON text, because the label schema exceeds Claude's 16-union structured-output limit). No SDK retries; Claude's server-side refusal fallback is built but off (`Buddy:AnthropicServerFallback`, owner call, TD-067). Other providers need the owner (paid vendor gate).
+- **Data handling:** OpenAI with `store:false`; Anthropic doesn't train on API data without permission and deletes API inputs and outputs within 30 days by default (longer only for usage-policy flags or legal holds). Neither is zero-retention.
 - **Privacy (AC-040–042):** no identity, handles not IDs, size-capped phone results, photos not stored, no message or tool content in logs or traces (OpenTelemetry content capture off; the dev `trace` event goes only to the phone).
 - **Logs:** turn ID hash, step count, tool names, outcome codes, latency, tokens, estimated cost.
-- **Prompt caching:** the system prompt and tool declarations first and static; profile and history next; the message and tool results last.
-- **Limits** (TD-124, TD-128): one turn budget across rounds (§2); Usage counts every send and one message per turn; laptop defaults 100 messages / 400 sends a day (guest 30/120). Expected cost: a simple log ≈ 1–2 sends, a suggestion or data question ≈ 3–5; with caching ≈ $0.001–0.004 per turn.
+- **Prompt caching:** the system prompt and tool declarations first and static; profile and history next; the message and tool results last. OpenAI caches automatically; Claude gets two explicit breakpoints: at the end of the system prompt (tools render first, so it covers tools + `agent-v1` + the shared exercise library) and on the last message (the next step of the turn reads the prefix). One Claude send is ≈ 20k input tokens (OpenAI ≈ 6k), mostly cache reads; with TD-124's 64k turn input budget that is ≈ 3 sends, so a higher `Buddy:Agent:MaxInputTokens` for Claude waits for the owner (B27 D12). Claude prices (2026-11-07): $2/M input, $2.50/M cache write, $0.10/M cache read, $10/M output.
+- **Limits** (TD-124, TD-128): one turn budget across rounds (§2); Usage counts every send and one message per turn; laptop defaults 100 messages / 400 sends a day (guest 30/120). Expected cost: a simple log ≈ 1–2 sends, a suggestion or data question ≈ 3–5; with caching ≈ $0.001–0.004 per turn on OpenAI; on Claude Sonnet 5.5 a simple log ≈ $0.008 with a warm cache, ≈ $0.055 cold (cache expired after 5 min), a 3-send suggestion ≈ $0.045 (B27 live).
 
 ## 10. Latency
 

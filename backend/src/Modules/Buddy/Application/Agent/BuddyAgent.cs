@@ -149,7 +149,9 @@ internal sealed partial class BuddyAgent(IAgentLedger ledger, IAgentModel model,
     internal async Task<SendGate> ReserveAsync(TurnRun run, IReadOnlyList<AgentMessage> transcript, IReadOnlyList<AgentToolSpec> specs, CancellationToken cancellationToken)
     {
         static long Bytes(string? s) => s is null ? 0 : System.Text.Encoding.UTF8.GetByteCount(s);
-        var bytes = Bytes(system) + specs.Sum(t => Bytes(t.Name) + Bytes(t.Description) + Bytes(t.Schema.GetRawText()))
+        // The declarations the send will really carry (a Claude rewrite keeps the full tool list), so the bound covers them.
+        var declared = model.Declared(specs, transcript);
+        var bytes = Bytes(system) + declared.Sum(t => Bytes(t.Name) + Bytes(t.Description) + Bytes(t.Schema.GetRawText()))
             + transcript.Sum(m => Bytes(m.Text) + m.Calls.Sum(c => Bytes(c.Name) + Bytes(c.ArgumentsJson)) + m.Results.Sum(r => Bytes(r.ResultJson)));
         var bound = bytes / 2 + 64 + (run.Round == 0 && transcript == run.Workspace.Transcript && run.Image is not null && !run.Workspace.WeeklyReview ? 3000 : 0);
         var gate = await ledger.ReserveSendAsync(run.TurnId, run.Round, run.Attempt, run.Guest, options.Value, bound, cancellationToken);
@@ -164,8 +166,9 @@ internal sealed partial class BuddyAgent(IAgentLedger ledger, IAgentModel model,
         var limits = options.Value;
         var budget = await ledger.ReadBudgetAsync(run.TurnId, cancellationToken) ?? run.Budget;
         var maxOutput = (int)Math.Clamp(limits.MaxOutputTokens - budget.OutputTokens, 1, limits.StepOutputTokens);
-        var result = await model.SendAsync(new(system, transcript ?? run.Workspace.Transcript, transcript is null && run.Round == 0 && !run.Workspace.WeeklyReview ? run.Image : null, specs,
-            maxOutput, TimeSpan.FromSeconds(limits.StepTimeoutSeconds)), cancellationToken);
+        var messages = transcript ?? run.Workspace.Transcript;
+        var result = await model.SendAsync(new(system, messages, transcript is null && run.Round == 0 && !run.Workspace.WeeklyReview ? run.Image : null,
+            model.Declared(specs, messages), maxOutput, TimeSpan.FromSeconds(limits.StepTimeoutSeconds), AllowToolCalls: specs.Count > 0), cancellationToken);
         using var persist = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         var reserved = reservedInput; reservedInput = 0;
         await ledger.RecordSendAsync(run.TurnId, reserved, result.Usage, result.EstimatedUsd, persist.Token);

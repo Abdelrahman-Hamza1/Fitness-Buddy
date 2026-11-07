@@ -18,7 +18,7 @@ namespace FitnessBuddy.Modules.Buddy.Infrastructure;
 /// session and recovery generation; no lock spans provider I/O.
 /// </summary>
 internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser user, IIdentityAccess identity, RecoveryBarrier recovery,
-    TimeProvider clock, IIdGenerator ids, IUsageRecorder usage, IOptions<BuddyAgentOptions> options) : IAgentLedger
+    TimeProvider clock, IIdGenerator ids, IUsageRecorder usage, IOptions<BuddyAgentOptions> options, BuddyProvider provider) : IAgentLedger
 {
     private static readonly TimeSpan Acknowledged = TimeSpan.FromMinutes(10);
     private Guid? generation;
@@ -37,7 +37,7 @@ internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser 
         if (budget is null)
         {
             var limits = options.Value;
-            var reservation = await usage.ReserveMessageAsync(session, OpenAIClientFactory.Model,
+            var reservation = await usage.ReserveMessageAsync(session, provider.Model,
                 guest ? limits.GuestDailyMessages : limits.RegisteredDailyMessages, DateOnly.FromDateTime(now.UtcDateTime), cancellationToken);
             if (!reservation.Reserved) { return new(RoundGateStatus.Limited, Limit: reservation.Ceiling); }
             await using (var insert = session.Command("INSERT INTO buddy.turns(user_id,turn_id,started_at,expires_at,message_charged) VALUES($1,$2,$3,$4,true)"))
@@ -127,7 +127,7 @@ internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser 
         // The input budget is checked with this send's projected input, before spending it.
         if (now >= budget.StartedAt.AddSeconds(limits.DeadlineSeconds) || budget.Sends >= limits.MaxSends
             || budget.InputTokens + budget.ReservedInput + projectedInput > limits.MaxInputTokens || budget.OutputTokens >= limits.MaxOutputTokens) { return SendGate.Limit; }
-        var reservation = await usage.ReserveAsync(session, OpenAIClientFactory.Model, guest ? limits.GuestDailySends : limits.RegisteredDailySends,
+        var reservation = await usage.ReserveAsync(session, provider.Model, guest ? limits.GuestDailySends : limits.RegisteredDailySends,
             DateOnly.FromDateTime(now.UtcDateTime), newMessage: false, cancellationToken);
         if (!reservation.Reserved) { return SendGate.Quota; }
         await using var count = session.Command("UPDATE buddy.turns SET sends=sends+1,reserved_input=reserved_input+$3 WHERE user_id=$1 AND turn_id=$2");
@@ -153,7 +153,7 @@ internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser 
         }
         if (tokens is not null && estimatedUsd is { } cost)
         {
-            await usage.RecordAsync(session, new(OpenAIClientFactory.Model, tokens.Input, tokens.CachedInput, tokens.Output, cost,
+            await usage.RecordAsync(session, new(provider.Model, tokens.Input, tokens.CachedInput, tokens.Output, cost,
                 DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime)), cancellationToken);
         }
         await session.CommitAsync(cancellationToken);
@@ -185,9 +185,9 @@ internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser 
         if (!await OpenAsync(session, cancellationToken)) { return new(RoundGateStatus.Unauthorized); }
         var limits = options.Value; var day = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
         // Both or neither: a denied send rolls back the message reservation (the transaction isn't committed).
-        var message = await usage.ReserveMessageAsync(session, OpenAIClientFactory.Model, guest ? limits.GuestDailyMessages : limits.RegisteredDailyMessages, day, cancellationToken);
+        var message = await usage.ReserveMessageAsync(session, provider.Model, guest ? limits.GuestDailyMessages : limits.RegisteredDailyMessages, day, cancellationToken);
         if (!message.Reserved) { return new(RoundGateStatus.Limited, Limit: message.Ceiling); }
-        var send = await usage.ReserveAsync(session, OpenAIClientFactory.Model, guest ? limits.GuestDailySends : limits.RegisteredDailySends, day, newMessage: false, cancellationToken);
+        var send = await usage.ReserveAsync(session, provider.Model, guest ? limits.GuestDailySends : limits.RegisteredDailySends, day, newMessage: false, cancellationToken);
         if (!send.Reserved) { return new(RoundGateStatus.Limited, Limit: message.Ceiling); }
         // The same recurring cleanup as a turn, so a label-only account's usage rows still expire (Codex B26 S-minor).
         await new QueueWriter(session, clock, ids).ScheduleUserAsync("buddy.cleanup:" + user.UserId!.Value, "*/5 * * * *", "buddy.cleanup", clock.GetUtcNow().AddMinutes(5), cancellationToken);
@@ -200,7 +200,7 @@ internal sealed class PostgresAgentLedger(NpgsqlDataSource source, ICurrentUser 
         if (tokens is null || estimatedUsd is not { } cost) { return; }
         await using var session = new DatabaseSession();
         if (!await OpenAsync(session, cancellationToken)) { return; }
-        await usage.RecordAsync(session, new(OpenAIClientFactory.Model, tokens.Input, tokens.CachedInput, tokens.Output, cost,
+        await usage.RecordAsync(session, new(provider.Model, tokens.Input, tokens.CachedInput, tokens.Output, cost,
             DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime)), cancellationToken);
         await session.CommitAsync(cancellationToken);
     }

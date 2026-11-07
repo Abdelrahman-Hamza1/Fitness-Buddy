@@ -11,14 +11,29 @@ internal static class BuddyClientRegistration
     {
         var options = services.GetRequiredService<IOptions<BuddyOptions>>().Value;
         if (!options.Enabled) { return new DisabledChatClient(); }
-        var file = new FileInfo(options.ApiKeyFile);
+        // Only the active provider's key is read (TD-129); both files get the same private-file checks.
+        var key = ReadKey(options.KeyFile);
+        var http = services.GetRequiredService<IHttpClientFactory>();
+        if (options.Provider == BuddyOptions.Anthropic)
+        {
+            // The SDK's own timeout sits behind the step timeout, so a slow step ends as Timeout, not as a transport error.
+            var step = services.GetRequiredService<IOptions<BuddyAgentOptions>>().Value.StepTimeoutSeconds;
+            return AnthropicClientFactory.Create(key, http.CreateClient("buddy-anthropic"), TimeSpan.FromSeconds(step + 5));
+        }
+        return OpenAIClientFactory.Create(key, http.CreateClient("buddy-openai"));
+    }
+
+    private static string ReadKey(string path)
+    {
+        var file = new FileInfo(path);
         if (!file.Exists || file.LinkTarget is not null || file.Length is < 10 or > 512
             || !OperatingSystem.IsWindows() && (File.GetUnixFileMode(file.FullName) & (UnixFileMode)63) != 0)
         { throw new InvalidOperationException("Buddy API credential is missing or not private."); }
         var key = File.ReadAllText(file.FullName).Trim();
         if (key.Length is < 10 or > 512 || key.Any(char.IsWhiteSpace)) { throw new InvalidOperationException("Invalid Buddy credential file."); }
-        return OpenAIClientFactory.Create(key, services.GetRequiredService<IHttpClientFactory>().CreateClient("buddy-openai"));
+        return key;
     }
+
     private sealed class DisabledChatClient : IChatClient
     {
         public void Dispose() { }

@@ -84,12 +84,18 @@ internal interface ITurnEventSink
 
 internal enum AgentModelStatus { Success, Refused, Incomplete, Timeout, Cancelled, Unavailable }
 internal sealed record AgentToolSpec(string Name, string Description, System.Text.Json.JsonElement Schema);
+/// <summary>One model step. <see cref="Tools"/> are the declarations sent (<see cref="IAgentModel.Declared"/>); the model may call one only when <see cref="AllowToolCalls"/>.</summary>
 internal sealed record AgentModelRequest(string System, IReadOnlyList<AgentMessage> Transcript, string? ImageBase64,
-    IReadOnlyList<AgentToolSpec> Tools, int MaxOutputTokens, TimeSpan Timeout);
+    IReadOnlyList<AgentToolSpec> Tools, int MaxOutputTokens, TimeSpan Timeout, bool AllowToolCalls = true);
 internal sealed record AgentModelResult(AgentModelStatus Status, string Text, AgentToolCall[] Calls, TokenUsage? Usage, decimal? EstimatedUsd, double ElapsedMs);
 
 /// <summary>One model step over declared tools only (no automatic invocation, TD-124).</summary>
 internal interface IAgentModel
 {
     Task<AgentModelResult> SendAsync(AgentModelRequest request, CancellationToken cancellationToken);
+    /// <summary>
+    /// The tool declarations a send really carries for the step's callable <paramref name="tools"/> (B27: Claude needs the
+    /// definitions whenever the history holds tool blocks). The budget reservation and the send both use this list.
+    /// </summary>
+    IReadOnlyList<AgentToolSpec> Declared(IReadOnlyList<AgentToolSpec> tools, IReadOnlyList<AgentMessage> transcript) => tools;
 }
