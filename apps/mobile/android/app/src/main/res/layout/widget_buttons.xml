@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A71 D2 (UX-082): the small 2 x 1 buttons widget: Speak and Ask. RemoteViews: only views the
-     launcher can inflate; colours and words are resources, the numbers come from
-     the app's snapshot (HomeWidgets.kt). -->
+<!-- A71 D2 (UX-082), A73 D1: the buttons widget at its default 2 x 1 (variant BUTTONS_REGULAR,
+     110 x 40 dp): Speak and Ask icons. High: 6 + button >= 28 + 6 = 40. Wide: 6 + 2 buttons + 6
+     between + 6.
+     RemoteViews: only views the launcher can inflate; colours and words are
+     resources, the numbers come from the app's snapshot (HomeWidgets.kt). The same
+     view ids in every size, so one render path fills them (A73 D5). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/background"
     android:layout_width="match_parent"
@@ -9,38 +12,39 @@
     android:background="@drawable/widget_background"
     android:clipToOutline="true"
     android:orientation="horizontal"
-    android:padding="8dp">
-        <LinearLayout
-            android:id="@+id/button_speak"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/widget_button_filled"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:contentDescription="@string/widget_speak">
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/widget_ic_speak"
-                android:tint="@color/widget_on_brand" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/button_ask"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/widget_button_tonal"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:contentDescription="@string/widget_ask"
-            android:layout_marginStart="8dp">
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/widget_ic_ask"
-                android:tint="@color/widget_on_tonal" />
-        </LinearLayout>
+    android:paddingHorizontal="6dp"
+    android:paddingVertical="6dp">
+    <LinearLayout
+        android:id="@+id/button_speak"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/widget_button_filled"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:contentDescription="@string/widget_speak">
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_ic_speak"
+            android:tint="@color/widget_on_brand" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/button_ask"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginStart="6dp"
+        android:background="@drawable/widget_button_tonal"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:contentDescription="@string/widget_ask">
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_ic_ask"
+            android:tint="@color/widget_on_tonal" />
+    </LinearLayout>
 </LinearLayout>

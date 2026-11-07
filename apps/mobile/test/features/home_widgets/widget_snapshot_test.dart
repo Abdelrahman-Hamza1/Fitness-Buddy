@@ -77,6 +77,8 @@ void main() {
     expect(data['d0.kcal'], '1,140');
     expect(data['d0.ring'], 430);
     expect(data['d0.protein.text'], '92/$target');
+    // A73: the compact rows show only the eaten grams.
+    expect(data['d0.protein.eaten'], '92');
     // Only strings, ints and bools cross the channel.
     expect(
       data.values.every((v) => v is String || v is int || v is bool),

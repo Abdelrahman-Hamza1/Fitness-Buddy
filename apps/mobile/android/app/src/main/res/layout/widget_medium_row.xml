@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A73 D1 (UX-082): the medium widget one row high (variant MEDIUM_ROW, 280 x 72 dp, a 4 x 1):
+     the calories ring and the four macros in one row. With no numbers (hidden or no day) the row
+     holds Speak, Ask and Weigh instead (UX-085 "buttons only"); signed out, "Open Fitness Buddy".
+     High: 8 + ring 56 + 8 = 72. Wide: 10 + ring 56 + 10 + four macro columns + 3 x 6 + 10 = 280,
+     so each column is 44.5. Only the eaten grams (A73 review; the bar shows the target): worst
+     "~1,250" 11 sp ~34 <= 44.5 under its label (10 sp, "Protein" ~36). Ring: "~2,500" 13 sp
+     bold ~42 and "kcal eaten" 9 sp ~41 inside 56 x 0.8 = 44.8.
+     Widths: Roboto ~0.56 em per digit, "~" and "/", ~0.25 em for "," and "."; bold +5%.
+     RemoteViews: only views the launcher can inflate; colours and words are
+     resources, the numbers come from the app's snapshot (HomeWidgets.kt). The same
+     view ids in every size, so one render path fills them (A73 D5). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:clipToOutline="true"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="8dp">
+    <FrameLayout
+        android:id="@+id/widget_body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/numbers_block"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:layout_width="56dp"
+                android:layout_height="56dp">
+                <ProgressBar
+                    android:id="@+id/ring"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="false"
+                    android:max="1000"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/widget_ring" />
+                <ProgressBar
+                    android:id="@+id/ring_over"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="false"
+                    android:max="1000"
+                    android:progress="1000"
+                    android:progressDrawable="@drawable/widget_ring_over"
+                    android:visibility="gone" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/ring_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textColor="@color/widget_on_surface"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/ring_caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textColor="@color/widget_on_surface_variant"
+                        android:textSize="9sp" />
+                </LinearLayout>
+            </FrameLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="@string/widget_protein"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface_variant"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/protein_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface"
+                        android:textSize="11sp" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="3dp">
+                        <ProgressBar
+                            android:id="@+id/protein_bar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progressDrawable="@drawable/widget_bar_protein" />
+                        <ProgressBar
+                            android:id="@+id/protein_over"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progress="1000"
+                            android:progressDrawable="@drawable/widget_bar_over"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="@string/widget_carbs"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface_variant"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/carbs_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface"
+                        android:textSize="11sp" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="3dp">
+                        <ProgressBar
+                            android:id="@+id/carbs_bar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progressDrawable="@drawable/widget_bar_carbs" />
+                        <ProgressBar
+                            android:id="@+id/carbs_over"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progress="1000"
+                            android:progressDrawable="@drawable/widget_bar_over"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="@string/widget_fat"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface_variant"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/fat_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface"
+                        android:textSize="11sp" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="3dp">
+                        <ProgressBar
+                            android:id="@+id/fat_bar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progressDrawable="@drawable/widget_bar_fat" />
+                        <ProgressBar
+                            android:id="@+id/fat_over"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progress="1000"
+                            android:progressDrawable="@drawable/widget_bar_over"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="@string/widget_fiber"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface_variant"
+                        android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/fiber_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAlignment="viewStart"
+                        android:textColor="@color/widget_on_surface"
+                        android:textSize="11sp" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="3dp">
+                        <ProgressBar
+                            android:id="@+id/fiber_bar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progressDrawable="@drawable/widget_bar_fiber" />
+                        <ProgressBar
+                            android:id="@+id/fiber_over"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progress="1000"
+                            android:progressDrawable="@drawable/widget_bar_over"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/plain_block"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_mark" />
+            <TextView
+                android:id="@+id/plain_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@string/widget_open_app"
+                android:textColor="@color/widget_on_surface"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:visibility="gone">
+        <LinearLayout
+            android:id="@+id/button_speak"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/widget_button_filled"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_ic_speak"
+                android:tint="@color/widget_on_brand" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="@string/widget_speak"
+                android:textColor="@color/widget_on_brand"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/button_ask"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/widget_button_tonal"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_ic_ask"
+                android:tint="@color/widget_on_tonal" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="@string/widget_ask"
+                android:textColor="@color/widget_on_tonal"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/button_weigh"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/widget_button_tonal"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_ic_weigh"
+                android:tint="@color/widget_on_tonal" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="@string/widget_weigh"
+                android:textColor="@color/widget_on_tonal"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

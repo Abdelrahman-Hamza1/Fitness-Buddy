@@ -11,6 +11,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
+import android.os.Bundle
+import android.util.SizeF
 import android.view.View
 import android.widget.RemoteViews
 import io.flutter.plugin.common.BinaryMessenger
@@ -107,45 +109,79 @@ object HomeWidgets {
         }
     }
 
-    /** Draws [ids] of [kind] from the snapshot, then arms the midnight redraw. */
+    /**
+     * Draws [ids] of [kind] from the snapshot, sized to each widget (A73), then arms the midnight
+     * redraw. Ids that aren't this provider's are skipped (the broadcast's extras are untrusted).
+     */
     fun update(context: Context, manager: AppWidgetManager, ids: IntArray, kind: Kind) {
-        val views = render(context, kind, Snapshot.read(prefs(context)))
-        manager.updateAppWidget(ids, views)
+        val ours = manager.getAppWidgetIds(ComponentName(context, kind.provider)).toSet()
+        val placed = ids.filter { it in ours }.toIntArray()
+        if (placed.isNotEmpty()) {
+            val snapshot = Snapshot.read(prefs(context))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // Android 12+: every size's layout at once; the launcher picks per actual size
+                // (the rule WidgetSizing.choose copies) and needs no redraw on resize.
+                val sized = WidgetSizing.variants(kind.family).associate {
+                    SizeF(it.widthDp, it.heightDp) to render(context, it, snapshot)
+                }
+                manager.updateAppWidget(placed, RemoteViews(sized))
+            } else {
+                for (id in placed) {
+                    val variant = variantFor(kind, manager.getAppWidgetOptions(id))
+                    manager.updateAppWidget(id, render(context, variant, snapshot))
+                }
+            }
+        }
         armMidnight(context)
     }
 
-    private fun render(context: Context, kind: Kind, snapshot: Snapshot): RemoteViews {
-        val views = RemoteViews(context.packageName, kind.layout)
-        val today = open(context, "today")
-        when (kind) {
-            Kind.MEDIUM -> {
-                views.setOnClickPendingIntent(R.id.widget_body, today)
+    /**
+     * Android 8-11: the layout for the size in [options]. The smaller of the portrait and landscape
+     * sizes on each axis (min width, min height), so it never clips; at worst it's a size smaller
+     * than the portrait cell.
+     */
+    private fun variantFor(kind: Kind, options: Bundle?): WidgetVariant = WidgetSizing.choose(
+        kind.family,
+        (options?.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) ?: 0).toFloat(),
+        (options?.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT) ?: 0).toFloat(),
+    )
+
+    private fun layoutOf(variant: WidgetVariant): Int = when (variant) {
+        WidgetVariant.MEDIUM_ROW -> R.layout.widget_medium_row
+        WidgetVariant.MEDIUM_REGULAR -> R.layout.widget_medium
+        WidgetVariant.MEDIUM_LARGE -> R.layout.widget_medium_large
+        WidgetVariant.NUMBERS_ROW -> R.layout.widget_numbers_row
+        WidgetVariant.NUMBERS_ROW_LARGE -> R.layout.widget_numbers_row_large
+        WidgetVariant.NUMBERS_REGULAR -> R.layout.widget_numbers
+        WidgetVariant.NUMBERS_LARGE -> R.layout.widget_numbers_large
+        WidgetVariant.BUTTONS_REGULAR -> R.layout.widget_buttons
+        WidgetVariant.BUTTONS_LARGE -> R.layout.widget_buttons_large
+    }
+
+    /** One size's layout; every variant has the same view ids (A73 D5), but the row no eaten_of. */
+    private fun render(context: Context, variant: WidgetVariant, snapshot: Snapshot): RemoteViews {
+        val views = RemoteViews(context.packageName, layoutOf(variant))
+        val day = snapshot.today
+        val face = WidgetFace.of(variant, hasNumbers = day != null, signedOut = snapshot.signedOut)
+        when (variant.family) {
+            WidgetFamily.MEDIUM -> {
+                views.setOnClickPendingIntent(R.id.widget_body, open(context, "today"))
                 views.setOnClickPendingIntent(R.id.button_speak, open(context, "speak"))
                 views.setOnClickPendingIntent(R.id.button_ask, open(context, "ask"))
                 views.setOnClickPendingIntent(R.id.button_weigh, open(context, "weigh"))
-                val day = snapshot.today
-                if (day != null) {
-                    showNumbers(views, day, MACROS)
+                show(context, views, variant, face, day, MACROS)
+                if (day != null && variant != WidgetVariant.MEDIUM_ROW) {
                     views.setTextViewText(R.id.eaten_of, day.eatenOf)
                     views.setViewVisibility(R.id.eaten_of, visible(day.eatenOf.isNotEmpty()))
-                } else {
-                    // Hidden or a stale day: the prompt and the buttons; signed out: open the app.
-                    showPlain(views, context.getString(
-                        if (snapshot.signedOut) R.string.widget_open_app else R.string.widget_prompt,
-                    ))
                 }
-                views.setViewVisibility(R.id.buttons, visible(!snapshot.signedOut))
+                views.setViewVisibility(R.id.widget_body, visible(face.body))
+                views.setViewVisibility(R.id.buttons, visible(face.buttons))
             }
-            Kind.NUMBERS -> {
-                views.setOnClickPendingIntent(android.R.id.background, today)
-                val day = snapshot.today
-                if (day != null) {
-                    showNumbers(views, day, listOf("protein"))
-                } else {
-                    showPlain(views, if (snapshot.signedOut) context.getString(R.string.widget_open_app) else null)
-                }
+            WidgetFamily.NUMBERS -> {
+                views.setOnClickPendingIntent(android.R.id.background, open(context, "today"))
+                show(context, views, variant, face, day, listOf("protein"))
             }
-            Kind.BUTTONS -> {
+            WidgetFamily.BUTTONS -> {
                 views.setOnClickPendingIntent(R.id.button_speak, open(context, "speak"))
                 views.setOnClickPendingIntent(R.id.button_ask, open(context, "ask"))
             }
@@ -153,9 +189,25 @@ object HomeWidgets {
         return views
     }
 
-    private fun showNumbers(views: RemoteViews, day: Day, macros: List<String>) {
-        views.setViewVisibility(R.id.numbers_block, View.VISIBLE)
-        views.setViewVisibility(R.id.plain_block, View.GONE)
+    /** The numbers or the plain block, as [face] says. */
+    private fun show(
+        context: Context,
+        views: RemoteViews,
+        variant: WidgetVariant,
+        face: WidgetFace,
+        day: Day?,
+        macros: List<String>,
+    ) {
+        views.setViewVisibility(R.id.numbers_block, visible(face.numbers))
+        views.setViewVisibility(R.id.plain_block, visible(face.plain))
+        val text = when (face.plainText) {
+            PlainText.NONE -> null
+            PlainText.PROMPT -> context.getString(R.string.widget_prompt)
+            PlainText.OPEN_APP -> context.getString(R.string.widget_open_app)
+        }
+        views.setTextViewText(R.id.plain_text, text ?: "")
+        views.setViewVisibility(R.id.plain_text, visible(text != null))
+        if (!face.numbers || day == null) return
         views.setTextViewText(R.id.ring_value, day.kcal)
         views.setTextViewText(R.id.ring_caption, day.caption)
         views.setProgressBar(R.id.ring, 1000, day.ring, false)
@@ -164,18 +216,12 @@ object HomeWidgets {
         for (name in macros) {
             val macro = day.macros.getValue(name)
             val ids = MacroIds.of(name)
-            views.setTextViewText(ids.value, macro.text)
+            // The one-row layouts: only the eaten grams; the bar shows the target.
+            views.setTextViewText(ids.value, if (variant.compactMacros) macro.eaten else macro.text)
             views.setProgressBar(ids.bar, 1000, macro.bar, false)
             views.setViewVisibility(ids.bar, visible(!macro.over))
             views.setViewVisibility(ids.over, visible(macro.over))
         }
-    }
-
-    private fun showPlain(views: RemoteViews, text: String?) {
-        views.setViewVisibility(R.id.numbers_block, View.GONE)
-        views.setViewVisibility(R.id.plain_block, View.VISIBLE)
-        views.setTextViewText(R.id.plain_text, text ?: "")
-        views.setViewVisibility(R.id.plain_text, visible(text != null))
     }
 
     private fun visible(shown: Boolean) = if (shown) View.VISIBLE else View.GONE
@@ -221,11 +267,11 @@ object HomeWidgets {
         alarms.set(AlarmManager.RTC, at.toInstant().toEpochMilli(), pending)
     }
 
-    /** The three widgets. */
-    enum class Kind(val layout: Int, val provider: Class<out AppWidgetProvider>) {
-        MEDIUM(R.layout.widget_medium, TodayWidgetMedium::class.java),
-        NUMBERS(R.layout.widget_numbers, TodayWidgetNumbers::class.java),
-        BUTTONS(R.layout.widget_buttons, TodayWidgetButtons::class.java),
+    /** The three widgets; their layouts per size are [WidgetSizing.variants] of the family. */
+    enum class Kind(val family: WidgetFamily, val provider: Class<out AppWidgetProvider>) {
+        MEDIUM(WidgetFamily.MEDIUM, TodayWidgetMedium::class.java),
+        NUMBERS(WidgetFamily.NUMBERS, TodayWidgetNumbers::class.java),
+        BUTTONS(WidgetFamily.BUTTONS, TodayWidgetButtons::class.java),
     }
 
     private data class MacroIds(val value: Int, val bar: Int, val over: Int) {
@@ -239,7 +285,8 @@ object HomeWidgets {
         }
     }
 
-    private data class Macro(val text: String, val bar: Int, val over: Boolean)
+    /** [eaten]: only the eaten grams (snapshots before A73 lack it: the full text). */
+    private data class Macro(val text: String, val eaten: String, val bar: Int, val over: Boolean)
 
     private data class Day(
         val kcal: String,
@@ -274,7 +321,12 @@ object HomeWidgets {
                         over = b("over"),
                         eatenOf = s("eatenOf"),
                         macros = MACROS.associateWith {
-                            Macro(s("$it.text"), n("$it.bar"), b("$it.over"))
+                            Macro(
+                                s("$it.text"),
+                                s("$it.eaten").ifEmpty { s("$it.text") },
+                                n("$it.bar"),
+                                b("$it.over"),
+                            )
                         },
                     ),
                 )
@@ -285,12 +337,25 @@ object HomeWidgets {
 
 /**
  * The base of the three widget receivers: draws from the snapshot. Exported because the launcher
- * sends APPWIDGET_UPDATE; AppWidgetProvider ignores every other action, so an outside app can at
- * most cause a redraw.
+ * sends APPWIDGET_UPDATE; AppWidgetProvider only acts on the platform's widget actions, and
+ * [HomeWidgets.update] reads sizes from AppWidgetManager and skips ids that aren't ours, so an
+ * outside app can at most cause a redraw.
  */
 abstract class TodayWidget(private val kind: HomeWidgets.Kind) : AppWidgetProvider() {
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
         HomeWidgets.update(context, manager, ids, kind)
+    }
+
+    /** Resized: below Android 12 pick the layout for the new size (12+ picks it itself, A73). */
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        manager: AppWidgetManager,
+        id: Int,
+        options: Bundle?,
+    ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            HomeWidgets.update(context, manager, intArrayOf(id), kind)
+        }
     }
 }
 

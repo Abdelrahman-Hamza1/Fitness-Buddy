@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A73 D1 (UX-082): the buttons widget on taller cells (variant BUTTONS_LARGE, 140 x 72 dp, a
+     2 x 1 on One UI): bigger icons with their labels under them. High: 8 + button 56 (icon 26 +
+     2 + label ~17 = 45) + 8 = 72. Wide: 8 + 2 x 58 ("Speak" 13 sp bold ~38) + 8 between + 8 = 140.
+     RemoteViews: only views the launcher can inflate; colours and words are
+     resources, the numbers come from the app's snapshot (HomeWidgets.kt). The same
+     view ids in every size, so one render path fills them (A73 D5). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:clipToOutline="true"
+    android:orientation="horizontal"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="8dp">
+    <LinearLayout
+        android:id="@+id/button_speak"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/widget_button_filled"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:contentDescription="@string/widget_speak">
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_ic_speak"
+            android:tint="@color/widget_on_brand" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/widget_speak"
+            android:textColor="@color/widget_on_brand"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/button_ask"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/widget_button_tonal"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:contentDescription="@string/widget_ask">
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_ic_ask"
+            android:tint="@color/widget_on_tonal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/widget_ask"
+            android:textColor="@color/widget_on_tonal"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

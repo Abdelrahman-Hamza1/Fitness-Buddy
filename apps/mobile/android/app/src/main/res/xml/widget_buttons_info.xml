@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A71 D9 (UX-082): the small 2 x 1 buttons widget. No periodic update (updatePeriodMillis 0): the app
-     redraws on every change and HomeWidgets.kt arms one inexact alarm for
-     the next midnight. previewLayout is the widget itself (Android 12+). -->
+<!-- A71 D9 (UX-082), A73 D4: the small 2 x 1 buttons widget. No periodic update (updatePeriodMillis 0): the app
+     redraws on every change and HomeWidgets.kt arms one inexact alarm for the next midnight.
+     Layouts per size (WidgetSizing.kt, dp): BUTTONS_REGULAR 110 x 40, BUTTONS_LARGE 140 x 72.
+     minResizeWidth/Height = the smallest of them (smallest on both axes, so every allowed size
+     fits one; HomeWidgetSizingTest checks it); minWidth/Height = the regular one (the default
+     span before Android 12). initialLayout and previewLayout are the regular layout. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/widget_buttons_description"
     android:initialLayout="@layout/widget_buttons"

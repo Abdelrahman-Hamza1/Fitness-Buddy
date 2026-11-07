@@ -330,7 +330,7 @@ test-it: catalog-pack ## Run the Patrol integration tests (patrol_test/, dev fla
 	$(PATROL_ANDROID) test
 
 .PHONY: test-android-unit
-test-android-unit: ## Run Android host JVM unit tests (including the PA2 commit barrier)
+test-android-unit: ## Run Android host JVM unit tests (the PA2 commit barrier, the A73 widget sizes)
 	@cd '$(REPO_ROOT)/apps/mobile/android' && ./gradlew :app:testDevDebugUnitTest --no-daemon
 
 .PHONY: build-it

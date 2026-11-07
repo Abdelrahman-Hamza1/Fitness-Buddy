@@ -22,11 +22,20 @@ enum WidgetShows {
 /// bar in thousandths, full in the over tone past the target.
 final class WidgetMacro {
   /// The macro.
-  const new({required this.text, this.bar = 0, this.over = false});
+  const new({
+    required this.text,
+    required this.eaten,
+    this.bar = 0,
+    this.over = false,
+  });
 
   /// The formatted grams, "~" for a lower bound or an estimate, "—" when
   /// unknown.
   final String text;
+
+  /// Only the eaten grams ("~92", no unit, no target): the compact one-row
+  /// widgets (A73), whose bar shows the target.
+  final String eaten;
 
   /// Eaten of target, 0–1000; 0 without a target.
   final int bar;
@@ -67,11 +76,12 @@ final class WidgetDay {
           final text = grams(m.eatenGrams, approximate: m.approximate);
           final target = m.targetGrams;
           if (target == null) {
-            return WidgetMacro(text: l10n.todayMacroEaten(text));
+            return WidgetMacro(text: l10n.todayMacroEaten(text), eaten: text);
           }
           final eaten = m.eatenGrams ?? 0;
           return WidgetMacro(
             text: l10n.widgetMacroOfTarget(text, target),
+            eaten: text,
             bar: permille(eaten, target.toDouble()),
             over: eaten > target,
           );
@@ -104,11 +114,10 @@ final class WidgetDay {
         );
       case final EatenNumbers v:
         // UX-084: without targets the ring shows the calories eaten.
-        WidgetMacro macro(NutrientField f, double? g) => WidgetMacro(
-          text: l10n.todayMacroEaten(
-            grams(g, approximate: v.approximate.contains(f)),
-          ),
-        );
+        WidgetMacro macro(NutrientField f, double? g) {
+          final text = grams(g, approximate: v.approximate.contains(f));
+          return WidgetMacro(text: l10n.todayMacroEaten(text), eaten: text);
+        }
         return WidgetDay(
           date: date,
           withTargets: false,
@@ -248,6 +257,7 @@ final class WidgetSnapshot {
       ]) {
         data.addAll({
           '$p$name.text': m.text,
+          '$p$name.eaten': m.eaten,
           '$p$name.bar': m.bar,
           '$p$name.over': m.over,
         });
