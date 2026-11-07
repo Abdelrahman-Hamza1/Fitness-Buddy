@@ -225,6 +225,8 @@ Legend: ⬜ not started · 🟦 planning · 🟨 in progress · ✅ done · ⏸ 
 | [A67](A67-buddy-records-by-chat.md) | Buddy records by chat: diary edits/deletes/copies, saved meals, batches, personal foods, memory + Buddy remembers (was A25–A27) | Claude (Opus build), Codex review (Risky) | A66, **B25** | L | A25, A26, A27 |  | ✅ |
 | [A68](A68-buddy-answers-suggestions-review.md) | Buddy answers (QueryEngine), suggestions & halal, weekly review, Ramadan (was A31, A39b, A41b) | Claude (Opus build), Codex review | A66, **B25**, **B26** | M–L | A31, A39b, A41b | **M4** | ✅ |
 | [A69](A69-buddy-workouts-body-photos.md) | Buddy workouts, measurements, paste import, meal photos & label scan (was A28b, A29, A37b) | Claude (Opus build), Codex review | A66, **B26** | L | A28b, A29, A37b | **M6** | ✅ |
+| [A70](A70-voice-input.md) | Voice input in Buddy (D-101, R2 work early): mic, on-device speech, transcript to check | Claude (Opus build), Codex review | A66 | S–M | new (owner 2026-11-07) |  | ✅ done (Codex review + 2 fix-checks; A55 checks pending) |
+| [A71](A71-home-widgets.md) | Home-screen widgets (D-101, R2 work early): medium, small numbers, small buttons; open the app only | Claude (Opus build), Codex review (code + security) | A70 (Speak only) | M | new (owner 2026-11-07) |  | 🟨 in progress (lane 2) |
 
 **A44 runs right after A22 (owner request, 2026-10-29):** the "Embrace" identity (palette, fonts, icon) lands before the remaining screens are built, an exception to "the number is the order" like the dish batches below.
 

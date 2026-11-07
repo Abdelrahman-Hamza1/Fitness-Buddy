@@ -21,6 +21,8 @@ const Set<String> ioPackages = {
   'path_provider',
   'sentry*',
   'share_plus',
+  // A70: the speech recogniser stays in features/buddy/data.
+  'speech_to_text*',
   'shared_preferences',
   'sqlite3*',
 };

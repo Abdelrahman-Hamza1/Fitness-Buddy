@@ -70,6 +70,10 @@ abstract final class PreferenceKeys {
   /// synced, sent or logged.
   static const identity = 'fb.identity.v1';
 
+  /// The language last chosen for Buddy's voice input (A70 D4): English or
+  /// Arabic, device display state, never synced or sent.
+  static const voiceLanguage = 'fb.buddy_voice_language.v1';
+
   /// The identity of [profileKey] in the [namespace] environment.
   static String identityFor(String namespace, String profileKey) =>
       '$identity|$namespace|$profileKey';

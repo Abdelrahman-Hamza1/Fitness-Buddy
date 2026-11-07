@@ -69,7 +69,11 @@ The product principles (PR-1 to PR-12 in `00-vision-and-scope.md`) apply everywh
 
 ## 9. Quick entry outside the app
 
-- **UX-080** `[R2]` Home-screen widget: today's remaining calories + a tap target that opens the input bar.
+- **UX-080** `[R2]` Home-screen widget: today's remaining calories + a tap target that opens the input bar (D-101).
+- **UX-082** `[R2]` Widget sizes: medium 4 × 2 (calories-left ring, protein/carbs/fat/fiber against targets, Speak · Ask · Weigh), small 2 × 2 (calories left + protein), small 2 × 1 (Speak · Ask). Light/dark follow the phone.
+- **UX-083** `[R2]` Widget taps only open the app: Speak → Buddy listening, Ask → Buddy with the keyboard up, Weigh → the weigh-in, numbers → Today. Nothing is written from a widget.
+- **UX-084** `[R2]` Widget numbers refresh on every change to today and at midnight; without targets the ring shows calories eaten.
+- **UX-085** `[R2]` "Hide numbers" setting (buttons only). Sign-out, profile removal and deletion clear the widget's numbers.
 - **UX-081** `[R2]` Share sheet: share a photo, text or URL into Fitness Buddy → it arrives as a Buddy message (a proposal follows).
 
 ## Open questions

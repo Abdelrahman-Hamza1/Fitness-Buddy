@@ -18,6 +18,7 @@ Selection rules, in order: (1) fits the drivers in `01` §1; (2) mature, maintai
 | Sign-in SDKs | **google_sign_in**, **sign_in_with_apple** (iOS, R2, D-081) | Native flows. The ID token is sent to our API (`04` §5) | Firebase Auth, Supabase Auth |
 | Barcode | **mobile_scanner** | On-device (ML Kit / Apple Vision), fast | — |
 | Camera / images | **image_picker** + **flutter_image_compress** | Photos resized to ~1024 px JPEG before upload | `camera` |
+| Voice input | **speech_to_text** (A70, D-101): the phone's own recogniser, on-device requested | Free; no audio through our server or the AI provider (the phone's speech service may work online where it has no on-device pack); live words, English or Arabic | Cloud transcription (only by a new decision) |
 | Charts | **fl_chart** behind design-system chart widgets. Feasibility check at the start of A15, with `CustomPainter` as the fallback | Free, flexible, popular | Syncfusion (licence), `graphic` |
 | Local notifications | **flutter_local_notifications** + **timezone** | All R1 notifications are local (`09` §1) | FCM (R2+ if needed) |
 | Prayer times | **adhan_dart** (offline) | No network. Multiple calculation methods | Aladhan API |

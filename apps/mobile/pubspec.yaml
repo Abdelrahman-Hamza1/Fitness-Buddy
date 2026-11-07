@@ -75,6 +75,12 @@ dependencies:
   share_plus: 13.3.1
   # The device id and the cached /v1/config (not secret, not user data).
   shared_preferences: ^2.5.6
+  # A70: voice input in Buddy (AI-014, D-101), BSD-3, csdcorp, Android + iOS.
+  # Exact pin. Android: the platform SpeechRecognizer (on-device where the phone
+  # has the language pack); no audio file is written or sent by the app. Adds
+  # RECORD_AUDIO via the app manifest. Used only in
+  # lib/features/buddy/data/speech_recognizer.dart.
+  speech_to_text: 7.5.0
   # Direct: drift's `setup` callback gets a sqlite3 Database (pragmas). sqlite3
   # 3.x bundles SQLite through build hooks (sqlite3_flutter_libs is EOL). Hook
   # overrides (user_defines) go in the root pubspec only (A01 plan §3.5).

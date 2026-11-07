@@ -8392,4 +8392,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recordImportAllShown => 'All rows are listed';
+
+  @override
+  String get buddyVoice => 'Speak to Buddy';
+
+  @override
+  String get buddyVoiceHint => 'From your voice: fix anything, then send.';
+
+  @override
+  String get buddyVoiceTitle => 'Speak to Buddy';
+
+  @override
+  String get buddyVoiceListening => 'Listening…';
+
+  @override
+  String get buddyVoiceFinishing => 'Finishing…';
+
+  @override
+  String get buddyVoicePlaceholder =>
+      'Start talking. It stops by itself when you pause.';
+
+  @override
+  String get buddyVoiceEnglish => 'English';
+
+  @override
+  String get buddyVoiceArabic => 'عربي';
+
+  @override
+  String get buddyVoiceLanguage => 'Language you speak';
+
+  @override
+  String get buddyVoiceDone => 'Done';
+
+  @override
+  String get buddyVoiceCancel => 'Cancel';
+
+  @override
+  String get buddyVoiceAsk =>
+      'Your phone\'s speech service turns your voice into words, and may use the internet to do it. Fitness Buddy keeps no recording and sends nothing to Buddy until you tap Send.';
+
+  @override
+  String get buddyVoiceAllow => 'Allow microphone';
+
+  @override
+  String get buddyVoiceTypeInstead => 'Type instead';
+
+  @override
+  String get buddyVoiceTryAgain => 'Try again';
+
+  @override
+  String get buddyVoicePermissionOff =>
+      'Buddy can\'t hear you: microphone access is off. You can turn it on for Fitness Buddy in your phone\'s settings, or type instead.';
+
+  @override
+  String get buddyVoiceUnavailable =>
+      'This phone has no speech recognition, so please type your message.';
+
+  @override
+  String get buddyVoiceLanguageMissing =>
+      'Your phone can\'t recognise this language yet. Add it in your phone\'s speech settings, switch language, or type instead.';
+
+  @override
+  String get buddyVoiceNoSpeech =>
+      'Buddy didn\'t catch anything. Try again, or type instead.';
+
+  @override
+  String get buddyVoiceFailed =>
+      'Listening stopped. Try again, or type instead.';
+
+  @override
+  String get buddyVoiceInterrupted =>
+      'Listening stopped when you left the app. Tap Try again to speak.';
 }

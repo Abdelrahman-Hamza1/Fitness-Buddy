@@ -18,7 +18,7 @@ Buddy is the main way to put data into the app. You write (or photograph) what h
 - **AI-011** `[R1]` Photo + optional text ("this is about 300g"). The photo helps identify the food. Portion size from a photo alone is always marked as an estimate (D-045).
 - **AI-012** `[R1]` Nutrition-label photo → creates a personal food (flow in `11-foods-and-data-quality.md` §5).
 - **AI-013** `[R2]` Recipe URL → recipe proposal (`12-diary-meals-recipes.md` §6).
-- **AI-014** `[Later]` Voice input.
+- **AI-014** `[R2]` Voice input (D-101): a mic in the composer, on-device speech recognition (English or Arabic per recording), live words, then the transcript sits in the message box to fix before sending. No audio leaves the phone through us.
 - **AI-015** `[R1]` One message may contain several things ("breakfast was 2 eggs and labaneh, lunch a shawarma, also weighed 97.2"). Buddy produces **one proposal card per affected meal or record**, grouped in one reply.
 - **AI-016** `[R1]` Typos, missing units and shorthand are tolerated ("chiken brest 250 cookd", "3x8 80", "110k").
 

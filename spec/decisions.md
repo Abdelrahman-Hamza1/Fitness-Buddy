@@ -579,3 +579,13 @@ _Entries marked **(provisional)** apply Claude's recommendation to a question th
   - **You see it working.** Replies stream in, with live steps ("checking your diary…"). A developer-only trace view shows each step on the phone.
   - **Quality is judged by use, not a test suite.** No AI eval suite and no Buddy tests, except the guard that nothing is written without your confirmation. Prompts and models are tuned from experiments and the owner's daily use.
 - Why: A one-shot parser can't decide or act, so Buddy felt like a form filler. The owner wants a smart assistant that makes decisions and takes actions, while the confirmation rule, the "numbers from data" rule and local-first privacy stay as they are.
+
+## D-101 — Voice input and home-screen widgets, built early (R2 work)
+- Date / Source: 2026-11-07 · owner ("I think the only ones that matter for now: Voice input, and creating a widget" → design canvas → "I prefer option 1, and maybe another smaller one that only shows numbers" → "Looks solid!!!" → "just count it as us doing some work on R2 I don't mind. Get started.")
+- Status: Accepted by the owner. AI-014 moves from `[Later]` to `[R2]`; UX-080 gains its details (UX-082…UX-085). Both are built now, ahead of the rest of R2.
+- Decision:
+  - **Voice turns into text you check.** A mic in Buddy's composer listens with the phone's own speech recognition (no audio to our server or the AI provider), shows the words live, and puts them in the message box to fix before sending. English or Arabic per recording (a switch; Arabizi isn't spoken). The typed-text rules (numbers only from what you wrote) apply to the transcript as is. Cloud transcription only if on-device accuracy is poor in use (a new decision).
+  - **Three home-screen widgets.** Medium (4 × 2): calories left ring, the four macros against targets, and Speak · Ask · Weigh buttons. Small numbers (2 × 2): calories left + protein. Small buttons (2 × 1): Speak · Ask. Light/dark follow the phone; the owner's pick is the dark look on the design canvas.
+  - **Widgets only open the app.** Speak opens Buddy listening, Ask opens Buddy with the keyboard, Weigh opens the weigh-in, numbers open Today. Nothing is logged from a widget (D-079).
+  - **Privacy.** A "hide numbers" switch shows buttons only; signing out, removing or deleting a profile clears the widget's numbers.
+- Why: The owner logs on the go; speaking and a one-tap entry from the home screen remove the most friction. On-device speech keeps voice free and private.

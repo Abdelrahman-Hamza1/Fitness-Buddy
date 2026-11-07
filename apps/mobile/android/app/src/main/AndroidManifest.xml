@@ -19,6 +19,12 @@
          USE_EXACT_ALARM (tools/scripts/apk_hardening_check.py fails a release that
          asks for one). Nothing leaves the phone (TD-013). -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- A70 D1-D2: voice input in Buddy (AI-014, D-101). speech_to_text hands the
+         microphone to the phone's own speech recogniser (on-device first); the app
+         records no audio file and sends no audio anywhere. Asked at first use,
+         after a plain explanation; denied = the keyboard. No BLUETOOTH_CONNECT
+         (initialized with noBluetooth). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <!-- Hardening (S06 plan A8, backlog #32):
          - app_name comes from the flavor (resValue in app/build.gradle.kts).
@@ -100,6 +106,11 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- A70 D2: Android 11+ package visibility, so the speech recogniser
+             service can be found (SpeechRecognizer.isRecognitionAvailable). -->
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
         </intent>
     </queries>
 </manifest>

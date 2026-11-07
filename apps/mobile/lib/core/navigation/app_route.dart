@@ -37,7 +37,11 @@ enum TodayOpen {
   weighIn('weigh-in'),
 
   /// The Buddy sheet, where pending cards wait (NT-002).
-  buddy('buddy');
+  buddy('buddy'),
+
+  /// The Buddy sheet, listening at once (voice input, A70 D8; the home
+  /// screen widget's Speak, A71).
+  buddyVoice('buddy-voice');
 
   new(this.param);
 

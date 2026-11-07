@@ -66,6 +66,9 @@ abstract final class FbIcons {
   /// Pick a photo from the gallery (A69).
   static const IconData gallery = Icons.photo_library_outlined;
 
+  /// Speak instead of typing (voice input, A70).
+  static const IconData mic = Icons.mic_none_rounded;
+
   /// Send a message. Points to the end (mirrors in RTL).
   static const IconData send = Icons.send_rounded; // app-check: allow directional matchTextDirection mirrors it in RTL
 

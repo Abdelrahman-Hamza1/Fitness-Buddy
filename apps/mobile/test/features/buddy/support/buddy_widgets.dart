@@ -12,10 +12,12 @@ import 'buddy_harness.dart';
 const openSheet = 'open-buddy';
 
 /// A screen over [h]'s container with one button that opens Buddy's sheet,
-/// at [size] and [textScale], in [brightness].
+/// at [size] and [textScale], in [brightness], through `BuddyEntry` in
+/// [mode] (A70 D8).
 Future<void> pumpBuddyHost(
   WidgetTester tester,
   BuddyHarness h, {
+  BuddyEntryMode mode = BuddyEntryMode.keyboard,
   Size size = const Size(360, 720),
   double textScale = 1,
   Brightness brightness = Brightness.light,
@@ -50,8 +52,11 @@ Future<void> pumpBuddyHost(
           body: Builder(
             builder: (context) => Center(
               child: TextButton(
-                onPressed: () =>
-                    showBuddySheet(context, date: LocalDate(2026, 10, 17)),
+                onPressed: () => BuddyEntry.open(
+                  context,
+                  date: LocalDate(2026, 10, 17),
+                  mode: mode,
+                ),
                 child: const Text(openSheet),
               ),
             ),

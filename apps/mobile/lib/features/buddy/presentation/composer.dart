@@ -17,8 +17,22 @@ class BuddyComposer extends StatelessWidget {
     this.onPhoto,
     this.photoAttached = false,
     this.onRemovePhoto,
+    this.onVoice,
+    this.fromVoice = false,
+    this.autofocus = true,
     super.key,
   });
+
+  /// Focus the field (the keyboard) when it first shows; off when Buddy
+  /// opens straight into listening (A70 D8).
+  final bool autofocus;
+
+  /// Opens the listening panel (AI-014, A70); null hides the button.
+  final VoidCallback? onVoice;
+
+  /// The text came from the voice: the hint says to check it before
+  /// sending (it is never sent by itself).
+  final bool fromVoice;
 
   /// Attaches a meal photo (AI-011); null hides the button.
   final VoidCallback? onPhoto;
@@ -47,20 +61,13 @@ class BuddyComposer extends StatelessWidget {
     return FbComposer(
       controller: controller,
       focusNode: focusNode,
-      autofocus: true,
+      autofocus: autofocus,
       hint: l10n.buddyComposerHint,
       sendTooltip: l10n.buddySend,
       onSend: onSend,
       inputFormatters: [Utf16LengthLimitingFormatter(ChatText.composerLimit)],
       sendWithoutText: photoAttached,
-      attachment: photoAttached
-          ? FbTargetChip(
-              key: const ValueKey('buddy-photo-attached'),
-              label: l10n.buddyPhotoAttached,
-              clearTooltip: l10n.buddyPhotoRemove,
-              onClear: onRemovePhoto ?? () {},
-            )
-          : null,
+      attachment: _attachment(context),
       leading: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -76,8 +83,43 @@ class BuddyComposer extends StatelessWidget {
               tooltip: l10n.buddyAddPhoto,
               onPressed: onPhoto,
             ),
+          if (onVoice != null)
+            FbIconButton(
+              key: const ValueKey('buddy-voice'),
+              icon: FbIcons.mic,
+              tooltip: l10n.buddyVoice,
+              onPressed: onVoice,
+            ),
         ],
       ),
+    );
+  }
+
+  Widget? _attachment(BuildContext context) {
+    final l10n = context.l10n;
+    final photo = photoAttached
+        ? FbTargetChip(
+            key: const ValueKey('buddy-photo-attached'),
+            label: l10n.buddyPhotoAttached,
+            clearTooltip: l10n.buddyPhotoRemove,
+            onClear: onRemovePhoto ?? () {},
+          )
+        : null;
+    final hint = fromVoice
+        ? Text(
+            l10n.buddyVoiceHint,
+            key: const ValueKey('buddy-voice-hint'),
+            style: FbType.caption.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          )
+        : null;
+    if (photo == null || hint == null) return photo ?? hint;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: FbSpace.s1,
+      children: [photo, hint],
     );
   }
 }

@@ -99,7 +99,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       case TodayOpen.weighIn:
         unawaited(showWeighInSheet(context));
       case TodayOpen.buddy:
-        unawaited(showBuddySheet(context, date: _today));
+        unawaited(BuddyEntry.keyboard(context, date: _today));
+      case TodayOpen.buddyVoice:
+        unawaited(BuddyEntry.voice(context, date: _today));
     }
   }
 
@@ -328,7 +330,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                     ? l10n.todayBuddyWaitingSemantics(waiting)
                     : null,
                 onTap: () => unawaited(
-                  showBuddySheet(
+                  BuddyEntry.keyboard(
                     context,
                     date: viewed,
                     revealPending: waiting > 0,

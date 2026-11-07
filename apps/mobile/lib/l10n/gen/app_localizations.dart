@@ -12382,6 +12382,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All rows are listed'**
   String get recordImportAllShown;
+
+  /// Composer mic button tooltip: voice input (AI-014, A70).
+  ///
+  /// In en, this message translates to:
+  /// **'Speak to Buddy'**
+  String get buddyVoice;
+
+  /// Composer line after a voice transcript went into the box; it is never sent by itself (AI-014).
+  ///
+  /// In en, this message translates to:
+  /// **'From your voice: fix anything, then send.'**
+  String get buddyVoiceHint;
+
+  /// Listening panel title.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak to Buddy'**
+  String get buddyVoiceTitle;
+
+  /// Listening panel: the microphone is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening…'**
+  String get buddyVoiceListening;
+
+  /// Listening panel: stopped, waiting for the last words.
+  ///
+  /// In en, this message translates to:
+  /// **'Finishing…'**
+  String get buddyVoiceFinishing;
+
+  /// Listening panel: shown in the words box before any word.
+  ///
+  /// In en, this message translates to:
+  /// **'Start talking. It stops by itself when you pause.'**
+  String get buddyVoicePlaceholder;
+
+  /// Listening panel language switch: English.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get buddyVoiceEnglish;
+
+  /// Listening panel language switch: Arabic, written in Arabic.
+  ///
+  /// In en, this message translates to:
+  /// **'عربي'**
+  String get buddyVoiceArabic;
+
+  /// Screen-reader label of the language switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Language you speak'**
+  String get buddyVoiceLanguage;
+
+  /// Listening panel: stop and put the words in the message box.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get buddyVoiceDone;
+
+  /// Listening panel: stop and drop the words.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get buddyVoiceCancel;
+
+  /// Listening panel, before the microphone permission is asked (first use). Honest on purpose (A70 review 1): the phone's own speech service may work online; never claim the voice stays on the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone\'s speech service turns your voice into words, and may use the internet to do it. Fitness Buddy keeps no recording and sends nothing to Buddy until you tap Send.'**
+  String get buddyVoiceAsk;
+
+  /// Listening panel: asks for the microphone permission (the system dialog).
+  ///
+  /// In en, this message translates to:
+  /// **'Allow microphone'**
+  String get buddyVoiceAllow;
+
+  /// Listening panel: close and use the keyboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Type instead'**
+  String get buddyVoiceTypeInstead;
+
+  /// Listening panel: listen again after a problem.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get buddyVoiceTryAgain;
+
+  /// Listening panel: the microphone permission was refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy can\'t hear you: microphone access is off. You can turn it on for Fitness Buddy in your phone\'s settings, or type instead.'**
+  String get buddyVoicePermissionOff;
+
+  /// Listening panel: no speech recognizer on the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone has no speech recognition, so please type your message.'**
+  String get buddyVoiceUnavailable;
+
+  /// Listening panel: the recognizer has no pack for the chosen language.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone can\'t recognise this language yet. Add it in your phone\'s speech settings, switch language, or type instead.'**
+  String get buddyVoiceLanguageMissing;
+
+  /// Listening panel: nothing was heard.
+  ///
+  /// In en, this message translates to:
+  /// **'Buddy didn\'t catch anything. Try again, or type instead.'**
+  String get buddyVoiceNoSpeech;
+
+  /// Listening panel: any other speech error.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening stopped. Try again, or type instead.'**
+  String get buddyVoiceFailed;
+
+  /// Listening panel: the app went to the background and the recording was cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening stopped when you left the app. Tap Try again to speak.'**
+  String get buddyVoiceInterrupted;
 }
 
 class _AppLocalizationsDelegate

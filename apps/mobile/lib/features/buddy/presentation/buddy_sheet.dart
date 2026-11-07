@@ -8,8 +8,10 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/photos/photo_picker.dart';
 import 'package:fb_mobile/core/photos/photo_source_sheet.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
+import 'package:fb_mobile/features/buddy/application/voice_input.dart';
 import 'package:fb_mobile/features/buddy/presentation/composer.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_list.dart';
+import 'package:fb_mobile/features/buddy/presentation/voice_panel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -22,24 +24,35 @@ import 'package:material_ui/material_ui.dart';
 /// tap outside, or back) to close. The thread stays for this app session.
 ///
 /// With [revealPending] (Today's "{n} waiting", D-094) the thread opens
-/// scrolled to the oldest card still waiting for an answer.
+/// scrolled to the oldest card still waiting for an answer. With [listen]
+/// (`BuddyEntry.voice`, A70 D8) the listening panel opens at once.
 Future<void> showBuddySheet(
   BuildContext context, {
   required LocalDate date,
   bool revealPending = false,
+  bool listen = false,
 }) => showModalBottomSheet<void>(
   context: context,
   useRootNavigator: true,
   isScrollControlled: true,
   useSafeArea: true,
   barrierColor: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.16),
-  builder: (context) => BuddySheet(date: date, revealPending: revealPending),
+  builder: (context) =>
+      BuddySheet(date: date, revealPending: revealPending, listen: listen),
 );
 
 /// The chat sheet's content: the thread and the composer.
 class BuddySheet extends ConsumerStatefulWidget {
   /// The sheet; search opens on [date].
-  const new({required this.date, this.revealPending = false, super.key});
+  const new({
+    required this.date,
+    this.revealPending = false,
+    this.listen = false,
+    super.key,
+  });
+
+  /// Whether the listening panel opens at once (A70 D8).
+  final bool listen;
 
   /// The day food search opens on.
   final LocalDate date;
@@ -83,7 +96,36 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
       unawaited(ref.read(photoPickerProvider).sweepOnce());
       // Opening Buddy tries waiting messages again (A66 D12).
       unawaited(_thread.wake(buddyReplyTexts(context.l10n)));
+      if (widget.listen) unawaited(_speak());
     });
+    _text.addListener(_onText);
+  }
+
+  /// The box's text came from the voice (A70 D7): the hint shows until
+  /// it is sent or cleared.
+  bool _fromVoice = false;
+
+  void _onText() {
+    if (_fromVoice && _text.text.trim().isEmpty) {
+      setState(() => _fromVoice = false);
+    }
+  }
+
+  /// The listening panel; its words go after the typed text, the box keeps
+  /// the focus (the keyboard). Never sent by itself (AI-014): the sent text
+  /// is the box's, as the user leaves it.
+  Future<void> _speak() async {
+    final words = await showVoicePanel(context);
+    if (!mounted) return;
+    if (words != null && words.trim().isNotEmpty) {
+      final text = appendTranscript(_text.text, words);
+      _text.value = TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+      setState(() => _fromVoice = true);
+    }
+    _focus.requestFocus();
   }
 
   void _restore() {
@@ -102,7 +144,9 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     // Dismissing the sheet writes every adjusted card (A23 D8).
     unawaited(_thread.flush());
     _lifecycle.dispose();
-    _text.dispose();
+    _text
+      ..removeListener(_onText)
+      ..dispose();
     _focus.dispose();
     _sheet.dispose();
     super.dispose();
@@ -119,7 +163,10 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
       text = context.l10n.buddyPhotoOnlyMessage;
     }
     _text.clear();
-    setState(() => _photo = null);
+    setState(() {
+      _photo = null;
+      _fromVoice = false;
+    });
     unawaited(
       ref
           .read(buddyThreadControllerProvider.notifier)
@@ -263,6 +310,11 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
                         : () => unawaited(_pickPhoto()),
                     photoAttached: _photo != null,
                     onRemovePhoto: () => setState(() => _photo = null),
+                    // Speaking only fills the box (sending is the user's
+                    // tap), so it works while a reply is on its way.
+                    onVoice: accountBusy ? null : () => unawaited(_speak()),
+                    fromVoice: _fromVoice,
+                    autofocus: !widget.listen,
                   ),
                 ),
               ],

@@ -12,6 +12,7 @@ export 'data/chat_message_repository.dart';
 export 'data/memory_item_op_handler.dart';
 export 'data/proposal_op_handler.dart';
 export 'data/proposal_repository.dart';
+export 'presentation/buddy_entry.dart';
 export 'presentation/buddy_remembers_row.dart';
 export 'presentation/buddy_remembers_screen.dart';
 export 'presentation/buddy_sheet.dart' show showBuddySheet;
