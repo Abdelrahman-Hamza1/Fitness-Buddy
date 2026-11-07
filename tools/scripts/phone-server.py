@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """B03 private laptop stack. Persistent state and credentials never live in git."""
 import argparse
+import base64
 from contextlib import contextmanager
 import datetime as dt
 import fcntl
@@ -364,20 +365,42 @@ def identity_compose_args(state):
     return ['-f', str(overlay)]
 
 
-def buddy_overlay(state):
+def buddy_overlay(state, agent=True):
+    environment = {'Buddy__Enabled': 'true', 'Buddy__ApiKeyFile': '/buddy/openai-api-key'}
+    if agent:
+        # B25: the agent's continuation seal key (32 random bytes, base64) and the dev trace view (AI-172) on the owner's server.
+        environment.update({'Buddy__Agent__SealKeyFile': '/buddy/agent-seal-key', 'Buddy__Agent__TraceEnabled': 'true'})
     return {'services': {'api': {
-        'environment': {'Buddy__Enabled': 'true', 'Buddy__ApiKeyFile': '/buddy/openai-api-key'},
+        'environment': environment,
         'volumes': [{'type': 'bind', 'source': str(state / 'buddy'), 'target': '/buddy', 'read_only': True}]}}}
+
+
+def ensure_seal_key(state):
+    key = state / 'buddy' / 'agent-seal-key'
+    if key.exists() or key.is_symlink():
+        private(key)
+        if len(base64.b64decode(key.read_bytes().strip(), validate=True)) != 32:
+            raise Failure('Invalid Buddy agent seal key; recover the original file')
+        return
+    atomic(key, base64.b64encode(secrets.token_bytes(32)) + b'\n')
 
 
 def buddy_compose_args(state):
     overlay = state / 'buddy-compose.json'
     if not overlay.exists():
         return []
-    if read_json(overlay) != buddy_overlay(state):
+    current = read_json(overlay)
+    if current == buddy_overlay(state, agent=False):
+        # A B08-era overlay: add the agent's seal key and settings in place (B25), so `up` keeps working.
+        safe_dir(state / 'buddy')
+        ensure_seal_key(state)
+        json_write(overlay, buddy_overlay(state))
+        current = read_json(overlay)
+    if current != buddy_overlay(state):
         raise Failure('Invalid API-only Buddy overlay')
     safe_dir(state / 'buddy')
     private(state / 'buddy' / 'openai-api-key')
+    private(state / 'buddy' / 'agent-seal-key')
     return ['-f', str(overlay)]
 
 
@@ -393,6 +416,7 @@ def configure_buddy(state, key_path):
         raise Failure('Invalid OpenAI credential file')
     safe_dir(state / 'buddy')
     atomic(state / 'buddy' / 'openai-api-key', key)
+    ensure_seal_key(state)
     json_write(state / 'buddy-compose.json', buddy_overlay(state))
     buddy_compose_args(state)
     print('Private API-only Buddy configuration prepared; takes effect on next main-image deployment')

@@ -10,6 +10,7 @@ _BuddyPriorCard _$BuddyPriorCardFromJson(Map<String, dynamic> json) =>
     _BuddyPriorCard(
       proposalId: json['proposalId'] as String,
       status: BuddyPriorCardStatus.fromJson(json['status'] as String),
+      revision: (json['revision'] as num).toInt(),
       line: json['line'] as String,
     );
 
@@ -17,6 +18,7 @@ Map<String, dynamic> _$BuddyPriorCardToJson(_BuddyPriorCard instance) =>
     <String, dynamic>{
       'proposalId': instance.proposalId,
       'status': _$BuddyPriorCardStatusEnumMap[instance.status]!,
+      'revision': instance.revision,
       'line': instance.line,
     };
 

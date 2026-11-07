@@ -25,6 +25,23 @@ internal sealed class PostgresUsageRecorder(TimeProvider clock) : IUsageRecorder
         command.Parameters.AddWithValue(model); command.Parameters.AddWithValue(ceiling); command.Parameters.AddWithValue(newMessage ? 1 : 0);
         return new UsageReservation(await command.ExecuteScalarAsync(cancellationToken) is not null, ceiling);
     }
+    public async Task<UsageReservation> ReserveMessageAsync(DatabaseSession session, string model, int messageCeiling, DateOnly day, CancellationToken cancellationToken)
+    {
+        var user = session.UserId ?? throw new InvalidOperationException("Missing usage owner.");
+        await using (var limit = session.Command("SELECT daily_calls FROM usage.limit_overrides WHERE user_id=$1"))
+        {
+            limit.Parameters.AddWithValue(user);
+            if (await limit.ExecuteScalarAsync(cancellationToken) is 0) { return new UsageReservation(false, 0); }
+        }
+        if (messageCeiling <= 0) { return new UsageReservation(false, 0); }
+        await using var command = session.Command("""
+            INSERT INTO usage.daily(user_id,day,model,calls,messages,input_tokens,cached_input_tokens,output_tokens,estimated_usd)
+            VALUES($1,$2,$3,0,1,0,0,0,0) ON CONFLICT(user_id,day,model) DO UPDATE SET messages=usage.daily.messages+1
+            WHERE usage.daily.messages<$4 RETURNING messages
+            """);
+        command.Parameters.AddWithValue(user); command.Parameters.AddWithValue(day); command.Parameters.AddWithValue(model); command.Parameters.AddWithValue(messageCeiling);
+        return new UsageReservation(await command.ExecuteScalarAsync(cancellationToken) is not null, messageCeiling);
+    }
     public async Task RecordAsync(DatabaseSession session, UsageCharge charge, CancellationToken cancellationToken)
     {
         await using var command = session.Command("""

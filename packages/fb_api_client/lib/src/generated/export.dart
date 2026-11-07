@@ -173,6 +173,7 @@ export 'models/buddy_link_screen.dart';
 export 'models/buddy_query_link.dart';
 export 'models/buddy_query_result_data.dart';
 export 'models/buddy_query_data_result.dart';
+export 'models/buddy_unsupported_result.dart';
 export 'models/buddy_phone_tool_result.dart';
 export 'models/buddy_turn_continue.dart';
 export 'models/auth_tokens.dart';
@@ -242,5 +243,6 @@ export 'models/buddy_read_body_result_name.dart';
 export 'models/buddy_read_workouts_result_name.dart';
 export 'models/buddy_read_memory_result_name.dart';
 export 'models/buddy_query_data_result_name.dart';
+export 'models/buddy_unsupported_result_name.dart';
 // Root client
 export 'fb_api.dart';

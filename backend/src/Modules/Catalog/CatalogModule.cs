@@ -30,7 +30,7 @@ public sealed class CatalogModule : IModule
             // The framework's request logs would print the product path, which carries the barcode (B10a D7).
             .RemoveAllLoggers();
         services.AddSingleton<OffGate>();
-        services.AddScoped<IOffClient, OpenFoodFactsClient>(); services.AddScoped<IOffCache, PostgresOffCache>(); services.AddScoped<BarcodeLookup>();
+        services.AddScoped<IOffClient, OpenFoodFactsClient>(); services.AddScoped<IOffCache, PostgresOffCache>(); services.AddScoped<BarcodeLookup>(); services.AddScoped<IBarcodeFacts, BarcodeFactsAdapter>();
         services.AddSingleton<OffLookupCounters>(); services.AddSingleton<IOffLookupCounters>(p => p.GetRequiredService<OffLookupCounters>());
         services.AddSingleton<FitnessBuddy.BuildingBlocks.Ops.ICounterFlush>(p => p.GetRequiredService<OffLookupCounters>());
         services.AddSingleton<ICatalogAdminReads, PostgresCatalogAdminReads>();

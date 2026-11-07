@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BuddyPriorCard {
 
- String get proposalId; BuddyPriorCardStatus get status;/// The card's compact summary.
+ String get proposalId; BuddyPriorCardStatus get status;/// The card's current revision on the phone; a retry's update names it in replaces.expectedRevision.
+ int get revision;/// The card's compact summary.
  String get line;
 /// Create a copy of BuddyPriorCard
 /// with the given fields replaced by the non-null parameter values.
@@ -31,20 +32,20 @@ $BuddyPriorCardCopyWith<BuddyPriorCard> get copyWith => _$BuddyPriorCardCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as BuddyPriorCard;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyPriorCard&&(identical(other.proposalId, _this.proposalId) || other.proposalId == _this.proposalId)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.line, _this.line) || other.line == _this.line));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyPriorCard&&(identical(other.proposalId, _this.proposalId) || other.proposalId == _this.proposalId)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.revision, _this.revision) || other.revision == _this.revision)&&(identical(other.line, _this.line) || other.line == _this.line));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as BuddyPriorCard;
-  return Object.hash(runtimeType,_this.proposalId,_this.status,_this.line);
+  return Object.hash(runtimeType,_this.proposalId,_this.status,_this.revision,_this.line);
 }
 
 @override
 String toString() {
   final _this = this as BuddyPriorCard;
-  return 'BuddyPriorCard(proposalId: ${_this.proposalId}, status: ${_this.status}, line: ${_this.line})';
+  return 'BuddyPriorCard(proposalId: ${_this.proposalId}, status: ${_this.status}, revision: ${_this.revision}, line: ${_this.line})';
 }
 
 
@@ -55,7 +56,7 @@ abstract mixin class $BuddyPriorCardCopyWith<$Res>  {
   factory $BuddyPriorCardCopyWith(BuddyPriorCard value, $Res Function(BuddyPriorCard) _then) = _$BuddyPriorCardCopyWithImpl;
 @useResult
 $Res call({
- String proposalId, BuddyPriorCardStatus status, String line
+ String proposalId, BuddyPriorCardStatus status, int revision, String line
 });
 
 
@@ -72,11 +73,12 @@ class _$BuddyPriorCardCopyWithImpl<$Res>
 
 /// Create a copy of BuddyPriorCard
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? proposalId = null,Object? status = null,Object? line = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? proposalId = null,Object? status = null,Object? revision = null,Object? line = null,}) {
   return _then(BuddyPriorCard(
 proposalId: null == proposalId ? _self.proposalId : proposalId // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as BuddyPriorCardStatus,line: null == line ? _self.line : line // ignore: cast_nullable_to_non_nullable
+as BuddyPriorCardStatus,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,line: null == line ? _self.line : line // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -162,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String proposalId,  BuddyPriorCardStatus status,  String line)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String proposalId,  BuddyPriorCardStatus status,  int revision,  String line)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BuddyPriorCard() when $default != null:
-return $default(_that.proposalId,_that.status,_that.line);case _:
+return $default(_that.proposalId,_that.status,_that.revision,_that.line);case _:
   return orElse();
 
 }
@@ -183,10 +185,10 @@ return $default(_that.proposalId,_that.status,_that.line);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String proposalId,  BuddyPriorCardStatus status,  String line)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String proposalId,  BuddyPriorCardStatus status,  int revision,  String line)  $default,) {final _that = this;
 switch (_that) {
 case _BuddyPriorCard():
-return $default(_that.proposalId,_that.status,_that.line);case _:
+return $default(_that.proposalId,_that.status,_that.revision,_that.line);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +205,10 @@ return $default(_that.proposalId,_that.status,_that.line);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String proposalId,  BuddyPriorCardStatus status,  String line)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String proposalId,  BuddyPriorCardStatus status,  int revision,  String line)?  $default,) {final _that = this;
 switch (_that) {
 case _BuddyPriorCard() when $default != null:
-return $default(_that.proposalId,_that.status,_that.line);case _:
+return $default(_that.proposalId,_that.status,_that.revision,_that.line);case _:
   return null;
 
 }
@@ -218,11 +220,13 @@ return $default(_that.proposalId,_that.status,_that.line);case _:
 @JsonSerializable()
 
 class _BuddyPriorCard implements BuddyPriorCard {
-  const _BuddyPriorCard({required this.proposalId, required this.status, required this.line});
+  const _BuddyPriorCard({required this.proposalId, required this.status, required this.revision, required this.line});
   factory _BuddyPriorCard.fromJson(Map<String, dynamic> json) => _$BuddyPriorCardFromJson(json);
 
 @override final  String proposalId;
 @override final  BuddyPriorCardStatus status;
+/// The card's current revision on the phone; a retry's update names it in replaces.expectedRevision.
+@override final  int revision;
 /// The card's compact summary.
 @override final  String line;
 
@@ -239,18 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BuddyPriorCard&&(identical(other.proposalId, proposalId) || other.proposalId == proposalId)&&(identical(other.status, status) || other.status == status)&&(identical(other.line, line) || other.line == line));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BuddyPriorCard&&(identical(other.proposalId, proposalId) || other.proposalId == proposalId)&&(identical(other.status, status) || other.status == status)&&(identical(other.revision, revision) || other.revision == revision)&&(identical(other.line, line) || other.line == line));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,proposalId,status,line);
+    return Object.hash(runtimeType,proposalId,status,revision,line);
 }
 
 @override
 String toString() {
-    return 'BuddyPriorCard(proposalId: $proposalId, status: $status, line: $line)';
+    return 'BuddyPriorCard(proposalId: $proposalId, status: $status, revision: $revision, line: $line)';
 }
 
 
@@ -261,7 +265,7 @@ abstract mixin class _$BuddyPriorCardCopyWith<$Res> implements $BuddyPriorCardCo
   factory _$BuddyPriorCardCopyWith(_BuddyPriorCard value, $Res Function(_BuddyPriorCard) _then) = __$BuddyPriorCardCopyWithImpl;
 @override @useResult
 $Res call({
- String proposalId, BuddyPriorCardStatus status, String line
+ String proposalId, BuddyPriorCardStatus status, int revision, String line
 });
 
 
@@ -278,11 +282,12 @@ class __$BuddyPriorCardCopyWithImpl<$Res>
 
 /// Create a copy of BuddyPriorCard
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? proposalId = null,Object? status = null,Object? line = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? proposalId = null,Object? status = null,Object? revision = null,Object? line = null,}) {
   return _then(_BuddyPriorCard(
 proposalId: null == proposalId ? _self.proposalId : proposalId // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as BuddyPriorCardStatus,line: null == line ? _self.line : line // ignore: cast_nullable_to_non_nullable
+as BuddyPriorCardStatus,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,line: null == line ? _self.line : line // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

@@ -23,6 +23,8 @@ import 'buddy_read_memory_result_name.dart';
 import 'buddy_read_workouts_data.dart';
 import 'buddy_read_workouts_result.dart';
 import 'buddy_read_workouts_result_name.dart';
+import 'buddy_unsupported_result.dart';
+import 'buddy_unsupported_result_name.dart';
 
 part 'buddy_phone_tool_result.freezed.dart';
 part 'buddy_phone_tool_result.g.dart';
@@ -83,6 +85,14 @@ sealed class BuddyPhoneToolResult with _$BuddyPhoneToolResult {
     required BuddyPhoneToolError? error,
     required BuddyQueryResultData? data,
   }) = BuddyPhoneToolResultQueryData;
+
+  @FreezedUnionValue('unsupported')
+  const factory BuddyPhoneToolResult.unsupported({
+    required BuddyUnsupportedResultName name,
+    required String callId,
+    required bool ok,
+    required BuddyPhoneToolError? error,
+  }) = BuddyPhoneToolResultUnsupported;
 
   const factory BuddyPhoneToolResult.unrecognized() =
       BuddyPhoneToolResultUnrecognized;

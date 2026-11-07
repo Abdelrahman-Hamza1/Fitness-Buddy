@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**80 of 111 steps done** · `▓▓▓▓▓▓▓░░░` 72%
+**81 of 111 steps done** · `▓▓▓▓▓▓▓░░░` 72%
 
-App 61/83 · Backend 19/28 · Foundation 7/7
+App 61/83 · Backend 20/28 · Foundation 7/7
 
 ## Now
 
@@ -16,7 +16,7 @@ App 61/83 · Backend 19/28 · Foundation 7/7
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | ✅ | **M5** Accounts & sync | `▓▓▓▓▓` 20/20 | — |
 | 🟨 | **M2b** Solid app (no AI) | `▓▓▓░░` 22/30 | A25 A26 A27 A28b A29 A37b +2 |
-| 🟨 | **M3** Buddy agent on the… | `▓▓░░░` 15/33 | A23b A39b A41b A58 A59 A60 +12 |
+| 🟨 | **M3** Buddy agent on the… | `▓▓░░░` 16/33 | A23b A39b A41b A58 A59 A60 +11 |
 | ⬜ | **M4** Dogfood 2 | `░░░░░` 0/2 | A67 A68 B26 |
 | ⬜ | **M6** Workouts, body &… | `░░░░░` 0/0 | A69 B26 |
 | ⬜ | **M7** Production | `░░░░░` 0/1 | A43 B14 |
@@ -28,8 +28,8 @@ App 61/83 · Backend 19/28 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
+- [A66](technical-planning/steps/A66-buddy-agent-client.md) Buddy agent client (D-100): turn runner + SSE, phone tools, conversation/summary, live steps, Apply all, offline queue & failures (was A23b), dev trace view; app leaves interpret · M3
 - [B13](technical-planning/steps/B13-staging-infrastructure.md) Staging on Hetzner & deploy pipeline · M3
-- [B25](technical-planning/steps/B25-buddy-agent-core.md) Buddy agent core (D-100): turn endpoints + SSE, own tool loop, sealed continuation, server + action tools, guards, summary, trace, per-step limits · M3
 
 ## Waiting on you
 

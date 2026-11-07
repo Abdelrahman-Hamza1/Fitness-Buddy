@@ -3,7 +3,7 @@ using FitnessBuddy.BuildingBlocks.Persistence;
 
 namespace FitnessBuddy.Modules.Buddy.Infrastructure;
 
-/// <summary>Replay content and paid-attempt markers are erased atomically with the account.</summary>
+/// <summary>Replay content, paid-attempt markers and agent turn rows are erased atomically with the account.</summary>
 internal sealed class BuddyErasure : IOutboxHandler
 {
     public string EventType => UserErasure.EventType;
@@ -11,8 +11,11 @@ internal sealed class BuddyErasure : IOutboxHandler
     public async Task HandleAsync(QueueMessage message, DatabaseSession session, CancellationToken cancellationToken)
     {
         if (session.UserId is null || session.UserId != message.UserId) { throw new InvalidOperationException("Invalid erasure scope."); }
-        await using var command = session.Command("DELETE FROM buddy.attempts WHERE user_id=$1");
-        command.Parameters.AddWithValue(session.UserId.Value);
-        await command.ExecuteNonQueryAsync(cancellationToken);
+        foreach (var table in new[] { "attempts", "turn_rounds", "turns" })
+        {
+            await using var command = session.Command($"DELETE FROM buddy.{table} WHERE user_id=$1");
+            command.Parameters.AddWithValue(session.UserId.Value);
+            await command.ExecuteNonQueryAsync(cancellationToken);
+        }
     }
 }

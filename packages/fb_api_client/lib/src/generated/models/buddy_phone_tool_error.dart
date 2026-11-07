@@ -4,7 +4,7 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-/// budgetExceeded: the turn's disclosure budget (120 rows, 48 KiB across all phone results) is spent; unsupportedPlan: the QueryPlan isn't a valid combination; invalidArgs; unavailable. Additive.
+/// budgetExceeded: the turn's disclosure budget (120 rows, 48 KiB across all phone results) is spent; unsupportedPlan: the QueryPlan isn't a valid combination; invalidArgs; unavailable; unsupported: the app doesn't know this tool (sent with the unsupported variant). Additive.
 @JsonEnum()
 enum BuddyPhoneToolError {
   @JsonValue('budgetExceeded')
@@ -15,6 +15,8 @@ enum BuddyPhoneToolError {
   invalidArgs('invalidArgs'),
   @JsonValue('unavailable')
   unavailable('unavailable'),
+  @JsonValue('unsupported')
+  unsupported('unsupported'),
 
   /// Default value for all unparsed values, allows backward compatibility when adding new values on the backend.
   $unknown(null);

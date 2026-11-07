@@ -39,5 +39,6 @@ const _$BuddyPhoneToolErrorEnumMap = {
   BuddyPhoneToolError.unsupportedPlan: 'unsupportedPlan',
   BuddyPhoneToolError.invalidArgs: 'invalidArgs',
   BuddyPhoneToolError.unavailable: 'unavailable',
+  BuddyPhoneToolError.unsupported: 'unsupported',
   BuddyPhoneToolError.$unknown: r'$unknown',
 };

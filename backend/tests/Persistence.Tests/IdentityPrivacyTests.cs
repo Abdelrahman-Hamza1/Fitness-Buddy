@@ -626,6 +626,255 @@ public sealed class IdentityPrivacyTests(PostgresFixture postgres)
         await capture.AssertAbsentAsync(canaries, await SinkCapture.AuditAsync(postgres), postgres);
     }
 
+    // B25 (TD-125, TD-128, exit criteria 2–4) with a scripted model and no provider: the turn stream carries the user's own words
+    // by design, while logs, spans, metrics, Sentry, the audit table and the ledger rows hold none of them. Along the way it pins
+    // the protocol: SSE ids, a phone round trip, attempt-scoped proposal IDs, one message per turn across a retry, 409 for an
+    // acknowledged round, error invalid for wrong call IDs and error expired for an old continuation or a third attempt.
+    [Fact, Trait("Rule", "09.4-no-user-content"), Trait("Req", "AC-040")]
+    public async Task B25_agent_turns_stream_content_while_logs_telemetry_and_ledger_omit_it()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var h = new IdentityHarness(postgres); await h.InitializeAsync();
+        using var capture = new SinkCapture();
+        string[] canaries = ["CANARY-B25-MESSAGE", "رسالة-وكيل-سرية-كناري", "CANARY-B25-PERSONAL", "CANARY-B25-ENTRY", "CANARY-B25-REPLY", "CANARY-B25-HISTORY", "CANARY-B25-MEMORY"];
+        var keyDir = Directory.CreateTempSubdirectory("fb-b25-seal-");
+        var keyFile = Path.Combine(keyDir.FullName, "seal");
+        // Built at runtime (no key-shaped literal in the repository).
+        await File.WriteAllTextAsync(keyFile, Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32)), ct);
+        if (!OperatingSystem.IsWindows()) { File.SetUnixFileMode(keyFile, UnixFileMode.UserRead | UnixFileMode.UserWrite); }
+        var model = new ScriptedAgentModel(canaries);
+        using var wire = new BuddyApiTests.BuddyWire();
+        await using var api = capture.Configure(new BuddyApiTests.BuddyApi(postgres, h, wire,
+            configure: s => s.AddScoped<FitnessBuddy.Modules.Buddy.Application.IAgentModel>(_ => model)), _ => { });
+        await using var factory = api.WithWebHostBuilder(b => b.ConfigureAppConfiguration((_, c) => c.AddInMemoryCollection(new Dictionary<string, string?>
+        { ["Buddy:Agent:SealKeyFile"] = keyFile, ["Buddy:Agent:TraceEnabled"] = "true" })));
+        using var client = factory.CreateClient(); BuddyApiTests.Headers(client, h); await BuddyApiTests.SignIn(client, h);
+        var personal = "019a0b0c-0000-4000-8000-000000000301";
+        var turnA = Guid.CreateVersion7();
+
+        JsonObject Start(Guid turn, string text, Guid? ack = null, JsonObject? prior = null) => new()
+        {
+            ["turnId"] = turn.ToString(),
+            ["mode"] = "chat",
+            ["message"] = new JsonObject { ["text"] = text, ["image"] = null },
+            ["history"] = new JsonArray(new JsonObject { ["messageId"] = "019a0b0c-0000-7000-8000-000000000001", ["role"] = "user", ["text"] = canaries[5], ["outcomes"] = new JsonArray() }),
+            ["summary"] = null,
+            ["compact"] = null,
+            ["personal"] = new JsonArray(new JsonObject
+            {
+                ["ref"] = personal,
+                ["kind"] = "personalFood",
+                ["names"] = new JsonArray(canaries[2]),
+                ["aliases"] = new JsonArray(),
+                ["state"] = "cooked",
+                ["per100"] = new JsonObject { ["kcal"] = 150, ["proteinG"] = 10, ["carbsG"] = 5, ["fatG"] = 8, ["fiberG"] = 0 },
+                ["servings"] = new JsonArray(new JsonObject { ["unitCode"] = "piece", ["g"] = 50, ["ml"] = null, ["rangeLo"] = null, ["rangeHi"] = null, ["source"] = "user" }),
+                ["portions"] = new JsonArray(),
+            }),
+            ["profile"] = new JsonObject
+            {
+                ["memory"] = new JsonArray(new JsonObject { ["kind"] = "alias", ["key"] = "shake", ["value"] = canaries[6] }),
+                ["defaults"] = new JsonArray(),
+                ["halal"] = true,
+                ["units"] = new JsonObject { ["mass"] = "kg", ["length"] = "cm", ["energy"] = "kcal" },
+                ["ramadan"] = new JsonObject { ["active"] = false, ["fajr"] = null, ["maghrib"] = null },
+            },
+            ["snapshot"] = new JsonObject
+            {
+                ["now"] = h.Clock.GetUtcNow().ToString("O"),
+                ["tzOffsetMin"] = 120,
+                ["slots"] = new JsonArray(),
+                ["today"] = new JsonObject
+                {
+                    ["kcal"] = 900,
+                    ["proteinG"] = 40,
+                    ["carbsG"] = 100,
+                    ["fatG"] = 30,
+                    ["fiberG"] = 10,
+                    ["targets"] = new JsonObject { ["kcal"] = 2100, ["proteinG"] = 120, ["carbsG"] = null, ["fatG"] = null, ["fiberG"] = null }
+                },
+                ["openCards"] = new JsonArray(),
+            },
+            ["ackTurn"] = ack is { } a ? new JsonObject { ["turnId"] = a.ToString() } : null,
+            ["priorAttempt"] = prior,
+            ["trace"] = true,
+        };
+        async Task<(HttpStatusCode Status, List<(string Id, JsonNode Data)> Events, string Body)> PostAsync(string path, Guid turn, JsonNode body)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = new StringContent(body.ToJsonString(B18Relaxed), Encoding.UTF8, "application/json") };
+            request.Headers.Add("Idempotency-Key", turn.ToString());
+            using var response = await client.SendAsync(request, ct);
+            var text = await response.Content.ReadAsStringAsync(ct);
+            var events = new List<(string, JsonNode)>();
+            if (response.Content.Headers.ContentType?.MediaType == "text/event-stream")
+            {
+                Assert.Equal("no", response.Headers.GetValues("X-Accel-Buffering").Single());
+                foreach (var frame in text.Split("\n\n", StringSplitOptions.RemoveEmptyEntries).Where(f => !f.StartsWith(':')))
+                {
+                    var lines = frame.Split('\n');
+                    events.Add((lines[0]["id: ".Length..], JsonNode.Parse(lines[1]["data: ".Length..])!));
+                }
+            }
+            return (response.StatusCode, events, text);
+        }
+        static string Type((string, JsonNode Data) e) => e.Data["type"]!.GetValue<string>();
+        var user = Guid.Parse((await h.Tokens.ValidateAsync(client.DefaultRequestHeaders.Authorization!.Parameter!, ct))!.FindFirst("sub")!.Value);
+        async Task<long> MessagesAsync()
+        {
+            await using var inspect = await postgres.SessionAsync(user);
+            await using var read = inspect.Command("SELECT coalesce(sum(messages),0)::bigint FROM usage.daily WHERE user_id=$1"); read.Parameters.AddWithValue(user);
+            return (long)(await read.ExecuteScalarAsync(ct))!;
+        }
+
+        // 1. A phone round trip: proposal (personal slice first) + read_diary → phoneTools; the continuation answers it → text, done.
+        var a0 = await PostAsync("/v1/buddy/turns", turnA, Start(turnA, $"{canaries[0]} {canaries[1]} {canaries[2]} and what did I eat"));
+        Assert.Equal(HttpStatusCode.OK, a0.Status);
+        Assert.Equal(Enumerable.Range(0, a0.Events.Count).Select(i => $"{turnA}:0:{i}"), a0.Events.Select(e => e.Id));
+        Assert.Equal(["step", "proposal", "step", "trace", "phoneTools"], a0.Events.Select(Type));
+        var proposal = a0.Events.Single(e => Type(e) == "proposal").Data;
+        Assert.Equal(FitnessBuddy.Modules.Buddy.Domain.ProposalIds.For(turnA, 0, 1, 0).ToString(), proposal["proposalId"]!.GetValue<string>());
+        Assert.Equal(personal, proposal["intent"]!["items"]![0]!["match"]!["key"]!.GetValue<string>());
+        var pause = a0.Events.Last().Data;
+        var call = pause["calls"]![0]!;
+        JsonObject Continue(string callId, string entryName = "") => new()
+        {
+            ["turnId"] = turnA.ToString(),
+            ["round"] = 1,
+            ["continuation"] = pause["continuation"]!.GetValue<string>(),
+            ["priorAttempt"] = null,
+            ["results"] = new JsonArray(new JsonObject
+            {
+                ["name"] = "readDiary",
+                ["callId"] = callId,
+                ["ok"] = true,
+                ["error"] = null,
+                ["data"] = new JsonObject
+                {
+                    ["truncated"] = false,
+                    ["entries"] = new JsonArray(new JsonObject
+                    { ["id"] = "019a0b0c-0000-4000-8000-000000000401", ["date"] = "2026-10-16", ["slot"] = "Lunch", ["name"] = canaries[3] + entryName, ["grams"] = 200, ["kcal"] = 330 })
+                },
+            }),
+        };
+        // Nested result limits are checked before any ledger change: 400, and the round can still run.
+        var oversized = await PostAsync("/v1/buddy/turns/continue", turnA, Continue(call["callId"]!.GetValue<string>(), new string('x', 300)));
+        Assert.Equal(HttpStatusCode.BadRequest, oversized.Status); B18AssertNoCanary(canaries, oversized.Body);
+        var wrong = await PostAsync("/v1/buddy/turns/continue", turnA, Continue(Guid.CreateVersion7().ToString()));
+        Assert.Equal(["error"], wrong.Events.Select(Type)); Assert.Equal("invalid", wrong.Events[0].Data["code"]!.GetValue<string>());
+        var a1 = await PostAsync("/v1/buddy/turns/continue", turnA, Continue(call["callId"]!.GetValue<string>()));
+        Assert.Equal(HttpStatusCode.OK, a1.Status);
+        Assert.Equal("done", Type(a1.Events[^1])); Assert.Equal("answered", a1.Events[^1].Data["reason"]!.GetValue<string>());
+        var reply = string.Concat(a1.Events.Where(e => Type(e) == "text").Select(e => e.Data["text"]!.GetValue<string>()));
+        Assert.Contains("330 kcal", reply, StringComparison.Ordinal); // a claim rendered by code
+        Assert.Equal(1, await MessagesAsync());
+        // A retry of that round must repeat its results (digest): different results are invalid, with no send.
+        var sendsBefore = model.Calls;
+        var changed = await PostAsync("/v1/buddy/turns/continue", turnA, Continue(call["callId"]!.GetValue<string>(), "-changed"));
+        Assert.Equal("invalid", changed.Events.Single().Data["code"]!.GetValue<string>()); Assert.Equal(sendsBefore, model.Calls);
+
+        // 2. A completed but unacknowledged round re-runs once as attempt 2 with new card IDs and no new message; a third is expired.
+        var turnB = Guid.CreateVersion7();
+        var b1 = await PostAsync("/v1/buddy/turns", turnB, Start(turnB, $"2 {canaries[2]}"));
+        Assert.Equal(["step", "proposal", "text", "trace", "done"], b1.Events.Select(Type));
+        var firstCard = b1.Events.Single(e => Type(e) == "proposal").Data["proposalId"]!.GetValue<string>();
+        JsonObject Prior() => new() { ["attempt"] = 1, ["cards"] = new JsonArray(new JsonObject { ["proposalId"] = firstCard, ["status"] = "pending", ["revision"] = 1, ["line"] = canaries[2] }) };
+        var b2 = await PostAsync("/v1/buddy/turns", turnB, Start(turnB, $"2 {canaries[2]}", prior: Prior()));
+        Assert.Equal(FitnessBuddy.Modules.Buddy.Domain.ProposalIds.For(turnB, 0, 2, 0).ToString(), b2.Events.Single(e => Type(e) == "proposal").Data["proposalId"]!.GetValue<string>());
+        Assert.Equal(2, await MessagesAsync());
+        var b3 = await PostAsync("/v1/buddy/turns", turnB, Start(turnB, $"2 {canaries[2]}"));
+        Assert.Equal("expired", b3.Events.Single().Data["code"]!.GetValue<string>());
+
+        // A first post may already carry priorAttempt (the phone's send was ambiguous but never arrived): it runs as attempt 1.
+        var turnF = Guid.CreateVersion7();
+        var f1 = await PostAsync("/v1/buddy/turns", turnF, Start(turnF, $"2 {canaries[2]}", prior: new JsonObject { ["attempt"] = 1, ["cards"] = new JsonArray() }));
+        Assert.Equal(FitnessBuddy.Modules.Buddy.Domain.ProposalIds.For(turnF, 0, 1, 0).ToString(), f1.Events.Single(e => Type(e) == "proposal").Data["proposalId"]!.GetValue<string>());
+
+        // 3. An acknowledged round (ackTurn in the next start) already ran: 409 without a send.
+        var turnC = Guid.CreateVersion7();
+        Assert.Equal(HttpStatusCode.OK, (await PostAsync("/v1/buddy/turns", turnC, Start(turnC, $"2 {canaries[2]}", ack: turnB))).Status);
+        var sends = model.Calls;
+        var replay = await PostAsync("/v1/buddy/turns", turnB, Start(turnB, $"2 {canaries[2]}"));
+        Assert.Equal(HttpStatusCode.Conflict, replay.Status); Assert.Equal(sends, model.Calls);
+        B18AssertNoCanary(canaries, replay.Body);
+
+        // An app that doesn't know a tool answers it with the unsupported variant; the model gets a tool error and the turn ends.
+        var turnE = Guid.CreateVersion7();
+        var e0 = await PostAsync("/v1/buddy/turns", turnE, Start(turnE, $"{canaries[0]} what did I eat"));
+        var ePause = e0.Events.Last().Data;
+        var e1 = await PostAsync("/v1/buddy/turns/continue", turnE, new JsonObject
+        {
+            ["turnId"] = turnE.ToString(),
+            ["round"] = 1,
+            ["continuation"] = ePause["continuation"]!.GetValue<string>(),
+            ["priorAttempt"] = null,
+            ["results"] = new JsonArray(new JsonObject { ["name"] = "unsupported", ["callId"] = ePause["calls"]![0]!["callId"]!.GetValue<string>(), ["ok"] = false, ["error"] = "unsupported" }),
+        });
+        Assert.True(Type(e1.Events[^1]) == "done", string.Join(",", e1.Events.Select(e => e.Data.ToJsonString())));
+
+        // 4. A continuation older than 10 minutes is expired, with no send.
+        var turnD = Guid.CreateVersion7();
+        var d0 = await PostAsync("/v1/buddy/turns", turnD, Start(turnD, $"{canaries[0]} what did I eat"));
+        var paused = d0.Events.Last().Data;
+        h.Clock.Advance(TimeSpan.FromMinutes(11)); sends = model.Calls;
+        var late = await PostAsync("/v1/buddy/turns/continue", turnD, new JsonObject
+        {
+            ["turnId"] = turnD.ToString(),
+            ["round"] = 1,
+            ["continuation"] = paused["continuation"]!.GetValue<string>(),
+            ["priorAttempt"] = null,
+            ["results"] = new JsonArray(new JsonObject { ["name"] = "readDiary", ["callId"] = paused["calls"]![0]!["callId"]!.GetValue<string>(), ["ok"] = false, ["error"] = "unavailable", ["data"] = null }),
+        });
+        Assert.Equal("expired", late.Events.Single().Data["code"]!.GetValue<string>()); Assert.Equal(sends, model.Calls);
+
+        // Diagnostics and the ledger hold no content (the stream itself carries the user's words by design).
+        await factory.Services.GetRequiredService<Sentry.IHub>().FlushAsync(TimeSpan.FromSeconds(5));
+        capture.Meter.RecordObservableInstruments();
+        Assert.Contains(capture.Logs.Lines, l => l.Contains("Buddy turn", StringComparison.Ordinal) && l.Contains("prompt=agent-v1", StringComparison.Ordinal));
+        await using (var inspect = await postgres.SessionAsync(user))
+        {
+            await using var rows = inspect.Command("SELECT (SELECT count(*) FROM buddy.turns)::text || ' ' || coalesce((SELECT string_agg(row_to_json(t)::text, ' ') FROM buddy.turns t), '') || coalesce((SELECT string_agg(row_to_json(r)::text, ' ') FROM buddy.turn_rounds r), '')");
+            var ledger = (string)(await rows.ExecuteScalarAsync(ct))!;
+            Assert.StartsWith("6 ", ledger, StringComparison.Ordinal);
+            B18AssertNoCanary(canaries, ledger);
+            // Every send's input reservation was reconciled to the reported usage (1200 per scripted send): none outstanding.
+            await using var reserved = inspect.Command("SELECT coalesce(sum(reserved_input),0)::bigint, coalesce(sum(input_tokens),0)::bigint, coalesce(sum(sends),0)::bigint FROM buddy.turns");
+            await using var totals = await reserved.ExecuteReaderAsync(ct); Assert.True(await totals.ReadAsync(ct));
+            Assert.Equal(0, totals.GetInt64(0)); Assert.Equal(1200 * totals.GetInt64(2), totals.GetInt64(1));
+        }
+        await capture.AssertAbsentAsync(canaries, await SinkCapture.AuditAsync(postgres), postgres);
+        keyDir.Delete(recursive: true);
+    }
+
+    /// <summary>A model that answers from the transcript shape only: a food log (+ a diary read when asked), then a reply with a claim.</summary>
+    private sealed class ScriptedAgentModel(string[] canaries) : FitnessBuddy.Modules.Buddy.Application.IAgentModel
+    {
+        private int calls;
+        public int Calls => calls;
+        public Task<FitnessBuddy.Modules.Buddy.Application.AgentModelResult> SendAsync(FitnessBuddy.Modules.Buddy.Application.AgentModelRequest request, CancellationToken cancellationToken)
+        {
+            var n = Interlocked.Increment(ref calls);
+            var last = request.Transcript[^1];
+            var usage = new FitnessBuddy.Modules.Buddy.Application.TokenUsage(1200, 0, 80);
+            FitnessBuddy.Modules.Buddy.Application.AgentModelResult Result(string text, params AgentToolCall[] toolCalls) =>
+                new(FitnessBuddy.Modules.Buddy.Application.AgentModelStatus.Success, text, toolCalls, usage, 0.0001m, 5);
+            if (last.Role == AgentRole.Tool)
+            {
+                // The phone's diary row came back as an entry handle with a kcal claim; the reply refers to it by ID.
+                var entryClaim = System.Text.RegularExpressions.Regex.Match(last.Results[0].ResultJson, "\"kcal\":\"(k[0-9]+)\"").Groups[1].Value;
+                return Task.FromResult(Result($"{canaries[4]}: lunch was {{fact:{entryClaim}}}."));
+            }
+            var text = last.Text ?? "";
+            var log = new AgentToolCall($"call-{n}-log", "propose_food_log", JsonSerializer.Serialize(new
+            {
+                items = new[] { new { mention = canaries[2], canonicalNameEn = canaries[2], nameAr = (string?)null, amount = 2, unit = "piece", amountExplicit = true, ambiguities = Array.Empty<string>() } },
+                slotHint = "breakfast",
+            }));
+            return Task.FromResult(text.Contains("what did I eat", StringComparison.Ordinal)
+                ? Result("", log, new AgentToolCall($"call-{n}-diary", "read_diary", "{\"dateHint\":\"today\"}"))
+                : Result("", log));
+        }
+    }
+
     private sealed class ThrowingResolver(string text) : FitnessBuddy.Modules.Catalog.Contracts.IFoodResolver
     {
         public Task<IReadOnlyList<FitnessBuddy.Modules.Catalog.Contracts.FoodCandidate>> ResolveAsync(FitnessBuddy.Modules.Catalog.Contracts.FoodMention mention, CancellationToken cancellationToken) =>

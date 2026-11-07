@@ -15,6 +15,9 @@ abstract class BuddyPriorCard with _$BuddyPriorCard {
     required String proposalId,
     required BuddyPriorCardStatus status,
 
+    /// The card's current revision on the phone; a retry's update names it in replaces.expectedRevision.
+    required int revision,
+
     /// The card's compact summary.
     required String line,
   }) = _BuddyPriorCard;

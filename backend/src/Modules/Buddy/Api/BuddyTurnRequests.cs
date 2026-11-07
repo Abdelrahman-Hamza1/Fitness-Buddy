@@ -15,7 +15,7 @@ public enum BuddyPersonalKind { PersonalFood, SavedMeal, Batch, Usual }
 public enum BuddyMassUnit { Kg, Lb }
 public enum BuddyLengthUnit { Cm, In }
 public enum BuddyEnergyUnit { Kcal }
-public enum BuddyPhoneToolError { BudgetExceeded, UnsupportedPlan, InvalidArgs, Unavailable }
+public enum BuddyPhoneToolError { BudgetExceeded, UnsupportedPlan, InvalidArgs, Unavailable, Unsupported }
 public enum BuddyBodyUnit { Kg, Cm, Percent }
 public enum BuddyClaimMetric { Kcal, Protein, Carbs, Fat, Fiber, Weight, WeightTrend, Measurement, Workouts, Sets, Volume, ExerciseLastDate, ExercisePr, WeighIns, LoggedDays }
 public enum BuddyClaimOperation { Total, Average, Remaining, Latest, Change, Count, Max, Min, Last }
@@ -51,7 +51,8 @@ public sealed record BuddyOpenCard(Guid ProposalId, [property: Range(1, int.MaxV
     [property: MaxLength(200)] string Summary);
 public sealed record BuddyTurnReference(Guid TurnId);
 public sealed record BuddyPriorAttempt([property: Range(1, 2)] int Attempt, [property: MaxLength(12)] BuddyPriorCard[] Cards);
-public sealed record BuddyPriorCard(Guid ProposalId, BuddyPriorCardStatus Status, [property: MaxLength(120)] string Line);
+/// <remarks><c>revision</c>: the card's current revision on the phone (A66 review #4), so a retry's updates name it exactly.</remarks>
+public sealed record BuddyPriorCard(Guid ProposalId, BuddyPriorCardStatus Status, [property: Range(1, int.MaxValue)] int Revision, [property: MaxLength(120)] string Line);
 
 /// <summary>Answers a paused round's phone tools (06 §3.2): exactly the pending call IDs, each once.</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
@@ -65,12 +66,15 @@ public sealed record BuddyTurnContinue(Guid TurnId, [property: Range(1, 3)] int 
 [JsonDerivedType(typeof(BuddyReadWorkoutsResult), "readWorkouts")]
 [JsonDerivedType(typeof(BuddyReadMemoryResult), "readMemory")]
 [JsonDerivedType(typeof(BuddyQueryDataResult), "queryData")]
+[JsonDerivedType(typeof(BuddyUnsupportedResult), "unsupported")]
 public abstract record BuddyPhoneToolResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error);
 public sealed record BuddyFindMyFoodsResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error, BuddyFindMyFoodsData? Data) : BuddyPhoneToolResult(CallId, Ok, Error);
 public sealed record BuddyReadDiaryResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error, BuddyReadDiaryData? Data) : BuddyPhoneToolResult(CallId, Ok, Error);
 public sealed record BuddyReadBodyResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error, BuddyReadBodyData? Data) : BuddyPhoneToolResult(CallId, Ok, Error);
 public sealed record BuddyReadWorkoutsResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error, BuddyReadWorkoutsData? Data) : BuddyPhoneToolResult(CallId, Ok, Error);
 public sealed record BuddyReadMemoryResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error, BuddyReadMemoryData? Data) : BuddyPhoneToolResult(CallId, Ok, Error);
+/// <summary>An app that doesn't know a tool answers any call with this (ok false, error unsupported); the server treats it as a tool error.</summary>
+public sealed record BuddyUnsupportedResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error) : BuddyPhoneToolResult(CallId, Ok, Error);
 public sealed record BuddyQueryDataResult(Guid CallId, bool Ok, BuddyPhoneToolError? Error, BuddyQueryResultData? Data) : BuddyPhoneToolResult(CallId, Ok, Error);
 
 // Phone-tool result data with the phone-enforced scope caps (06 §4.2). Local IDs here are swapped for handles by the server.

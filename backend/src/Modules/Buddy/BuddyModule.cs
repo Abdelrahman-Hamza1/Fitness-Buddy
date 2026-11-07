@@ -15,7 +15,7 @@ namespace FitnessBuddy.Modules.Buddy;
 public sealed class BuddyModule : IModule
 {
     public string Name => "Buddy";
-    public UserDataOwnership UserData => new(["attempts"], [], "buddy.erase");
+    public UserDataOwnership UserData => new(["attempts", "turns", "turn_rounds"], [], "buddy.erase");
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidation();
@@ -29,6 +29,13 @@ public sealed class BuddyModule : IModule
         services.AddScoped<IProductionLlmClient, ProductionLlmClient>();
         services.AddScoped<IInterpretLedger, PostgresInterpretLedger>(); services.AddScoped<InterpretMessage>(); services.AddScoped<ResolveInterpretation>();
         services.AddSingleton<BuddyConcurrency>(); services.AddScoped<IOutboxHandler, BuddyErasure>(); services.AddScoped<IJobHandler, BuddyCleanup>();
+        // B25: the agent turn routes (06 §2–§3). The seal key is read lazily; without it the routes answer 503.
+        services.AddOptions<BuddyAgentOptions>().Bind(configuration.GetSection("Buddy:Agent"))
+            .Validate(o => o.Valid(), "Invalid bounded Buddy agent configuration.").ValidateOnStart();
+        services.AddSingleton<IContinuationSealer, AesGcmContinuationSealer>(); services.AddSingleton<AgentConcurrency>(); services.AddSingleton<AttemptFences>();
+        services.AddScoped<IAgentLedger, PostgresAgentLedger>(); services.AddScoped<BuddyAgent>();
+        services.AddScoped<IAgentModel, ChatClientAgentModel>(); services.AddScoped<ToolRunner>(); services.AddScoped<ServerTools>(); services.AddScoped<ActionTools>(); services.AddScoped<ReplyWriter>();
+        services.AddScoped<RunTurn>();
         services.AddSingleton(new ModuleMigration("buddy", c => new Infrastructure.BuddyContext(DatabaseConfiguration.ContextOptions<Infrastructure.BuddyContext>(c, "buddy"))));
     }
     public void MapEndpoints(RouteGroupBuilder group) => BuddyEndpoints.Map(group);

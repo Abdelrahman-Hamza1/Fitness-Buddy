@@ -3255,12 +3255,13 @@
       },
       "BuddyPhoneToolError": {
         "type": "string",
-        "description": "budgetExceeded: the turn's disclosure budget (120 rows, 48 KiB across all phone results) is spent; unsupportedPlan: the QueryPlan isn't a valid combination; invalidArgs; unavailable. Additive.",
+        "description": "budgetExceeded: the turn's disclosure budget (120 rows, 48 KiB across all phone results) is spent; unsupportedPlan: the QueryPlan isn't a valid combination; invalidArgs; unavailable; unsupported: the app doesn't know this tool (sent with the unsupported variant). Additive.",
         "enum": [
           "budgetExceeded",
           "unsupportedPlan",
           "invalidArgs",
-          "unavailable"
+          "unavailable",
+          "unsupported"
         ]
       },
       "BuddyPhoneToolResult": {
@@ -3283,6 +3284,9 @@
           },
           {
             "$ref": "#/components/schemas/BuddyQueryDataResult"
+          },
+          {
+            "$ref": "#/components/schemas/BuddyUnsupportedResult"
           }
         ],
         "discriminator": {
@@ -3293,7 +3297,8 @@
             "readBody": "#/components/schemas/BuddyReadBodyResult",
             "readWorkouts": "#/components/schemas/BuddyReadWorkoutsResult",
             "readMemory": "#/components/schemas/BuddyReadMemoryResult",
-            "queryData": "#/components/schemas/BuddyQueryDataResult"
+            "queryData": "#/components/schemas/BuddyQueryDataResult",
+            "unsupported": "#/components/schemas/BuddyUnsupportedResult"
           }
         }
       },
@@ -3360,7 +3365,7 @@
       },
       "BuddyPriorAttempt": {
         "type": "object",
-        "description": "Retries only (06 §3.4): the failed attempt's cards. Confirmed and discarded ones are passed to the model as already handled, pending ones as still open.",
+        "description": "Retries only (06 §3.4): the failed attempt's cards. Confirmed and discarded ones are passed to the model as already handled, pending ones as still open. attempt 1 is also valid when the server never saw the first request (an ambiguous send): the round then simply runs as attempt 1.",
         "required": [
           "attempt",
           "cards"
@@ -3386,6 +3391,7 @@
         "required": [
           "proposalId",
           "status",
+          "revision",
           "line"
         ],
         "properties": {
@@ -3395,6 +3401,13 @@
           },
           "status": {
             "$ref": "#/components/schemas/BuddyPriorCardStatus"
+          },
+          "revision": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "description": "The card's current revision on the phone; a retry's update names it in replaces.expectedRevision."
           },
           "line": {
             "type": "string",
@@ -5131,6 +5144,41 @@
               "null"
             ],
             "format": "double"
+          }
+        }
+      },
+      "BuddyUnsupportedResult": {
+        "type": "object",
+        "description": "Any call the app doesn't know: ok false, error unsupported, no data. The server treats it as a tool error.",
+        "required": [
+          "name",
+          "callId",
+          "ok",
+          "error"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "unsupported"
+            ]
+          },
+          "callId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BuddyPhoneToolError"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       }

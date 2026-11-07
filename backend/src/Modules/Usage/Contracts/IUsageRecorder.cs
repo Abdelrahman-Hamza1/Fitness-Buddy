@@ -10,6 +10,11 @@ public interface IUsageRecorder
     /// A ceiling of 0 or less reserves nothing, so no physical send happens.
     /// </summary>
     Task<UsageReservation> ReserveAsync(DatabaseSession session, string model, int defaultCeiling, DateOnly day, bool newMessage, CancellationToken cancellationToken);
+    /// <summary>
+    /// B25 (TD-128): reserves one logical message (an agent turn) against <paramref name="messageCeiling"/>, without a physical call;
+    /// the turn's sends are reserved one by one with <see cref="ReserveAsync"/> (<c>newMessage: false</c>). An operator override of 0 refuses.
+    /// </summary>
+    Task<UsageReservation> ReserveMessageAsync(DatabaseSession session, string model, int messageCeiling, DateOnly day, CancellationToken cancellationToken);
     Task RecordAsync(DatabaseSession session, UsageCharge charge, CancellationToken cancellationToken);
     Task CleanupAsync(DatabaseSession session, CancellationToken cancellationToken);
 }

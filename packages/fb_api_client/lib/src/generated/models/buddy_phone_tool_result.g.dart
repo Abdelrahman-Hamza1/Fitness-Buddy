@@ -40,6 +40,7 @@ const _$BuddyPhoneToolErrorEnumMap = {
   BuddyPhoneToolError.unsupportedPlan: 'unsupportedPlan',
   BuddyPhoneToolError.invalidArgs: 'invalidArgs',
   BuddyPhoneToolError.unavailable: 'unavailable',
+  BuddyPhoneToolError.unsupported: 'unsupported',
   BuddyPhoneToolError.$unknown: r'$unknown',
 };
 
@@ -186,6 +187,31 @@ Map<String, dynamic> _$BuddyPhoneToolResultQueryDataToJson(
 const _$BuddyQueryDataResultNameEnumMap = {
   BuddyQueryDataResultName.queryData: 'queryData',
   BuddyQueryDataResultName.$unknown: r'$unknown',
+};
+
+BuddyPhoneToolResultUnsupported _$BuddyPhoneToolResultUnsupportedFromJson(
+  Map<String, dynamic> json,
+) => BuddyPhoneToolResultUnsupported(
+  name: BuddyUnsupportedResultName.fromJson(json['name'] as String),
+  callId: json['callId'] as String,
+  ok: json['ok'] as bool,
+  error: json['error'] == null
+      ? null
+      : BuddyPhoneToolError.fromJson(json['error'] as String),
+);
+
+Map<String, dynamic> _$BuddyPhoneToolResultUnsupportedToJson(
+  BuddyPhoneToolResultUnsupported instance,
+) => <String, dynamic>{
+  'name': _$BuddyUnsupportedResultNameEnumMap[instance.name]!,
+  'callId': instance.callId,
+  'ok': instance.ok,
+  'error': _$BuddyPhoneToolErrorEnumMap[instance.error],
+};
+
+const _$BuddyUnsupportedResultNameEnumMap = {
+  BuddyUnsupportedResultName.unsupported: 'unsupported',
+  BuddyUnsupportedResultName.$unknown: r'$unknown',
 };
 
 BuddyPhoneToolResultUnrecognized _$BuddyPhoneToolResultUnrecognizedFromJson(

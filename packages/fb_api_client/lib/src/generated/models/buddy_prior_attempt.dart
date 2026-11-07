@@ -9,7 +9,7 @@ import 'buddy_prior_card.dart';
 part 'buddy_prior_attempt.freezed.dart';
 part 'buddy_prior_attempt.g.dart';
 
-/// Retries only (06 §3.4): the failed attempt's cards. Confirmed and discarded ones are passed to the model as already handled, pending ones as still open.
+/// Retries only (06 §3.4): the failed attempt's cards. Confirmed and discarded ones are passed to the model as already handled, pending ones as still open. attempt 1 is also valid when the server never saw the first request (an ambiguous send): the round then simply runs as attempt 1.
 @Freezed()
 abstract class BuddyPriorAttempt with _$BuddyPriorAttempt {
   const factory BuddyPriorAttempt({

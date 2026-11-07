@@ -40,6 +40,10 @@ BuddyPhoneToolResult _$BuddyPhoneToolResultFromJson(
           return BuddyPhoneToolResultQueryData.fromJson(
             json
           );
+                case 'unsupported':
+          return BuddyPhoneToolResultUnsupported.fromJson(
+            json
+          );
         
           default:
             return BuddyPhoneToolResultUnrecognized.fromJson(
@@ -95,7 +99,7 @@ extension BuddyPhoneToolResultPatterns on BuddyPhoneToolResult {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BuddyPhoneToolResultFindMyFoods value)?  findMyFoods,TResult Function( BuddyPhoneToolResultReadDiary value)?  readDiary,TResult Function( BuddyPhoneToolResultReadBody value)?  readBody,TResult Function( BuddyPhoneToolResultReadWorkouts value)?  readWorkouts,TResult Function( BuddyPhoneToolResultReadMemory value)?  readMemory,TResult Function( BuddyPhoneToolResultQueryData value)?  queryData,TResult Function( BuddyPhoneToolResultUnrecognized value)?  unrecognized,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BuddyPhoneToolResultFindMyFoods value)?  findMyFoods,TResult Function( BuddyPhoneToolResultReadDiary value)?  readDiary,TResult Function( BuddyPhoneToolResultReadBody value)?  readBody,TResult Function( BuddyPhoneToolResultReadWorkouts value)?  readWorkouts,TResult Function( BuddyPhoneToolResultReadMemory value)?  readMemory,TResult Function( BuddyPhoneToolResultQueryData value)?  queryData,TResult Function( BuddyPhoneToolResultUnsupported value)?  unsupported,TResult Function( BuddyPhoneToolResultUnrecognized value)?  unrecognized,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case BuddyPhoneToolResultFindMyFoods() when findMyFoods != null:
@@ -104,7 +108,8 @@ return readDiary(_that);case BuddyPhoneToolResultReadBody() when readBody != nul
 return readBody(_that);case BuddyPhoneToolResultReadWorkouts() when readWorkouts != null:
 return readWorkouts(_that);case BuddyPhoneToolResultReadMemory() when readMemory != null:
 return readMemory(_that);case BuddyPhoneToolResultQueryData() when queryData != null:
-return queryData(_that);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
+return queryData(_that);case BuddyPhoneToolResultUnsupported() when unsupported != null:
+return unsupported(_that);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
 return unrecognized(_that);case _:
   return orElse();
 
@@ -123,7 +128,7 @@ return unrecognized(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BuddyPhoneToolResultFindMyFoods value)  findMyFoods,required TResult Function( BuddyPhoneToolResultReadDiary value)  readDiary,required TResult Function( BuddyPhoneToolResultReadBody value)  readBody,required TResult Function( BuddyPhoneToolResultReadWorkouts value)  readWorkouts,required TResult Function( BuddyPhoneToolResultReadMemory value)  readMemory,required TResult Function( BuddyPhoneToolResultQueryData value)  queryData,required TResult Function( BuddyPhoneToolResultUnrecognized value)  unrecognized,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BuddyPhoneToolResultFindMyFoods value)  findMyFoods,required TResult Function( BuddyPhoneToolResultReadDiary value)  readDiary,required TResult Function( BuddyPhoneToolResultReadBody value)  readBody,required TResult Function( BuddyPhoneToolResultReadWorkouts value)  readWorkouts,required TResult Function( BuddyPhoneToolResultReadMemory value)  readMemory,required TResult Function( BuddyPhoneToolResultQueryData value)  queryData,required TResult Function( BuddyPhoneToolResultUnsupported value)  unsupported,required TResult Function( BuddyPhoneToolResultUnrecognized value)  unrecognized,}){
 final _that = this;
 switch (_that) {
 case BuddyPhoneToolResultFindMyFoods():
@@ -132,7 +137,8 @@ return readDiary(_that);case BuddyPhoneToolResultReadBody():
 return readBody(_that);case BuddyPhoneToolResultReadWorkouts():
 return readWorkouts(_that);case BuddyPhoneToolResultReadMemory():
 return readMemory(_that);case BuddyPhoneToolResultQueryData():
-return queryData(_that);case BuddyPhoneToolResultUnrecognized():
+return queryData(_that);case BuddyPhoneToolResultUnsupported():
+return unsupported(_that);case BuddyPhoneToolResultUnrecognized():
 return unrecognized(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -147,7 +153,7 @@ return unrecognized(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BuddyPhoneToolResultFindMyFoods value)?  findMyFoods,TResult? Function( BuddyPhoneToolResultReadDiary value)?  readDiary,TResult? Function( BuddyPhoneToolResultReadBody value)?  readBody,TResult? Function( BuddyPhoneToolResultReadWorkouts value)?  readWorkouts,TResult? Function( BuddyPhoneToolResultReadMemory value)?  readMemory,TResult? Function( BuddyPhoneToolResultQueryData value)?  queryData,TResult? Function( BuddyPhoneToolResultUnrecognized value)?  unrecognized,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BuddyPhoneToolResultFindMyFoods value)?  findMyFoods,TResult? Function( BuddyPhoneToolResultReadDiary value)?  readDiary,TResult? Function( BuddyPhoneToolResultReadBody value)?  readBody,TResult? Function( BuddyPhoneToolResultReadWorkouts value)?  readWorkouts,TResult? Function( BuddyPhoneToolResultReadMemory value)?  readMemory,TResult? Function( BuddyPhoneToolResultQueryData value)?  queryData,TResult? Function( BuddyPhoneToolResultUnsupported value)?  unsupported,TResult? Function( BuddyPhoneToolResultUnrecognized value)?  unrecognized,}){
 final _that = this;
 switch (_that) {
 case BuddyPhoneToolResultFindMyFoods() when findMyFoods != null:
@@ -156,7 +162,8 @@ return readDiary(_that);case BuddyPhoneToolResultReadBody() when readBody != nul
 return readBody(_that);case BuddyPhoneToolResultReadWorkouts() when readWorkouts != null:
 return readWorkouts(_that);case BuddyPhoneToolResultReadMemory() when readMemory != null:
 return readMemory(_that);case BuddyPhoneToolResultQueryData() when queryData != null:
-return queryData(_that);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
+return queryData(_that);case BuddyPhoneToolResultUnsupported() when unsupported != null:
+return unsupported(_that);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
 return unrecognized(_that);case _:
   return null;
 
@@ -174,7 +181,7 @@ return unrecognized(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( BuddyFindMyFoodsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyFindMyFoodsData? data)?  findMyFoods,TResult Function( BuddyReadDiaryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadDiaryData? data)?  readDiary,TResult Function( BuddyReadBodyResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadBodyData? data)?  readBody,TResult Function( BuddyReadWorkoutsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadWorkoutsData? data)?  readWorkouts,TResult Function( BuddyReadMemoryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadMemoryData? data)?  readMemory,TResult Function( BuddyQueryDataResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyQueryResultData? data)?  queryData,TResult Function()?  unrecognized,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( BuddyFindMyFoodsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyFindMyFoodsData? data)?  findMyFoods,TResult Function( BuddyReadDiaryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadDiaryData? data)?  readDiary,TResult Function( BuddyReadBodyResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadBodyData? data)?  readBody,TResult Function( BuddyReadWorkoutsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadWorkoutsData? data)?  readWorkouts,TResult Function( BuddyReadMemoryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadMemoryData? data)?  readMemory,TResult Function( BuddyQueryDataResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyQueryResultData? data)?  queryData,TResult Function( BuddyUnsupportedResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error)?  unsupported,TResult Function()?  unrecognized,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case BuddyPhoneToolResultFindMyFoods() when findMyFoods != null:
 return findMyFoods(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadDiary() when readDiary != null:
@@ -182,7 +189,8 @@ return readDiary(_that.name,_that.callId,_that.ok,_that.error,_that.data);case B
 return readBody(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadWorkouts() when readWorkouts != null:
 return readWorkouts(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadMemory() when readMemory != null:
 return readMemory(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultQueryData() when queryData != null:
-return queryData(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
+return queryData(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultUnsupported() when unsupported != null:
+return unsupported(_that.name,_that.callId,_that.ok,_that.error);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
 return unrecognized();case _:
   return orElse();
 
@@ -201,7 +209,7 @@ return unrecognized();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( BuddyFindMyFoodsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyFindMyFoodsData? data)  findMyFoods,required TResult Function( BuddyReadDiaryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadDiaryData? data)  readDiary,required TResult Function( BuddyReadBodyResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadBodyData? data)  readBody,required TResult Function( BuddyReadWorkoutsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadWorkoutsData? data)  readWorkouts,required TResult Function( BuddyReadMemoryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadMemoryData? data)  readMemory,required TResult Function( BuddyQueryDataResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyQueryResultData? data)  queryData,required TResult Function()  unrecognized,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( BuddyFindMyFoodsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyFindMyFoodsData? data)  findMyFoods,required TResult Function( BuddyReadDiaryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadDiaryData? data)  readDiary,required TResult Function( BuddyReadBodyResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadBodyData? data)  readBody,required TResult Function( BuddyReadWorkoutsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadWorkoutsData? data)  readWorkouts,required TResult Function( BuddyReadMemoryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadMemoryData? data)  readMemory,required TResult Function( BuddyQueryDataResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyQueryResultData? data)  queryData,required TResult Function( BuddyUnsupportedResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error)  unsupported,required TResult Function()  unrecognized,}) {final _that = this;
 switch (_that) {
 case BuddyPhoneToolResultFindMyFoods():
 return findMyFoods(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadDiary():
@@ -209,7 +217,8 @@ return readDiary(_that.name,_that.callId,_that.ok,_that.error,_that.data);case B
 return readBody(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadWorkouts():
 return readWorkouts(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadMemory():
 return readMemory(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultQueryData():
-return queryData(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultUnrecognized():
+return queryData(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultUnsupported():
+return unsupported(_that.name,_that.callId,_that.ok,_that.error);case BuddyPhoneToolResultUnrecognized():
 return unrecognized();}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -224,7 +233,7 @@ return unrecognized();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( BuddyFindMyFoodsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyFindMyFoodsData? data)?  findMyFoods,TResult? Function( BuddyReadDiaryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadDiaryData? data)?  readDiary,TResult? Function( BuddyReadBodyResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadBodyData? data)?  readBody,TResult? Function( BuddyReadWorkoutsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadWorkoutsData? data)?  readWorkouts,TResult? Function( BuddyReadMemoryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadMemoryData? data)?  readMemory,TResult? Function( BuddyQueryDataResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyQueryResultData? data)?  queryData,TResult? Function()?  unrecognized,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( BuddyFindMyFoodsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyFindMyFoodsData? data)?  findMyFoods,TResult? Function( BuddyReadDiaryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadDiaryData? data)?  readDiary,TResult? Function( BuddyReadBodyResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadBodyData? data)?  readBody,TResult? Function( BuddyReadWorkoutsResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadWorkoutsData? data)?  readWorkouts,TResult? Function( BuddyReadMemoryResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyReadMemoryData? data)?  readMemory,TResult? Function( BuddyQueryDataResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error,  BuddyQueryResultData? data)?  queryData,TResult? Function( BuddyUnsupportedResultName name,  String callId,  bool ok,  BuddyPhoneToolError? error)?  unsupported,TResult? Function()?  unrecognized,}) {final _that = this;
 switch (_that) {
 case BuddyPhoneToolResultFindMyFoods() when findMyFoods != null:
 return findMyFoods(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadDiary() when readDiary != null:
@@ -232,7 +241,8 @@ return readDiary(_that.name,_that.callId,_that.ok,_that.error,_that.data);case B
 return readBody(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadWorkouts() when readWorkouts != null:
 return readWorkouts(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultReadMemory() when readMemory != null:
 return readMemory(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultQueryData() when queryData != null:
-return queryData(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
+return queryData(_that.name,_that.callId,_that.ok,_that.error,_that.data);case BuddyPhoneToolResultUnsupported() when unsupported != null:
+return unsupported(_that.name,_that.callId,_that.ok,_that.error);case BuddyPhoneToolResultUnrecognized() when unrecognized != null:
 return unrecognized();case _:
   return null;
 
@@ -785,6 +795,83 @@ $BuddyQueryResultDataCopyWith<$Res>? get data {
     return _then(_self.copyWith(data: value));
   });
 }
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BuddyPhoneToolResultUnsupported implements BuddyPhoneToolResult {
+  const BuddyPhoneToolResultUnsupported({required this.name, required this.callId, required this.ok, required this.error});
+  factory BuddyPhoneToolResultUnsupported.fromJson(Map<String, dynamic> json) => _$BuddyPhoneToolResultUnsupportedFromJson(json);
+
+ final  BuddyUnsupportedResultName name;
+ final  String callId;
+ final  bool ok;
+ final  BuddyPhoneToolError? error;
+
+/// Create a copy of BuddyPhoneToolResult
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BuddyPhoneToolResultUnsupportedCopyWith<BuddyPhoneToolResultUnsupported> get copyWith => _$BuddyPhoneToolResultUnsupportedCopyWithImpl<BuddyPhoneToolResultUnsupported>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BuddyPhoneToolResultUnsupportedToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is BuddyPhoneToolResultUnsupported&&(identical(other.name, name) || other.name == name)&&(identical(other.callId, callId) || other.callId == callId)&&(identical(other.ok, ok) || other.ok == ok)&&(identical(other.error, error) || other.error == error));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode {
+    return Object.hash(runtimeType,name,callId,ok,error);
+}
+
+@override
+String toString() {
+    return 'BuddyPhoneToolResult.unsupported(name: $name, callId: $callId, ok: $ok, error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BuddyPhoneToolResultUnsupportedCopyWith<$Res> implements $BuddyPhoneToolResultCopyWith<$Res> {
+  factory $BuddyPhoneToolResultUnsupportedCopyWith(BuddyPhoneToolResultUnsupported value, $Res Function(BuddyPhoneToolResultUnsupported) _then) = _$BuddyPhoneToolResultUnsupportedCopyWithImpl;
+@useResult
+$Res call({
+ BuddyUnsupportedResultName name, String callId, bool ok, BuddyPhoneToolError? error
+});
+
+
+
+
+}
+/// @nodoc
+class _$BuddyPhoneToolResultUnsupportedCopyWithImpl<$Res>
+    implements $BuddyPhoneToolResultUnsupportedCopyWith<$Res> {
+  _$BuddyPhoneToolResultUnsupportedCopyWithImpl(this._self, this._then);
+
+  final BuddyPhoneToolResultUnsupported _self;
+  final $Res Function(BuddyPhoneToolResultUnsupported) _then;
+
+/// Create a copy of BuddyPhoneToolResult
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? name = null,Object? callId = null,Object? ok = null,Object? error = freezed,}) {
+  return _then(BuddyPhoneToolResultUnsupported(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as BuddyUnsupportedResultName,callId: null == callId ? _self.callId : callId // ignore: cast_nullable_to_non_nullable
+as String,ok: null == ok ? _self.ok : ok // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as BuddyPhoneToolError?,
+  ));
+}
+
+
 }
 
 /// @nodoc

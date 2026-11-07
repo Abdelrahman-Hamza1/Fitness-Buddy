@@ -3,6 +3,7 @@ import importlib.util
 from contextlib import nullcontext
 import hashlib
 import ipaddress
+import base64
 import json
 import os
 from pathlib import Path
@@ -43,6 +44,27 @@ class PhoneServerTests(unittest.TestCase):
         key.chmod(0o644)
         with self.assertRaises(phone.Failure):
             phone.configure_buddy(self.state, key)
+
+    def test_buddy_agent_seal_key_is_private_kept_and_legacy_overlay_upgraded(self):
+        # B25: configure-buddy creates the agent's continuation key once; a B08-era overlay is upgraded on the next compose call.
+        self.configure_identity()
+        source = self.state / 'source-openai'
+        phone.atomic(source, b'synthetic' + b'b' * 40)
+        phone.configure_buddy(self.state, source)
+        seal = self.state / 'buddy/agent-seal-key'
+        self.assertEqual(0o600, stat.S_IMODE(seal.stat().st_mode))
+        first = seal.read_bytes()
+        self.assertEqual(32, len(base64.b64decode(first.strip())))
+        environment = phone.read_json(self.state / 'buddy-compose.json')['services']['api']['environment']
+        self.assertEqual('/buddy/agent-seal-key', environment['Buddy__Agent__SealKeyFile'])
+        self.assertNotIn(first.strip().decode(), json.dumps(environment))
+        phone.configure_buddy(self.state, source)
+        self.assertEqual(first, seal.read_bytes())
+        seal.unlink()
+        phone.json_write(self.state / 'buddy-compose.json', phone.buddy_overlay(self.state, agent=False))
+        self.assertIn(str(self.state / 'buddy-compose.json'), phone.buddy_compose_args(self.state))
+        self.assertTrue(seal.exists())
+        self.assertEqual(phone.buddy_overlay(self.state), phone.read_json(self.state / 'buddy-compose.json'))
 
     def test_catalog_import_uses_read_only_mount_and_always_removes_overlay(self):
         release = self.state / 'public-release'
