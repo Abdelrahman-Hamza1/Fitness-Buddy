@@ -18,7 +18,8 @@ internal static class TurnRequestMapping
             || w.DaysWithinTarget > w.TargetDays || w.ProteinTargetDays > w.CountedDays || w.ProteinDaysHit > w.ProteinTargetDays || !Bounded(w)))
         { return "weekly"; }
         if (string.IsNullOrWhiteSpace(r.Message.Text)) { return "message"; }
-        if (r.Message.Image is { } image && !Jpeg(image)) { return "message"; }
+        // The label route's whole-payload check (R1 security audit): a real JPEG of at most 1024 px a side, before any reservation.
+        if (r.Message.Image is { } image && !JpegImage.Valid(image)) { return "message"; }
         if (r.Snapshot is null || r.Profile is null || r.History is null || r.Personal is null) { return "snapshot"; }
         if (r.Personal.Select(p => p.Ref).Distinct().Count() != r.Personal.Length || r.Personal.Any(p => p.Ref == Guid.Empty)) { return "personal"; }
         if (r.Snapshot.OpenCards.Select(c => c.ProposalId).Distinct().Count() != r.Snapshot.OpenCards.Length) { return "snapshot"; }
@@ -144,10 +145,4 @@ internal static class TurnRequestMapping
 
     private static string Code<T>(T value) where T : Enum => JsonNamingPolicy.CamelCase.ConvertName(value.ToString());
     private static bool V7(Guid id) => id.ToString("D")[14] == '7' && "89ab".Contains(id.ToString("D")[19], StringComparison.Ordinal);
-    internal static bool Jpeg(string base64)
-    {
-        if (base64.Length < 8) { return false; }
-        Span<byte> head = stackalloc byte[3];
-        return Convert.TryFromBase64String(base64[..4], head, out var n) && n == 3 && head[0] == 0xFF && head[1] == 0xD8 && head[2] == 0xFF;
-    }
 }

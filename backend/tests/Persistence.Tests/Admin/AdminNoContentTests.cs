@@ -9,7 +9,8 @@ using Microsoft.Extensions.Logging;
 namespace FitnessBuddy.Persistence.Tests.Admin;
 
 // B23 WP11 (T10b, card exit 3): no user content reaches any console page, the CSV export or the logs. Every GET route of the
-// console is enumerated (new windows are covered automatically), each account's detail page is rendered, and the email lookup's
+// console is enumerated (new windows are covered automatically), each account's detail page is rendered (the metadata account's
+// too: its device controls carry the app-version canary, R1 audit), and the email lookup's
 // pages too. Bodies are HTML-decoded before the scan, so an encoded canary can't slip through. The masked email does appear.
 // B23b: writer-controlled metadata (types, error types, roles, builds, codes, versions, an email domain) carries canaries too.
 [Trait("Req", "AD-001")]
@@ -50,7 +51,7 @@ public sealed class AdminNoContentTests(PostgresFixture postgres)
             Assert.Contains(window, routes);
         }
         var pages = routes.SelectMany(path => path.Contains("{id:guid}", StringComparison.Ordinal)
-                ? [path.Replace("{id:guid}", seed.Registered.ToString(), StringComparison.Ordinal), path.Replace("{id:guid}", seed.Guest.ToString(), StringComparison.Ordinal)]
+                ? [.. new[] { seed.Registered, seed.Guest, seed.Stranger }.Select(id => path.Replace("{id:guid}", id.ToString(), StringComparison.Ordinal))]
                 : new[] { path.Replace("{version:int}", "1", StringComparison.Ordinal) })
             .Concat(["/admin/accounts?issues=1", "/admin/accounts?type=google", "/admin/jobs?result=retried", "/admin/audit?area=accounts",
                 "/admin/audit/export.csv", "/admin/audit/export.csv?area=jobs"])

@@ -50,6 +50,8 @@ public sealed class IdentityModule : IModule
         services.AddScoped<IIdentityTokens, IdentityTokens>();
         services.AddScoped<IdentityService>();
         services.AddSingleton<IEmailSender, LocalFileEmailSender>();
+        services.AddScoped<FitnessBuddy.BuildingBlocks.Jobs.IJobHandler, IdentityCleanupJob>();
+        services.AddSingleton(IdentityCleanupJob.Schedule);
         services.AddHostedService<EmailFileReaper>();
         services.AddHttpClient("google-identity", client => client.Timeout = TimeSpan.FromSeconds(5));
         // One verifier instance (one JWKS cache) behind the app port and the public contract the console uses (B23).

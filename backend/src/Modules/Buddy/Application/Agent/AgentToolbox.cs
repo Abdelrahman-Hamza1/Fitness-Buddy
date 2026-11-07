@@ -35,7 +35,7 @@ internal static class AgentTools
         new("search_foods", ToolKind.Server, BuddyStepCode.SearchingFoods, typeof(SearchFoodsArgs),
             "Search the food catalog (query in canonical English, optional Arabic name, state, kind food|dish|branded, limit ≤ 8). Returns food handles with per-100 g claims and servings."),
         new("get_dish", ToolKind.Server, BuddyStepCode.SearchingFoods, typeof(GetDishArgs), "Details of a food or dish handle: typical portions (claims) and close variants (handles)."),
-        new("lookup_barcode", ToolKind.Server, BuddyStepCode.SearchingFoods, typeof(LookupBarcodeArgs), "Look up a packaged product by its barcode digits: name, brand and per-100 claims, or not found."),
+        new("lookup_barcode", ToolKind.Server, BuddyStepCode.SearchingFoods, typeof(LookupBarcodeArgs), "Look up a packaged product by barcode digits the user typed in this message and called a barcode (other codes are refused): name, brand and per-100 claims, or not found."),
         new("compute", ToolKind.Server, BuddyStepCode.Computing, typeof(ComputeArgs),
             "Compute grams, kcal and macros for food handles with amounts (code does the arithmetic). Returns claims per item and totals."),
         new("check_fit", ToolKind.Server, BuddyStepCode.CheckingFit, typeof(CheckFitArgs),

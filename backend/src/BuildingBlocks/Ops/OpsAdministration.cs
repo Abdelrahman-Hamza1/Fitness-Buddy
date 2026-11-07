@@ -77,7 +77,7 @@ public interface IOpsAdministration
 public sealed record QueueVocabulary(IReadOnlyList<string> JobTypes, IReadOnlyList<string> EventTypes, IReadOnlyList<string> ErrorTypes)
 {
     public static QueueVocabulary Default { get; } = new(
-        [Jobs.OpsCleanupJob.Type, "buddy.cleanup", "catalog.off-cache-expiry", "userdata.cleanup"],
+        [Jobs.OpsCleanupJob.Type, "buddy.cleanup", "catalog.off-cache-expiry", "identity.cleanup", "userdata.cleanup"],
         [Messaging.UserErasure.EventType],
         ["ArgumentException", "ArgumentNullException", "ArgumentOutOfRangeException", "CryptographicException", "DbUpdateConcurrencyException",
          "DbUpdateException", "FormatException", "HttpRequestException", "InvalidCastException", "InvalidOperationException", "IOException",

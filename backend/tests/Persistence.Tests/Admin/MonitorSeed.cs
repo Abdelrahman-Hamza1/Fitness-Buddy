@@ -14,6 +14,8 @@ internal sealed class MonitorSeed
     public Guid Guest { get; } = Guid.CreateVersion7();
     public Guid Device { get; } = Guid.NewGuid();
     public Guid DeadJob { get; } = Guid.CreateVersion7();
+    /// <summary>The account <see cref="SeedMetadataCanariesAsync"/> creates, whose device carries the app-version canary.</summary>
+    public Guid Stranger { get; } = Guid.CreateVersion7();
     public Guid PendingJob { get; } = Guid.CreateVersion7();
     public Guid DeadEvent { get; } = Guid.CreateVersion7();
     public string Tag { get; } = Guid.NewGuid().ToString("N")[..8];
@@ -116,7 +118,7 @@ internal sealed class MonitorSeed
             metadata[4], metadata[5], metadata[6]);
         await ExecuteAsync(owner, "INSERT INTO ops.http_errors_hourly(hour,role,status,count) VALUES(date_trunc('hour',now()),$1,500,1)", metadata[7]);
         await ExecuteAsync(owner, "INSERT INTO catalog.off_lookup_daily(day,outcome,rule,count) VALUES(current_date,$1,$2,2)", metadata[8], metadata[9]);
-        var stranger = Guid.CreateVersion7();
+        var stranger = Stranger;
         await ExecuteAsync(owner, "INSERT INTO identity.users(id,anonymous,created_at) VALUES($1,false,now())", stranger);
         await ExecuteAsync(owner, "INSERT INTO identity.identities(provider,subject,user_id,email) VALUES('google',$1,$2,$3)", "canary-meta-subject-" + tag, stranger, "z@" + metadata[12]);
         await ExecuteAsync(owner, "INSERT INTO identity.devices(user_id,device_id,last_seen_at,app_version,platform) VALUES($1,$2,now(),$3,'android')", stranger, Guid.NewGuid(), metadata[11]);

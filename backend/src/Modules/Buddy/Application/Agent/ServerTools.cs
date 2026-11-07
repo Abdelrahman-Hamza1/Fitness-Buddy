@@ -75,6 +75,10 @@ internal sealed class ServerTools(IFoodResolver catalog, IBarcodeFacts barcodes,
     {
         var code = args.Code.Trim();
         if (code.Length is < 8 or > 14 || !code.All(char.IsAsciiDigit)) { return AgentTools.Error("invalidArgs"); }
+        // R1 security audit: only digits the user typed in this message, as a whole run, in a message that says it is a barcode.
+        // A code the model composed (from a photo, a catalog name or a phone result), or any other number the user typed (a date,
+        // a phone number), could carry private facts out to Open Food Facts, so it is never looked up, not even in the cache.
+        if (!TypedByUser(code, ws.MessageText)) { return AgentTools.Error("notStated"); }
         if (user.UserId is not { } owner || await barcodes.LookupAsync(code, owner, ct) is not { } product) { return AgentTools.Result(new { ok = true, found = false }); }
         var basis = product.Basis == "100ml" ? "per 100 ml" : "per 100 g";
         // Packaged products are shown for answers; the card itself resolves by name (catalog or badged estimate).
@@ -87,6 +91,23 @@ internal sealed class ServerTools(IFoodResolver catalog, IBarcodeFacts barcodes,
             checkLabel = product.CheckLabel,
             nutrients = product.Per100 is { } n ? ClaimSet.Nutrients(ws, new(n.Kcal, n.ProteinG, n.CarbsG, n.FatG, n.FiberG), "per100", null, $"{basis} of {product.Name ?? "this product"}") : null,
         });
+    }
+
+    // Whole words only: "ean" inside "lean" or "beans" is no barcode request.
+    private static readonly System.Text.RegularExpressions.Regex BarcodeWords = new(
+        @"(?<![\p{L}\p{N}])(bar ?codes?|barcod|barkod|upc|ean(-?(8|13))?|gtin|باركود|الباركود|باركد)(?![\p{L}])",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    /// <summary>Whether <paramref name="code"/> is one maximal run of ASCII digits in a user message that names a barcode.</summary>
+    internal static bool TypedByUser(string code, string message)
+    {
+        if (!BarcodeWords.IsMatch(message)) { return false; }
+        for (var start = message.IndexOf(code, StringComparison.Ordinal); start >= 0; start = message.IndexOf(code, start + 1, StringComparison.Ordinal))
+        {
+            var end = start + code.Length;
+            if ((start == 0 || !char.IsAsciiDigit(message[start - 1])) && (end == message.Length || !char.IsAsciiDigit(message[end]))) { return true; }
+        }
+        return false;
     }
 
     private static string Compute(ComputeArgs args, TurnWorkspace ws)

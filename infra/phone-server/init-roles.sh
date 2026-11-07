@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Variables are psql quoted literals, never shell-expanded SQL. No passwords in output.
-psql --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" --set ON_ERROR_STOP=1 \
-  --set app_password="$FB_PHONE_APP_PASSWORD" \
-  --set migrator_password="$FB_PHONE_MIGRATOR_PASSWORD" \
-  --set backup_password="$FB_PHONE_BACKUP_PASSWORD" <<'SQL'
+# Passwords never reach argv (the process list): psql reads them from its environment with \getenv, and
+# uses them as quoted literals, never shell-expanded SQL. No passwords in output. Unset ones fail here, as before.
+: "${FB_PHONE_APP_PASSWORD:?}" "${FB_PHONE_MIGRATOR_PASSWORD:?}" "${FB_PHONE_BACKUP_PASSWORD:?}"
+export FB_PHONE_APP_PASSWORD FB_PHONE_MIGRATOR_PASSWORD FB_PHONE_BACKUP_PASSWORD
+psql --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" --set ON_ERROR_STOP=1 <<'SQL'
+\getenv app_password FB_PHONE_APP_PASSWORD
+\getenv migrator_password FB_PHONE_MIGRATOR_PASSWORD
+\getenv backup_password FB_PHONE_BACKUP_PASSWORD
 CREATE ROLE fb_migrator LOGIN PASSWORD :'migrator_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
 CREATE ROLE fb_app LOGIN PASSWORD :'app_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
 -- B23 console role. NOLOGIN until the controller's ensure-admin-role step gives it its own private password.

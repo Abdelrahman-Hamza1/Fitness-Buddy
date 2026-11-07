@@ -131,11 +131,11 @@ public sealed class IdentityTests(PostgresFixture postgres)
         Assert.Null(await h.Service.VerifyEmailAsync(expired.Id, h.Email.Code, h.Device, Ct));
     }
     [Fact]
-    public async Task Email_throttles_are_persistent_and_newest_challenge_invalidates_previous()
+    public async Task Email_throttles_are_persistent_and_denied_requests_issue_no_code()
     {
         await using var h = await HarnessAsync();
         var address = Guid.NewGuid() + "@example.invalid";
-        var first = await h.Service.StartEmailAsync(address, "signIn", null, Guid.NewGuid().ToString(), Ct);
+        await h.Service.StartEmailAsync(address, "signIn", null, Guid.NewGuid().ToString(), Ct);
         var code = h.Email.Code;
         var denied = await h.Service.StartEmailAsync(address, "signIn", null, Guid.NewGuid().ToString(), Ct);
         Assert.Equal(1, h.Email.Count);
@@ -143,7 +143,29 @@ public sealed class IdentityTests(PostgresFixture postgres)
         h.Clock.Advance(TimeSpan.FromMinutes(2));
         await h.Service.StartEmailAsync(address, "signIn", null, Guid.NewGuid().ToString(), Ct);
         Assert.Equal(2, h.Email.Count);
-        Assert.Null(await h.Service.VerifyEmailAsync(first.Id, code, h.Device, Ct));
+    }
+    [Fact]
+    [Trait("Rule", "09.4-email-code-availability")]
+    public async Task Other_callers_requests_and_guesses_never_lock_out_an_issued_code()
+    {
+        await using var h = await HarnessAsync();
+        var address = Guid.NewGuid() + "@example.invalid";
+        var victim = await h.Service.StartEmailAsync(address, "signIn", null, Guid.NewGuid().ToString(), Ct);
+        var victimCode = h.Email.Code;
+        static string Wrong(string code) => code == "000000" ? "999999" : "000000";
+        // The attacker requests codes for the same address from elsewhere and burns every guess on their own challenges.
+        var attacker = new List<(Guid Id, string Code)>();
+        for (var i = 0; i < 4; i++)
+        {
+            h.Clock.Advance(TimeSpan.FromSeconds(61));
+            attacker.Add(((await h.Service.StartEmailAsync(address, "signIn", null, Guid.NewGuid().ToString(), Ct)).Id, h.Email.Code));
+        }
+        Assert.Equal(5, h.Email.Count);
+        foreach (var (id, code) in attacker) { for (var g = 0; g < 5; g++) { Assert.Null(await h.Service.VerifyEmailAsync(id, Wrong(code), h.Device, Ct)); } }
+        // Guesses are bound to their challenge: a challenge with five misses refuses even its right code ...
+        Assert.Null(await h.Service.VerifyEmailAsync(attacker[0].Id, attacker[0].Code, h.Device, Ct));
+        // ... while the victim's code still works.
+        Assert.NotNull(await h.Service.VerifyEmailAsync(victim.Id, victimCode, h.Device, Ct));
     }
     [Fact]
     public async Task Email_link_proof_is_bound_to_purpose_and_guest_session()
