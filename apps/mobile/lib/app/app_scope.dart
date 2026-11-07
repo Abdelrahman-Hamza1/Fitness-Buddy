@@ -17,6 +17,7 @@ import 'package:fb_mobile/features/body/body.dart';
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
+import 'package:fb_mobile/features/home_widgets/home_widgets.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:fb_mobile/features/targets/targets.dart';
 import 'package:fb_mobile/features/workouts/workouts.dart';
@@ -36,6 +37,11 @@ List<Override> appOverrides(AppConfig config) => [
   appNavigatorProvider.overrideWith((ref) => ref.watch(appRouterProvider)),
   // A notification's deep link is a router location (A40 D9).
   notificationLinkOpenerProvider.overrideWith(
+    (ref) =>
+        (location) => ref.read(appRouterProvider).openLocation(location),
+  ),
+  // A widget tap opens a router location too (A71 D7).
+  homeWidgetLinkOpenerProvider.overrideWith(
     (ref) =>
         (location) => ref.read(appRouterProvider).openLocation(location),
   ),

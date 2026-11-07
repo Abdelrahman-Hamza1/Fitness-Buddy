@@ -91,6 +91,58 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+        <!-- A71 (UX-082): the three home-screen widgets (HomeWidgets.kt). The launcher
+             delivers APPWIDGET_UPDATE, so the receivers must be exported, with that
+             filter only; AppWidgetProvider ignores other actions, so another app can at
+             most cause a redraw. Taps open
+             MainActivity through explicit, immutable PendingIntents with a fixed
+             action (no intent filter, no deep link). The snapshot they draw lives in
+             shared_prefs/fb_home_widget.xml, excluded from backup and transfer by the
+             rules above (sharedpref is excluded / not on the allow-list). -->
+        <receiver
+            android:name=".TodayWidgetMedium"
+            android:exported="true"
+            android:label="@string/widget_medium_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_medium_info"/>
+        </receiver>
+        <receiver
+            android:name=".TodayWidgetNumbers"
+            android:exported="true"
+            android:label="@string/widget_numbers_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_numbers_info"/>
+        </receiver>
+        <receiver
+            android:name=".TodayWidgetButtons"
+            android:exported="true"
+            android:label="@string/widget_buttons_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_buttons_info"/>
+        </receiver>
+        <!-- A71 review: the midnight redraw alarm (explicit, ours) and the system's time
+             and time-zone changes (implicit-broadcast exceptions) redraw the widgets.
+             Not exported: no other app can reach it. -->
+        <receiver
+            android:name=".TodayWidgetClock"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

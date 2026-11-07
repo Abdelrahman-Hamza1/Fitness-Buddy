@@ -8394,6 +8394,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recordImportAllShown => 'All rows are listed';
 
   @override
+  String get widgetKcalLeft => 'kcal left';
+
+  @override
+  String get widgetKcalOver => 'kcal over';
+
+  @override
+  String widgetMacroOfTarget(String eaten, int target) {
+    final intl.NumberFormat targetNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String targetString = targetNumberFormat.format(target);
+
+    return '$eaten/$targetString';
+  }
+
+  @override
+  String get settingsWidgetsGroup => 'Home-screen widgets';
+
+  @override
+  String get settingsWidgetsHideNumbers => 'Hide numbers';
+
+  @override
+  String get settingsWidgetsHideNumbersHint => 'Widgets show only the buttons';
+
+  @override
+  String get settingsWidgetsHideNumbersSetOn => 'Widget numbers hidden';
+
+  @override
+  String get settingsWidgetsHideNumbersSetOff => 'Widget numbers shown';
+
+  @override
   String get buddyVoice => 'Speak to Buddy';
 
   @override

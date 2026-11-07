@@ -373,6 +373,45 @@ final class NotificationPrefsProvider
 
 String _$notificationPrefsHash() => r'7140638d7bf9225fea2dd82c5fa80af6460319b1';
 
+/// Whether the home-screen widgets hide their numbers (UX-085, A71 D8).
+
+@ProviderFor(widgetNumbersHidden)
+final widgetNumbersHiddenProvider = WidgetNumbersHiddenProvider._();
+
+/// Whether the home-screen widgets hide their numbers (UX-085, A71 D8).
+
+final class WidgetNumbersHiddenProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
+    with $FutureModifier<bool>, $StreamProvider<bool> {
+  /// Whether the home-screen widgets hide their numbers (UX-085, A71 D8).
+  WidgetNumbersHiddenProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'widgetNumbersHiddenProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$widgetNumbersHiddenHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<bool> create(Ref ref) {
+    return widgetNumbersHidden(ref);
+  }
+}
+
+String _$widgetNumbersHiddenHash() =>
+    r'54d7e84c1a078bf09fdc0e8b34730799181b3777';
+
 /// One shared calendar for future weekly views.
 
 @ProviderFor(weekCalendar)

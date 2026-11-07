@@ -105,6 +105,12 @@ final class SettingsActions {
   Future<SettingsOutcome> setHalal(bool value) =>
       _set(AppSettings.halal, value);
 
+  /// Hide or show the home-screen widgets' numbers (UX-085, A71 D8).
+  // This setter has one value, matching the other typed setting commands.
+  // ignore: avoid_positional_boolean_parameters
+  Future<SettingsOutcome> setWidgetNumbersHidden(bool value) =>
+      _set(AppSettings.widgetNumbersHidden, value);
+
   /// Set the food-name language (D-091).
   Future<SettingsOutcome> setFoodNames(FoodNameLanguage value) =>
       _set(AppSettings.foodNames, value);

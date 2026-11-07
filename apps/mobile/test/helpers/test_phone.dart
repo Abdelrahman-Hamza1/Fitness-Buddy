@@ -4,7 +4,9 @@ import 'package:fb_mobile/core/catalog/catalog_providers.dart';
 import 'package:fb_mobile/core/catalog/online_food_search.dart';
 import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/config/package_info.dart';
+import 'package:fb_mobile/core/home_widget/home_widget_store.dart';
 import 'package:fb_mobile/core/storage/preferences.dart';
+import 'package:fb_mobile/features/home_widgets/home_widgets.dart';
 import 'package:fb_mobile/features/notifications/notifications.dart';
 import 'package:fb_mobile/features/onboarding/onboarding.dart';
 import 'package:flutter_riverpod/misc.dart';
@@ -115,6 +117,12 @@ final class TestPhone {
     notificationPlatformProvider.overrideWithValue(notificationPlatform),
     notificationDeviceStoreProvider.overrideWithValue(notificationStore),
     firstRunEnabledProvider.overrideWithValue(firstRun),
+    // A71: no widget snapshot writes (no platform channel in tests).
+    homeWidgetsEnabledProvider.overrideWithValue(false),
+    // The account transitions clear the widgets: no channel to wait on.
+    homeWidgetStoreProvider.overrideWithValue(
+      ChannelHomeWidgetStore(supported: false),
+    ),
     packageInfoProvider.overrideWith((ref) async {
       events.add('package info');
       return PackageInfo(

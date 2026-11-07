@@ -1,12 +1,12 @@
 # Fitness Buddy: progress
 
-**87 of 113 steps done** · `▓▓▓▓▓▓▓░░░` 76%
+**88 of 113 steps done** · `▓▓▓▓▓▓▓░░░` 77%
 
-App 66/85 · Backend 21/28 · Foundation 7/7
+App 67/85 · Backend 21/28 · Foundation 7/7
 
 ## Now
 
-- 🟨 building [A71](technical-planning/steps/A71-home-widgets.md) Home-screen widgets (D-101, R2 work early): medium, small numbers, small buttons; open the app only · R1
+- Nothing marked in progress on the board.
 
 ## Milestones
 
@@ -20,7 +20,7 @@ App 66/85 · Backend 21/28 · Foundation 7/7
 | ✅ | **M4** Dogfood 2 | `▓▓▓▓▓` 2/2 | — |
 | ✅ | **M6** Workouts, body &… | `░░░░░` 0/0 | — |
 | ⬜ | **M7** Production | `░░░░░` 0/1 | A43 B14 |
-| 🟨 | **R1** done | `▓░░░░` 1/4 | A31 A32 A71 A43 B16 |
+| 🟨 | **R1** done | `▓▓░░░` 2/4 | A31 A32 A43 B16 |
 
 ✅ reached · 🟨 in progress · ⬜ ahead. Each step counts toward the first milestone that needs it.
 

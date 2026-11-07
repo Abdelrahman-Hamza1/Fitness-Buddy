@@ -12383,6 +12383,54 @@ abstract class AppLocalizations {
   /// **'All rows are listed'**
   String get recordImportAllShown;
 
+  /// Home-screen widget (A71, UX-082): caption inside the ring under the remaining calories. Short: the ring is small.
+  ///
+  /// In en, this message translates to:
+  /// **'kcal left'**
+  String get widgetKcalLeft;
+
+  /// Home-screen widget: caption inside the ring when the day is over its target. Neutral wording (SF-021).
+  ///
+  /// In en, this message translates to:
+  /// **'kcal over'**
+  String get widgetKcalOver;
+
+  /// Home-screen widget: a macro eaten out of its target in grams, e.g. "92/150" (no unit: the widget is small). The grams are formatted, "~" before a lower bound or estimate, "—" when unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'{eaten}/{target}'**
+  String widgetMacroOfTarget(String eaten, int target);
+
+  /// Me › Preferences: title of the group with the home-screen widget settings (A71).
+  ///
+  /// In en, this message translates to:
+  /// **'Home-screen widgets'**
+  String get settingsWidgetsGroup;
+
+  /// Me › Preferences: switch that hides calories and macros on the home-screen widgets (UX-085).
+  ///
+  /// In en, this message translates to:
+  /// **'Hide numbers'**
+  String get settingsWidgetsHideNumbers;
+
+  /// Me › Preferences: hint under the Hide numbers switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Widgets show only the buttons'**
+  String get settingsWidgetsHideNumbersHint;
+
+  /// Undo snackbar after Hide numbers was turned on.
+  ///
+  /// In en, this message translates to:
+  /// **'Widget numbers hidden'**
+  String get settingsWidgetsHideNumbersSetOn;
+
+  /// Undo snackbar after Hide numbers was turned off.
+  ///
+  /// In en, this message translates to:
+  /// **'Widget numbers shown'**
+  String get settingsWidgetsHideNumbersSetOff;
+
   /// Composer mic button tooltip: voice input (AI-014, A70).
   ///
   /// In en, this message translates to:

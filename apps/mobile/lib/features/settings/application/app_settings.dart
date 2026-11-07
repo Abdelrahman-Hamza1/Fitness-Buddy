@@ -170,6 +170,12 @@ abstract final class AppSettings {
     defaultValue: NotificationPrefs.defaults,
   );
 
+  /// UX-085 (A71 D8): the home-screen widgets show only their buttons.
+  static final SettingKey<bool> widgetNumbersHidden = SettingKey.boolean(
+    'widgets.hideNumbers',
+    defaultValue: false,
+  );
+
   /// Complete setting vocabulary for export's natural-id reverse lookup.
   static final List<SettingKey<Object?>> all = [
     unitSystem,
@@ -183,6 +189,7 @@ abstract final class AppSettings {
     ramadanSeasons,
     prayerMethod,
     notificationPrefs,
+    widgetNumbersHidden,
   ];
 
   /// Accepted GeoNames identity format, without including input in errors.

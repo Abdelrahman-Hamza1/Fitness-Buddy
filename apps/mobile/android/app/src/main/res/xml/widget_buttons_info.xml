@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A71 D9 (UX-082): the small 2 x 1 buttons widget. No periodic update (updatePeriodMillis 0): the app
+     redraws on every change and HomeWidgets.kt arms one inexact alarm for
+     the next midnight. previewLayout is the widget itself (Android 12+). -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_buttons_description"
+    android:initialLayout="@layout/widget_buttons"
+    android:minWidth="110dp"
+    android:minHeight="40dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:previewImage="@drawable/widget_mark"
+    android:previewLayout="@layout/widget_buttons"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="2"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The home-screen widgets' colours in dark (the phone's night mode) (A71 D2): copies of the Ink & Sky
+     palette (packages/fb_design_system/lib/src/tokens/palette.dart; surface = the
+     card colour surfaceContainer, track = surfaceContainerHigh, tonal = brandContainer,
+     over = overTarget), checked by apps/mobile/test/android/widget_colors_sync_test.dart.
+     Resources, so the widgets follow the phone's dark mode without a redraw. -->
+<resources>
+    <color name="widget_surface">#FF1A242B</color>
+    <color name="widget_on_surface">#FFEAF0F3</color>
+    <color name="widget_on_surface_variant">#FFA7B3BA</color>
+    <color name="widget_track">#FF24303A</color>
+    <color name="widget_brand">#FFA9CDDC</color>
+    <color name="widget_on_brand">#FF0E1418</color>
+    <color name="widget_tonal">#FF22343F</color>
+    <color name="widget_on_tonal">#FFD6E8F0</color>
+    <color name="widget_protein">#FFB79BFF</color>
+    <color name="widget_carbs">#FFF2BE5C</color>
+    <color name="widget_fat">#FFF29AC0</color>
+    <color name="widget_fiber">#FFB5D86A</color>
+    <color name="widget_over">#FF8E989E</color>
+    <color name="widget_mark_soft">#FFD3E3EA</color>
+    <color name="widget_mark_mid">#FF8FB3C4</color>
+    <color name="widget_mark_strong">#FF6EC8FF</color>
+</resources>

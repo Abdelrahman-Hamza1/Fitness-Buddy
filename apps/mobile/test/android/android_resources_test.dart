@@ -9,14 +9,26 @@ import 'android_xml.dart';
 void main() {
   test('TD-107 the Android window, splash and window background are the '
       'light surface, with light parents, a light status bar, and the plate '
-      'under the mark before Android 12', () {
+      'under the mark before Android 12; A71 night resources are the '
+      "widgets' colours only", () {
     final colors = readAndroid('main/res/values/colors.xml');
     expect(
       colorResource(colors, 'fb_window_background'),
       FbPalette.of(Brightness.light).surface.toARGB32(),
     );
-    // Light in day and night: no night-only resources.
-    expect(Directory('$androidSrc/main/res/values-night').existsSync(), false);
+    // Light in day and night: no night-only window resources. The only
+    // night resources are the home-screen widgets' colours (A71 D2).
+    final night = Directory('$androidSrc/main/res/values-night');
+    if (night.existsSync()) {
+      expect(night.listSync().map((f) => f.uri.pathSegments.last), [
+        'widget_colors.xml',
+      ]);
+      final widgetNight = readAndroid(
+        'main/res/values-night/widget_colors.xml',
+      );
+      expect(widgetNight, isNot(contains('fb_window_background')));
+      expect(widgetNight, isNot(contains('<style')));
+    }
 
     final styles = readAndroid('main/res/values/styles.xml');
     final v31 = readAndroid('main/res/values-v31/styles.xml');

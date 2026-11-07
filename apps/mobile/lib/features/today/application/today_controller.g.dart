@@ -44,7 +44,7 @@ final class TodayControllerProvider
   }
 }
 
-String _$todayControllerHash() => r'71f62ab4dfc98de57345fff1a73120827a914603';
+String _$todayControllerHash() => r'f48fe193b5c63002adde37a0c4aca7b6bf6c0440';
 
 /// Null follows today across midnight; a historical date stays fixed.
 

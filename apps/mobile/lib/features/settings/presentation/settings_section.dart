@@ -11,7 +11,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // The setting rows of Me (UX-010, A10 D8, A51 D8): Preferences has units,
-// theme, week start, language and energy; Food & meals has halal. Every
+// theme, week start, language and energy, and the widgets' Hide numbers
+// (A71); Food & meals has halal. Every
 // setting is three taps from Today at most. Choices open an option sheet on
 // the root navigator; Halal is a switch in the row. Each change is a direct
 // action with Undo (UX-030).
@@ -66,6 +67,26 @@ class HalalSettingRow extends ConsumerWidget {
       subtitle: l10n.settingsHalalHint,
       value: halal,
       onChanged: (value) => unawaited(_setHalal(context, ref, value)),
+    );
+  }
+}
+
+/// Hide numbers on the home-screen widgets, a switch (UX-085, A71 D8).
+class WidgetNumbersSettingRow extends ConsumerWidget {
+  /// Creates the row.
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final hidden =
+        ref.watch(widgetNumbersHiddenProvider).value ??
+        AppSettings.widgetNumbersHidden.defaultValue;
+    return FbSwitchRow(
+      title: l10n.settingsWidgetsHideNumbers,
+      subtitle: l10n.settingsWidgetsHideNumbersHint,
+      value: hidden,
+      onChanged: (value) => unawaited(_setWidgetNumbers(context, ref, value)),
     );
   }
 }
@@ -172,6 +193,25 @@ Future<void> _setHalal(BuildContext context, WidgetRef ref, bool value) async {
     host,
     outcome,
     () => value ? host.l10n.settingsHalalSetOn : host.l10n.settingsHalalSetOff,
+  );
+}
+
+Future<void> _setWidgetNumbers(
+  BuildContext context,
+  WidgetRef ref,
+  bool hidden,
+) async {
+  final host = Navigator.of(context, rootNavigator: true).context;
+  final outcome = await ref
+      .read(settingsActionsProvider)
+      .setWidgetNumbersHidden(hidden);
+  if (!host.mounted) return;
+  reportSettingsOutcome(
+    host,
+    outcome,
+    () => hidden
+        ? host.l10n.settingsWidgetsHideNumbersSetOn
+        : host.l10n.settingsWidgetsHideNumbersSetOff,
   );
 }
 

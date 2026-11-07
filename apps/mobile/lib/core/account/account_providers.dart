@@ -14,6 +14,7 @@ import 'package:fb_mobile/core/config/app_config.dart';
 import 'package:fb_mobile/core/db/database_location.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
 import 'package:fb_mobile/core/export/export_providers.dart';
+import 'package:fb_mobile/core/home_widget/home_widget_store.dart';
 import 'package:fb_mobile/core/ids/id_generator.dart';
 import 'package:fb_mobile/core/session/session_providers.dart';
 import 'package:fb_mobile/core/session/session_service.dart';
@@ -75,11 +76,28 @@ AccountTransitions accountTransitions(Ref ref) => AccountTransitions(
       // Security audit 2026-11-07: its export share copies go at once
       // (best effort; the 24-hour sweep is the backstop).
       await ref.read(exportHandoffsProvider).removeProfile(key);
+      // A71 D6 (UX-085): the home-screen widgets drop its numbers, unless
+      // the new profile already wrote its own. Best effort: the switch
+      // already cleared them, so a failure never holds up the deletion.
+      try {
+        await ref
+            .read(homeWidgetStoreProvider)
+            .clearFor(homeWidgetProfileTag(key));
+      } on Object {
+        // No widgets on this platform, or the channel failed.
+      }
     },
   ),
   newTag: ref.watch(idGeneratorProvider).next,
-  onBusy: ({required busy}) =>
-      ref.read(accountBusyProvider.notifier).publish(busy: busy),
+  onBusy: ({required busy}) {
+    // A71: the widgets accept snapshots again once the transition ended
+    // (the coordinator then writes the new state).
+    if (!busy) ref.read(homeWidgetStoreProvider).release();
+    ref.read(accountBusyProvider.notifier).publish(busy: busy);
+  },
+  // A71 review (security 1): the widgets' numbers go, durably, before the
+  // open profile or its sign-out state changes.
+  beforeSwitch: () => ref.read(homeWidgetStoreProvider).clearAndHold(),
 );
 
 /// True while an account transition with a journal runs (sign-in, sign-out,

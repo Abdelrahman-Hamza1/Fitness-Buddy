@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A71 D3: the home-screen widgets' fixed words. Android resources, not ARB: the
+     launcher shows them before the app has ever run (picker labels, the
+     "Open Fitness Buddy" state). The numbers and their captions come from the
+     app's snapshot, formatted from app_en.arb. English only in R1 (D-080). -->
+<resources>
+    <string name="widget_medium_label">Today</string>
+    <string name="widget_medium_description">Calories left, your macros, and Speak, Ask and Weigh</string>
+    <string name="widget_numbers_label">Today\'s numbers</string>
+    <string name="widget_numbers_description">Calories left and protein</string>
+    <string name="widget_buttons_label">Speak and Ask</string>
+    <string name="widget_buttons_description">Open Buddy to speak or type what you ate</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_protein">Protein</string>
+    <string name="widget_carbs">Carbs</string>
+    <string name="widget_fat">Fat</string>
+    <string name="widget_fiber">Fiber</string>
+    <string name="widget_speak">Speak</string>
+    <string name="widget_ask">Ask</string>
+    <string name="widget_weigh">Weigh</string>
+    <string name="widget_prompt">What did you eat?</string>
+    <string name="widget_open_app">Open Fitness Buddy</string>
+    <string name="widget_open_today">Open Today</string>
+</resources>

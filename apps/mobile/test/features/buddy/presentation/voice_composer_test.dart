@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fb_domain/fb_domain.dart' show LocalDate;
 import 'package:fb_mobile/features/buddy/buddy.dart';
 import 'package:fb_mobile/features/buddy/data/speech_recognizer.dart';
 import 'package:fb_mobile/features/buddy/presentation/buddy_sheet.dart';
@@ -193,6 +196,49 @@ void main() {
     expect(find.text('Listening…'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('voice-cancel')));
     await tester.pumpAndSettle();
+    await unmountBuddy(tester, h);
+  });
+
+  testWidgets('A71 fix-check Ask and Speak with Buddy already open reuse '
+      'its sheet: the draft stays, Ask focuses it, Speak opens the panel '
+      'once', (tester) async {
+    final speech = FakeSpeechRecognizer();
+    final h = BuddyHarness(overrides: fakeSpeech(speech));
+    await pumpBuddyHost(tester, h);
+    await openBuddySheet(tester);
+    await tester.enterText(find.byType(TextField), 'lunch:');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump();
+    final host = tester.element(find.text(openSheet, skipOffstage: false));
+    final date = LocalDate(2026, 10, 17);
+
+    // Ask (a widget tap): no second sheet, the draft focused.
+    unawaited(BuddyEntry.keyboard(host, date: date));
+    await tester.pumpAndSettle();
+    expect(find.byType(BuddySheet), findsOneWidget);
+    expect(_box(tester).controller.text, 'lunch:');
+    expect(_box(tester).focusNode.hasFocus, isTrue);
+
+    // Speak: the same sheet listens; a second Speak changes nothing.
+    unawaited(BuddyEntry.voice(host, date: date));
+    await tester.pumpAndSettle();
+    expect(find.byType(BuddySheet), findsOneWidget);
+    expect(find.text('Listening…'), findsOneWidget);
+    unawaited(BuddyEntry.voice(host, date: date));
+    await tester.pumpAndSettle();
+    expect(find.text('Listening…'), findsOneWidget);
+    expect(speech.listened, hasLength(1));
+    await tester.tap(find.byKey(const ValueKey('voice-cancel')));
+    await tester.pumpAndSettle();
+    expect(_box(tester).controller.text, 'lunch:');
+
+    // The numbers tap leaves a sheet with a draft open.
+    expect(closeBuddySheetIfIdle(), isFalse);
+    expect(find.byType(BuddySheet), findsOneWidget);
+    await tester.enterText(find.byType(TextField), '');
+    expect(closeBuddySheetIfIdle(), isTrue);
+    await tester.pumpAndSettle();
+    expect(find.byType(BuddySheet), findsNothing);
     await unmountBuddy(tester, h);
   });
 }

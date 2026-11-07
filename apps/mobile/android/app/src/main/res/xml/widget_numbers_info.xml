@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A71 D9 (UX-082): the small 2 x 2 numbers widget. No periodic update (updatePeriodMillis 0): the app
+     redraws on every change and HomeWidgets.kt arms one inexact alarm for
+     the next midnight. The minimums are what the layout needs
+     (A71 review: padding + ring/bars + buttons; summed in the step card). previewLayout is the widget itself (Android 12+). -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_numbers_description"
+    android:initialLayout="@layout/widget_numbers"
+    android:minWidth="110dp"
+    android:minHeight="126dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="126dp"
+    android:previewImage="@drawable/widget_mark"
+    android:previewLayout="@layout/widget_numbers"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

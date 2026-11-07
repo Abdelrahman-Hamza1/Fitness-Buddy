@@ -4,4 +4,5 @@ library;
 
 export 'application/today_controller.dart';
 export 'application/today_date.dart';
+export 'application/today_numbers_view.dart';
 export 'presentation/today_screen.dart';

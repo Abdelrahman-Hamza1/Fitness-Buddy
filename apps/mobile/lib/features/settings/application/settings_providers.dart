@@ -55,6 +55,11 @@ Stream<CheckInMode> checkInMode(Ref ref) =>
 Stream<NotificationPrefs> notificationPrefs(Ref ref) =>
     ref.watch(settingsStoreProvider).watch(AppSettings.notificationPrefs);
 
+/// Whether the home-screen widgets hide their numbers (UX-085, A71 D8).
+@riverpod
+Stream<bool> widgetNumbersHidden(Ref ref) =>
+    ref.watch(settingsStoreProvider).watch(AppSettings.widgetNumbersHidden);
+
 /// One shared calendar for future weekly views.
 @riverpod
 WeekCalendar weekCalendar(Ref ref) => WeekCalendar(

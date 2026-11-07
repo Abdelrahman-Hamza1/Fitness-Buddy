@@ -155,7 +155,8 @@ class MeWorkoutsScreen extends StatelessWidget {
   }
 }
 
-/// Me › Preferences: units, theme, week start and food names, every row
+/// Me › Preferences: units, theme, week start and food names, then the
+/// home-screen widgets' Hide numbers (A71), every row
 /// changeable (UX-048, S1 A); the facts that can't change are one quiet
 /// line under them (calories in kcal, the app in English).
 class MePreferencesScreen extends StatelessWidget {
@@ -188,6 +189,12 @@ class MePreferencesScreen extends StatelessWidget {
             key: const ValueKey('prefs-fixed-facts'),
             style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
           ),
+        ),
+        // A71 D8: the home-screen widgets (UX-085).
+        const SizedBox(height: FbSpace.s4),
+        MeGroup(
+          title: context.l10n.settingsWidgetsGroup,
+          children: const [WidgetNumbersSettingRow()],
         ),
       ],
     );

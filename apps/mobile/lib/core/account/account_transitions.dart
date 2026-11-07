@@ -81,7 +81,14 @@ final class AccountTransitions {
     required this._host,
     required this._newTag,
     this._onBusy,
+    this._beforeSwitch,
   });
+
+  /// Runs, awaited, right before every profile switch is written (sign-in,
+  /// sign-out keep or remove, removal, deletion, a resumed journal): the
+  /// home-screen widgets clear their numbers durably first (A71 review,
+  /// security 1). A failure fails the step; the journal retries it.
+  final Future<void> Function()? _beforeSwitch;
 
   /// Published with `busy:` true/false as journaled transitions start/end.
   final void Function({required bool busy})? _onBusy;
@@ -585,6 +592,7 @@ final class AccountTransitions {
     AccountTransition transition, {
     required bool live,
   }) async {
+    await _beforeSwitch?.call();
     final snapshot = await _registry.read();
     final target = transition.target;
     var next = snapshot.put(target, activeKey: target.profileKey);

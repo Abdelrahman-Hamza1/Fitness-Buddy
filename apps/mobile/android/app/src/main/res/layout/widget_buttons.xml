@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A71 D2 (UX-082): the small 2 x 1 buttons widget: Speak and Ask. RemoteViews: only views the
+     launcher can inflate; colours and words are resources, the numbers come from
+     the app's snapshot (HomeWidgets.kt). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:clipToOutline="true"
+    android:orientation="horizontal"
+    android:padding="8dp">
+        <LinearLayout
+            android:id="@+id/button_speak"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/widget_button_filled"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:contentDescription="@string/widget_speak">
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_ic_speak"
+                android:tint="@color/widget_on_brand" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/button_ask"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/widget_button_tonal"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:contentDescription="@string/widget_ask"
+            android:layout_marginStart="8dp">
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_ic_ask"
+                android:tint="@color/widget_on_tonal" />
+        </LinearLayout>
+</LinearLayout>

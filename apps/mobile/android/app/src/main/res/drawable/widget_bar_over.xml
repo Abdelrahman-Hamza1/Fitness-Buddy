@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A71 D2: a thin macro bar, a horizontal ProgressBar's drawable: the track and
+     a rounded fill scaled to the bar's level. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="2dp" />
+            <solid android:color="@color/widget_track" />
+        </shape>
+    </item>
+    <item android:id="@android:id/progress">
+        <scale android:scaleWidth="100%">
+            <shape android:shape="rectangle">
+                <corners android:radius="2dp" />
+                <solid android:color="@color/widget_over" />
+            </shape>
+        </scale>
+    </item>
+</layer-list>

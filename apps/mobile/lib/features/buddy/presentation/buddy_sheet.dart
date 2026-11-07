@@ -26,20 +26,50 @@ import 'package:material_ui/material_ui.dart';
 /// With [revealPending] (Today's "{n} waiting", D-094) the thread opens
 /// scrolled to the oldest card still waiting for an answer. With [listen]
 /// (`BuddyEntry.voice`, A70 D8) the listening panel opens at once.
+///
+/// Only one sheet at a time (A71 fix-check): when one is already open (a
+/// widget tap brought the app back to it), that sheet is reused: [listen]
+/// opens its listening panel (unless it already listens), otherwise its
+/// message box takes the focus; the draft stays. Resolves when it closes.
 Future<void> showBuddySheet(
   BuildContext context, {
   required LocalDate date,
   bool revealPending = false,
   bool listen = false,
-}) => showModalBottomSheet<void>(
-  context: context,
-  useRootNavigator: true,
-  isScrollControlled: true,
-  useSafeArea: true,
-  barrierColor: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.16),
-  builder: (context) =>
-      BuddySheet(date: date, revealPending: revealPending, listen: listen),
-);
+}) {
+  if (_BuddySheetState._open case final open?) {
+    if (listen) {
+      open.listenAgain();
+    } else {
+      open.focusComposer();
+    }
+    return open._closed.future;
+  }
+  return showModalBottomSheet<void>(
+    context: context,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    useSafeArea: true,
+    barrierColor: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.16),
+    builder: (context) =>
+        BuddySheet(date: date, revealPending: revealPending, listen: listen),
+  );
+}
+
+/// Closes the open Buddy sheet when nothing would be lost (an empty message
+/// box, not listening, no photo); whether it closed or none was open. A
+/// widget's numbers tap uses it to show Today (A71 fix-check).
+bool closeBuddySheetIfIdle() {
+  final open = _BuddySheetState._open;
+  if (open == null) return true;
+  if (open._listening ||
+      open._photo != null ||
+      open._text.text.trim().isNotEmpty) {
+    return false;
+  }
+  Navigator.of(open.context).pop();
+  return true;
+}
 
 /// The chat sheet's content: the thread and the composer.
 class BuddySheet extends ConsumerStatefulWidget {
@@ -68,6 +98,12 @@ class BuddySheet extends ConsumerStatefulWidget {
 }
 
 class _BuddySheetState extends ConsumerState<BuddySheet> {
+  /// The sheet on screen, if any (one at a time, A71 fix-check).
+  static _BuddySheetState? _open;
+
+  final _closed = Completer<void>();
+  bool _listening = false;
+
   final _text = TextEditingController();
   final _focus = FocusNode();
   final _sheet = DraggableScrollableController();
@@ -82,6 +118,7 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
   @override
   void initState() {
     super.initState();
+    _open = this;
     _thread = ref.read(buddyThreadControllerProvider.notifier);
     _lifecycle = AppLifecycleListener(
       onPause: () => unawaited(_thread.flush()),
@@ -115,7 +152,13 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
   /// the focus (the keyboard). Never sent by itself (AI-014): the sent text
   /// is the box's, as the user leaves it.
   Future<void> _speak() async {
-    final words = await showVoicePanel(context);
+    _listening = true;
+    final String? words;
+    try {
+      words = await showVoicePanel(context);
+    } finally {
+      _listening = false;
+    }
     if (!mounted) return;
     if (words != null && words.trim().isNotEmpty) {
       final text = appendTranscript(_text.text, words);
@@ -139,8 +182,20 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     );
   }
 
+  /// Another entry asked for the keyboard: the box takes the focus.
+  void focusComposer() {
+    if (mounted) _focus.requestFocus();
+  }
+
+  /// Another entry asked to listen: the panel opens unless it is open.
+  void listenAgain() {
+    if (mounted && !_listening) unawaited(_speak());
+  }
+
   @override
   void dispose() {
+    if (_open == this) _open = null;
+    if (!_closed.isCompleted) _closed.complete();
     // Dismissing the sheet writes every adjusted card (A23 D8).
     unawaited(_thread.flush());
     _lifecycle.dispose();

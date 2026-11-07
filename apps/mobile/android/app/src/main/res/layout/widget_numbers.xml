@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A71 D2 (UX-082): the small 2 x 2 numbers widget: the calories ring and protein. RemoteViews: only views the
+     launcher can inflate; colours and words are resources, the numbers come from
+     the app's snapshot (HomeWidgets.kt). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:clipToOutline="true"
+    android:padding="12dp">
+    <LinearLayout
+        android:id="@+id/numbers_block"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+        <FrameLayout
+            android:layout_width="72dp"
+            android:layout_height="72dp">
+            <ProgressBar
+                android:id="@+id/ring"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="false"
+                android:max="1000"
+                android:progress="0"
+                android:progressDrawable="@drawable/widget_ring" />
+            <ProgressBar
+                android:id="@+id/ring_over"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="false"
+                android:max="1000"
+                android:progress="1000"
+                android:progressDrawable="@drawable/widget_ring_over"
+                android:visibility="gone" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/ring_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/widget_on_surface"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/ring_caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:textColor="@color/widget_on_surface_variant"
+                    android:textSize="9sp" />
+            </LinearLayout>
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+        <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="@string/widget_protein"
+                            android:textAlignment="viewStart"
+                            android:textColor="@color/widget_on_surface_variant"
+                            android:textSize="11sp" />
+                        <TextView
+                            android:id="@+id/protein_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:textColor="@color/widget_on_surface"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="3dp">
+                        <ProgressBar
+                            android:id="@+id/protein_bar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progressDrawable="@drawable/widget_bar_protein" />
+                        <ProgressBar
+                            android:id="@+id/protein_over"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:indeterminate="false"
+                            android:max="1000"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progress="1000"
+                            android:progressDrawable="@drawable/widget_bar_over"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+            android:id="@+id/plain_block"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/widget_mark" />
+            <TextView
+                android:id="@+id/plain_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:maxLines="2"
+                android:text="@string/widget_open_app"
+                android:textColor="@color/widget_on_surface"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+</FrameLayout>

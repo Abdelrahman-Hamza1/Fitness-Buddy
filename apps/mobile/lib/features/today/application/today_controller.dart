@@ -23,6 +23,9 @@ class TodayController extends _$TodayController {
     state = clamped == day ? null : clamped;
   }
 
+  /// Back on today's page, following it again (a widget's numbers, A71).
+  void followToday() => state = null;
+
   /// Previous calendar day, bounded by the pager.
   void previous() => goTo(_viewed.plusDays(-1));
 

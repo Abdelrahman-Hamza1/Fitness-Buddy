@@ -15,5 +15,6 @@ export 'data/proposal_repository.dart';
 export 'presentation/buddy_entry.dart';
 export 'presentation/buddy_remembers_row.dart';
 export 'presentation/buddy_remembers_screen.dart';
-export 'presentation/buddy_sheet.dart' show showBuddySheet;
+export 'presentation/buddy_sheet.dart'
+    show closeBuddySheetIfIdle, showBuddySheet;
 export 'presentation/weekly_review_card.dart' show WeeklyReviewCard;
