@@ -3,7 +3,11 @@
 library;
 
 export 'application/exercise_library.dart'
-    show ExerciseLibrary, LibraryExercise, exerciseLibraryProvider;
+    show
+        ExerciseLibrary,
+        LibraryExercise,
+        exerciseLibraryProvider,
+        readExerciseLibrary;
 export 'application/workout_providers.dart';
 export 'application/workout_views.dart'
     show
@@ -26,4 +30,5 @@ export 'presentation/weekly_plan_screen.dart' show WeeklyPlanScreen;
 export 'presentation/workout_glance.dart';
 export 'presentation/workout_history_screen.dart';
 export 'presentation/workout_log_screen.dart';
+export 'presentation/workout_text.dart' show WorkoutText;
 export 'presentation/workouts_screen.dart';

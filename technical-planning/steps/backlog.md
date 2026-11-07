@@ -148,3 +148,8 @@ Items found during steps that aren't done in that step. The orchestrator adds th
 | 324 | A68 | Answer links survive a mid-turn restart: they come only from the live phone round, so a resumed turn loses them | nit | next Buddy step | open |
 | 325 | A68 | Persist a picked suggestion option (it shows as picked only in this session; after a restart a tap makes another card) | nit | next Buddy step | open |
 | 326 | A68 | Write the weekly review in the background at the NT-004 notification time instead of when the summary opens | minor | next Buddy step | open |
+| 327 | A69 | Inline set editing on Buddy's workout card (WO-030 "same inline editing as food proposals"); today sets are edited in the workout form after saving | minor | next Buddy step | open |
+| 328 | A69 | Fix an import row's date, value or unit on the review table (WB-031 "fixes or accepts"); today a flagged row can only be included or left out | minor | next Buddy step | open |
+| 329 | A69 | Workout picks and import accepts survive a restart (they live in memory; a reopened card asks again) | nit | next Buddy step | open |
+| 330 | A69 | Re-encode a non-JPEG gallery picture (a transparent PNG stays PNG after the native resize and is refused today) | nit | when a photo complaint comes | open |
+| 331 | A69 | Custom measurement names on Buddy's measurement card, and `readBody` measurements / `readWorkouts` PRs in the phone tools | nit | next Buddy step | open |

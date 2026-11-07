@@ -72,6 +72,11 @@ final class PersonalFormBinding {
     return errorWords(l10n, form.validation.errors[field]);
   }
 
+  /// "Check this against the label" for a field a label read left
+  /// unsure (FD-041), until it is edited.
+  String? check(AppLocalizations l10n, PersonalFoodField field) =>
+      form.uncertain.contains(field) ? l10n.labelCheckValue : null;
+
   /// The words for one field error.
   static String? errorWords(
     AppLocalizations l10n,
@@ -131,6 +136,7 @@ class NameSection extends StatelessWidget {
             autofocus: autofocus,
             textInputAction: TextInputAction.next,
             errorText: b.error(l10n, PersonalFoodField.name),
+            supportingText: b.check(l10n, PersonalFoodField.name),
             onChanged: (t) => b.controller.setField(PersonalFoodField.name, t),
           ),
         ),
@@ -265,6 +271,7 @@ class ValuesSection extends ConsumerWidget {
         autofocus: autofocus,
         textInputAction: TextInputAction.next,
         errorText: b.error(l10n, field),
+        supportingText: b.check(l10n, field),
         onChanged: (t) => b.controller.setField(field, t),
       ),
     );
@@ -343,6 +350,10 @@ class ValuesSection extends ConsumerWidget {
                     unit: b.basisUnit(l10n),
                     textInputAction: TextInputAction.next,
                     errorText: b.error(l10n, PersonalFoodField.servingSize),
+                    supportingText: b.check(
+                      l10n,
+                      PersonalFoodField.servingSize,
+                    ),
                     onChanged: (t) =>
                         b.controller.setField(PersonalFoodField.servingSize, t),
                   ),

@@ -14,6 +14,7 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_restorer.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_state.dart';
+import 'package:fb_mobile/features/buddy/application/photo_estimates.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_resolution.dart';
 import 'package:fb_mobile/features/buddy/application/proposal_write_lane.dart';
 import 'package:fb_mobile/features/buddy/application/query/buddy_query_answers.dart';
@@ -81,6 +82,10 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// The running turns' runners (one at a time), by turn ID.
   final Map<String, BuddyTurnRunner> _runners = {};
 
+  /// Meal photos of turns not finished yet, by turn ID (A69 D6): memory
+  /// only, never stored, logged or traced; gone with the process.
+  final Map<String, String> _images = {};
+
   /// The reply templates the sheet last handed over (A22 D16).
   BuddyReplyTexts? _texts;
 
@@ -111,6 +116,8 @@ class BuddyThreadController extends _$BuddyThreadController {
     // A profile switch rebuilds the thread empty: no text, card or confirm
     // crosses profiles (A33 round 4).
     _generation = ref.watch(profileGenerationProvider);
+    // No photo crosses a profile switch or outlives the thread (A69 review).
+    _images.clear();
     _saving = false;
     _lane = ProposalWriteLane();
     _undoing = {};
@@ -188,7 +195,8 @@ class BuddyThreadController extends _$BuddyThreadController {
       ..onDispose(foods.cancel)
       ..onDispose(remote.cancel)
       ..onDispose(() => lifecycle?.dispose())
-      ..onDispose(() => _retry?.cancel());
+      ..onDispose(() => _retry?.cancel())
+      ..onDispose(_images.clear);
     return const BuddyThread();
   }
 
@@ -275,7 +283,7 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// Saves [raw] and runs it as a turn (A66): the live step line at once,
   /// cards as they come. Ignored while a turn runs or for blank text; a
   /// message waiting offline is tried first.
-  Future<void> send(String raw, BuddyReplyTexts texts) async {
+  Future<void> send(String raw, BuddyReplyTexts texts, {String? image}) async {
     _texts = texts;
     if (state.sending || _saving || _draining) {
       // One turn at a time: the text goes back to the composer, never lost.
@@ -305,10 +313,16 @@ class BuddyThreadController extends _$BuddyThreadController {
       }
       return;
     }
+    // The photo lives in memory for this turn only (A69 D6).
+    if (image != null) _images[message.id] = image;
     state = state.copyWith(
       turns: [
         ...state.turns,
-        BuddyTurn(message: message, profileGeneration: gen),
+        BuddyTurn(
+          message: message,
+          profileGeneration: gen,
+          photo: image != null,
+        ),
       ],
       clearComposer: true,
     );
@@ -429,6 +443,7 @@ class BuddyThreadController extends _$BuddyThreadController {
         turnId,
         json,
         createdAtMs: ref.read(clockProvider).nowUtc().millisecondsSinceEpoch,
+        photo: turn.photo,
       );
       if (!await _setStatus(
         turnId,
@@ -449,10 +464,14 @@ class BuddyThreadController extends _$BuddyThreadController {
     }
   }
 
-  void _failed(String userMessageId) => _update(
-    userMessageId,
-    (t) => t.copyWith(phase: BuddyTurnPhase.failed, clearStep: true),
-  );
+  void _failed(String userMessageId) {
+    // A failed turn is over: its photo goes (Try again sends text only).
+    _images.remove(userMessageId);
+    _update(
+      userMessageId,
+      (t) => t.copyWith(phase: BuddyTurnPhase.failed, clearStep: true),
+    );
+  }
 
   /// Runs turn [turnId] from [checkpoint] and saves how it ended.
   Future<void> _run(
@@ -475,7 +494,9 @@ class BuddyThreadController extends _$BuddyThreadController {
       today:
           _turn(turnId)?.message.time.localDate ??
           EntryTime.now(ref.read(clockProvider)).localDate,
+      image: _images[turnId],
     );
+    if (checkpoint.photo) _update(turnId, (t) => t.copyWith(photo: true));
     _runners[turnId] = runner;
     _update(turnId, (t) => t.copyWith(phase: BuddyTurnPhase.sending));
     TurnEnd end;
@@ -488,6 +509,9 @@ class BuddyThreadController extends _$BuddyThreadController {
     } finally {
       if (identical(_runners[turnId], runner)) _runners.remove(turnId);
     }
+    // A waiting turn keeps its photo for the next try; any other end drops
+    // it.
+    if (end.kind != TurnEndKind.pending) _images.remove(turnId);
     if (!_current(gen)) return;
     await _finish(turnId, end, gen);
   }
@@ -844,7 +868,7 @@ class BuddyThreadController extends _$BuddyThreadController {
   /// diary op: only a user tap confirms. The new checkpoint, or `null`.
   Future<TurnCheckpoint?> _proposal(
     String turnId,
-    TurnProposal proposal,
+    TurnProposal event,
     TurnCheckpoint Function(CheckpointCard) withCard,
     int gen,
     AgentCardWriter writer,
@@ -853,11 +877,24 @@ class BuddyThreadController extends _$BuddyThreadController {
     if (turn == null || !_current(gen)) return null;
     // A suggestion is never a card: its options show under the reply and a
     // tap makes the card (A68 D5).
-    if (proposal.intent['kind'] == 'suggestion') {
-      await _suggestion(turnId, proposal.intent, gen, writer);
+    if (event.intent['kind'] == 'suggestion') {
+      await _suggestion(turnId, event.intent, gen, writer);
       return null;
     }
     final lane = _lane;
+    // A photo's portions are estimates unless the user stated grams
+    // (A69 D7, D-045).
+    final proposal = !turn.photo
+        ? event
+        : TurnProposal(
+            proposalId: event.proposalId,
+            revision: event.revision,
+            replaces: event.replaces,
+            intent: photoEstimates(event.intent, turn.message.text),
+            round: event.round,
+            attempt: event.attempt,
+            target: event.target,
+          );
     if (RecordKind.fromCode(proposal.intent['kind']) != null ||
         (proposal.replaces != null &&
             _record(proposal.target?.cardId ?? proposal.replaces!.proposalId) !=
@@ -2266,6 +2303,23 @@ class BuddyThreadController extends _$BuddyThreadController {
   Future<void> setRecordPath(String cardId, BatchPath path) =>
       _replanRecord(cardId, (c) => c.copyWith(path: path));
 
+  /// Picks [pick] for unmatched exercise [index] on workout card [cardId]
+  /// (WO-033: a library ID, `RecordAdjust.newExercise` or `leaveOut`);
+  /// nothing is written.
+  Future<void> pickExercise(String cardId, int index, String pick) =>
+      _replanRecord(
+        cardId,
+        (c) => c.copyWith(adjust: c.adjust.pick(index, pick)),
+      );
+
+  /// Includes (or leaves out again) flagged import row [index] on card
+  /// [cardId] (WB-031); nothing is written.
+  Future<void> acceptImportRow(String cardId, int index, {required bool on}) =>
+      _replanRecord(
+        cardId,
+        (c) => c.copyWith(adjust: c.adjust.accept(index, on: on)),
+      );
+
   Future<void> _replanRecord(
     String cardId,
     RecordCard Function(RecordCard) change,
@@ -2434,6 +2488,7 @@ class BuddyThreadController extends _$BuddyThreadController {
             revision: r.revision,
             choice: r.choice,
             path: r.path,
+            adjust: r.adjust,
           ),
         );
       }

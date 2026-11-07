@@ -32,7 +32,10 @@ export 'application/weight_card_state.dart'
     show WeightCardState, weightCardProvider;
 export 'application/weight_providers.dart';
 export 'application/weight_tip.dart' show weightTipControllerProvider;
+export 'data/measurement_mappers.dart'
+    show MeasurementMappingError, measurementOf;
 export 'data/measurement_op_handler.dart';
+export 'data/weigh_in_mappers.dart' show WeighInMappingError, weighInOf;
 export 'data/weigh_in_op_handler.dart';
 export 'presentation/custom_type_sheet.dart'
     show CustomTypeSheet, showCustomTypeSheet;

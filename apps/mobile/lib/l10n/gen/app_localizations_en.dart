@@ -8184,4 +8184,212 @@ class AppLocalizationsEn extends AppLocalizations {
   String buddyMemoryTip(String food, String date) {
     return 'Weighing tip for $food, $date';
   }
+
+  @override
+  String get recordKindWorkout => 'Workout';
+
+  @override
+  String get recordKindMeasurement => 'Measurement';
+
+  @override
+  String get recordKindImport => 'Import';
+
+  @override
+  String recordConfirmImport(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Import $count rows',
+      one: 'Import 1 row',
+      zero: 'Import',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recordWorkoutSets(String sets) {
+    return '$sets';
+  }
+
+  @override
+  String get recordWorkoutNoSets => 'No sets yet';
+
+  @override
+  String get recordWorkoutPr => 'PR';
+
+  @override
+  String get recordWorkoutSplit => 'Total split per dumbbell';
+
+  @override
+  String recordWorkoutWhich(String mention) {
+    return 'Not in your exercises: “$mention”. Which is it?';
+  }
+
+  @override
+  String recordWorkoutNew(String name) {
+    return 'New exercise “$name”';
+  }
+
+  @override
+  String get recordWorkoutLeaveOut => 'Leave it out';
+
+  @override
+  String get recordWorkoutCreated => 'New exercise';
+
+  @override
+  String get recordWorkoutLeftOut => 'Left out';
+
+  @override
+  String get recordWorkoutChange => 'Change';
+
+  @override
+  String get recordWorkoutEditLater => 'Edit sets in the workout after saving.';
+
+  @override
+  String recordMeasurementChange(String change) {
+    return '$change since last time';
+  }
+
+  @override
+  String recordImportSummary(int included, int total) {
+    return '$included of $total rows will be imported';
+  }
+
+  @override
+  String recordImportRow(String date, String value) {
+    return '$date · $value';
+  }
+
+  @override
+  String get recordImportNoDate => 'No date';
+
+  @override
+  String recordImportOthers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more rows are fine',
+      one: '1 more row is fine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get recordImportInclude => 'Include';
+
+  @override
+  String get recordImportExclude => 'Leave out';
+
+  @override
+  String get recordImportFlagUnclearDate => 'Date unclear';
+
+  @override
+  String get recordImportFlagNoValue => 'No number';
+
+  @override
+  String get recordImportFlagUnknownUnit => 'Unit not recognised';
+
+  @override
+  String get recordImportFlagOutOfRange => 'Out of range';
+
+  @override
+  String get recordImportFlagFuture => 'Date in the future';
+
+  @override
+  String recordImportFlagUnitInferred(String unit) {
+    return 'Read as $unit';
+  }
+
+  @override
+  String recordImportFlagUnitMissing(String unit) {
+    return 'No unit, read as $unit';
+  }
+
+  @override
+  String get recordImportFlagDuplicate => 'Already logged';
+
+  @override
+  String get recordImportFlagImplausible => 'Big jump, check it';
+
+  @override
+  String get recordImportFlagSameDay => 'Another value that day';
+
+  @override
+  String get photoTake => 'Take a photo';
+
+  @override
+  String get photoChoose => 'Choose from gallery';
+
+  @override
+  String get photoUnusable =>
+      'That picture can\'t be used. Take a photo instead.';
+
+  @override
+  String get photoUnavailable =>
+      'The camera or gallery couldn\'t open. Check the app\'s permissions.';
+
+  @override
+  String get buddyAddPhoto => 'Add a meal photo';
+
+  @override
+  String get buddyPhotoAttached => 'Photo attached';
+
+  @override
+  String get buddyPhotoRemove => 'Remove the photo';
+
+  @override
+  String get buddyPhotoOnlyMessage => 'What\'s in this photo?';
+
+  @override
+  String get buddyPhotoSent => 'Photo sent';
+
+  @override
+  String get labelRead => 'Read a nutrition label';
+
+  @override
+  String get labelReadingNow => 'Reading the label…';
+
+  @override
+  String get labelReadTitle => 'Photo of the nutrition label';
+
+  @override
+  String get labelFilled =>
+      'Filled from the label. Check the highlighted values before you save.';
+
+  @override
+  String labelFilledOthers(String others) {
+    return 'Filled from the label. Check the highlighted values before you save. Also on the label (not saved): $others';
+  }
+
+  @override
+  String get labelCheckValue => 'Check this against the label';
+
+  @override
+  String get labelNotFound =>
+      'No nutrition panel found. Try again closer, or type the values.';
+
+  @override
+  String get labelLimited =>
+      'Today\'s Buddy limit is reached. Type the values instead.';
+
+  @override
+  String get labelOffline => 'Reading a label needs a connection.';
+
+  @override
+  String get labelUnavailable =>
+      'Labels can\'t be read right now. Try again later.';
+
+  @override
+  String get barcodeScanLabel => 'Scan the label';
+
+  @override
+  String recordImportShowAll(int count) {
+    return 'Show all $count rows';
+  }
+
+  @override
+  String get recordImportShowFewer => 'Show fewer';
+
+  @override
+  String get recordImportAllShown => 'All rows are listed';
 }

@@ -38,7 +38,16 @@ enum RecordKind {
   memoryChange('memoryChange'),
 
   /// A weigh-in (AI-052).
-  weighIn('weighIn');
+  weighIn('weighIn'),
+
+  /// A workout session (AI-053, WO-030–033; A69).
+  workout('workout'),
+
+  /// A body measurement (WB-040; A69).
+  measurement('measurement'),
+
+  /// Pasted rows to import (AI-057, WB-030–032; A69).
+  importRows('importRows');
 
   new(this.code);
 
@@ -466,6 +475,155 @@ final class WeighInRecord extends RecordRequest {
 
   @override
   RecordKind get kind => RecordKind.weighIn;
+}
+
+/// One set as Buddy read it (`BuddyWorkoutSet`).
+final class WorkoutSetInput {
+  /// The set; every member optional.
+  const new({
+    this.reps,
+    this.weight,
+    this.unit,
+    this.perDumbbell = false,
+    this.durationSeconds,
+    this.distanceMeters,
+  });
+
+  /// Reps.
+  final int? reps;
+
+  /// The load as said, in [unit].
+  final double? weight;
+
+  /// `kg` or `lb` (with a weight).
+  final String? unit;
+
+  /// The stated weight is per dumbbell.
+  final bool perDumbbell;
+
+  /// A duration, s.
+  final int? durationSeconds;
+
+  /// A distance, m.
+  final double? distanceMeters;
+
+  @override
+  String toString() => 'WorkoutSetInput';
+}
+
+/// One exercise as Buddy read it (`BuddyWorkoutExercise`).
+final class WorkoutExerciseInput {
+  /// The exercise.
+  const new({
+    required this.mention,
+    this.exerciseRef,
+    this.sets = const [],
+    this.assumptions = const [],
+  });
+
+  /// The user's words for it. User content.
+  final String mention;
+
+  /// A library code or a custom exercise's UUID; `null` when nothing
+  /// matched (WO-033).
+  final String? exerciseRef;
+
+  /// Its sets, in order.
+  final List<WorkoutSetInput> sets;
+
+  /// The server's assumption lines (English), shown as sent.
+  final List<String> assumptions;
+
+  @override
+  String toString() => 'WorkoutExerciseInput';
+}
+
+/// `workout` (AI-053, WO-030–033).
+final class WorkoutRecord extends RecordRequest {
+  /// The session.
+  const new({required this.exercises, required this.when, this.name})
+    : super._();
+
+  /// "Push", or `null`. User content.
+  final String? name;
+
+  /// The day (and a time phrase, not resolved).
+  final RecordDayHint when;
+
+  /// The exercises, in order.
+  final List<WorkoutExerciseInput> exercises;
+
+  @override
+  RecordKind get kind => RecordKind.workout;
+}
+
+/// `measurement` (WB-040).
+final class MeasurementRecord extends RecordRequest {
+  /// The measurement.
+  const new({
+    required this.kindCode,
+    required this.value,
+    required this.unit,
+    required this.when,
+    this.customTypeId,
+  }) : super._();
+
+  /// The measurement kind's code (`waist`, …, `custom`).
+  final String kindCode;
+
+  /// A custom type's ID (exactly for `custom`).
+  final String? customTypeId;
+
+  /// The value as said.
+  final double value;
+
+  /// `cm`, `in` or `percent`.
+  final String unit;
+
+  /// The day.
+  final RecordDayHint when;
+
+  @override
+  RecordKind get kind => RecordKind.measurement;
+}
+
+/// One pasted row as read (`BuddyImportRow`). User content.
+final class ImportRowInput {
+  /// The row.
+  const new({required this.original, this.date, this.value, this.unit});
+
+  /// An ISO date, or `null` when unclear.
+  final String? date;
+
+  /// The number, or `null`.
+  final double? value;
+
+  /// The unit as written ("k", "kg", "lbs"), or `null`.
+  final String? unit;
+
+  /// The literal text of the row.
+  final String original;
+
+  @override
+  String toString() => 'ImportRowInput';
+}
+
+/// `importRows` (AI-057, WB-030–032): weights, or one measurement kind.
+final class ImportRowsRecord extends RecordRequest {
+  /// The rows.
+  const new({required this.rows, this.measurementKind}) : super._();
+
+  /// The measurement kind's code, or `null` for weights.
+  final String? measurementKind;
+
+  /// The rows, as pasted.
+  final List<ImportRowInput> rows;
+
+  /// Whether these are weights.
+  bool get isWeight => measurementKind == null;
+
+  @override
+  RecordKind get kind => RecordKind.importRows;
 }
 
 /// The memory kinds a `memoryChange` names (the contract's enum).

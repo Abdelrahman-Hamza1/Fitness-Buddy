@@ -3,12 +3,17 @@ import 'package:fb_mobile/features/foods/application/barcode_lookup.dart'
     show ScanPrefill;
 import 'package:fb_mobile/features/foods/application/barcode_providers.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
+import 'package:fb_mobile/features/foods/application/label_reading.dart';
 import 'package:fb_mobile/features/foods/application/new_food_prefill.dart';
 import 'package:fb_mobile/features/foods/application/personal_food_actions.dart';
+import 'package:fb_mobile/features/foods/data/label_api.dart';
 import 'package:fb_text/fb_text.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'personal_food_form.g.dart';
+
+/// The creation code of a personal food read from a label (A69 D8).
+const labelCreatedFrom = 'label';
 
 /// Typed field identities; no labels or user content in errors.
 enum PersonalFoodField {
@@ -226,7 +231,12 @@ final class PersonalFoodFormState {
     this.duplicate,
     this.submitting = false,
     this.newCreatedFrom = 'form',
-  }) : fields = Map.unmodifiable(fields),
+    Set<PersonalFoodField> uncertain = const {},
+    List<LabelOther> labelOthers = const [],
+    this.readLabelOnOpen = false,
+  }) : uncertain = Set.unmodifiable(uncertain),
+       labelOthers = List.unmodifiable(labelOthers),
+       fields = Map.unmodifiable(fields),
        touched = Set.unmodifiable(touched),
        servings = List.unmodifiable(servings);
 
@@ -277,6 +287,20 @@ final class PersonalFoodFormState {
   /// The creation code of a new food: `form`, or the OFF origin of a scan
   /// prefill (review fix 2). An edited food keeps its own.
   final String newCreatedFrom;
+
+  /// Fields a label read left to check (FD-041): unsure, missing or
+  /// converted; a field leaves the set once the user edits it.
+  final Set<PersonalFoodField> uncertain;
+
+  /// Other nutrients the label listed (shown, not stored).
+  final List<LabelOther> labelOthers;
+
+  /// Opened by "Scan the label" on the scanner: the form starts a label
+  /// read at once (A69 D8).
+  final bool readLabelOnOpen;
+
+  /// Whether a label filled this form.
+  bool get fromLabel => newCreatedFrom == labelCreatedFrom;
 
   /// Reads a field without inventing a default number.
   String text(PersonalFoodField field) => fields[field] ?? '';
@@ -330,8 +354,15 @@ final class PersonalFoodFormState {
     PersonalFood? duplicate,
     bool clearDuplicate = false,
     bool? submitting,
+    String? newCreatedFrom,
+    Set<PersonalFoodField>? uncertain,
+    List<LabelOther>? labelOthers,
+    bool? readLabelOnOpen,
   }) => PersonalFoodFormState(
-    newCreatedFrom: newCreatedFrom,
+    newCreatedFrom: newCreatedFrom ?? this.newCreatedFrom,
+    uncertain: uncertain ?? this.uncertain,
+    labelOthers: labelOthers ?? this.labelOthers,
+    readLabelOnOpen: readLabelOnOpen ?? this.readLabelOnOpen,
     original: original ?? this.original,
     latest: latest ?? this.latest,
     fields: fields ?? this.fields,
@@ -675,6 +706,7 @@ PersonalFoodFormState _initialFromDraft(
 /// brand, per-100 values and serving Open Food Facts has; the rest is typed.
 /// "More details" opens because a barcode is set.
 PersonalFoodFormState _initialFromScan(ScanPrefill p) => PersonalFoodFormState(
+  readLabelOnOpen: p.readLabel,
   // Review fix 2: a prefill from OFF keeps the origin and the scan's halal
   // flags; the fiber mark is decided from the field at save.
   newCreatedFrom: switch (p.halal) {
@@ -848,10 +880,83 @@ class PersonalFoodFormController extends _$PersonalFoodFormController {
         current.copyWith(
           fields: {...current.fields, field: text},
           touched: {...current.touched, field},
+          uncertain: current.uncertain.difference({field}),
         ),
         ref.read(personalFoodsProvider).value ?? [],
       ),
     );
+  }
+
+  /// Fills a new food from a label read (FD-041, A69 D8): its name when
+  /// the name is still empty, the serving and the numbers on the label's
+  /// own basis, the fields to check, the other nutrients. Saving is the
+  /// confirmation; the form's Undo takes it back.
+  void applyLabel(LabelReading label) {
+    final current = state.requireValue;
+    if (current.original != null) return;
+    String text(double? v) => v == null ? '' : _display(v);
+    final nameEmpty = current.text(PersonalFoodField.name).trim().isEmpty;
+    final fields = <PersonalFoodField, String>{
+      if (nameEmpty && label.name != null)
+        PersonalFoodField.name: _capped(label.name!),
+      for (final f in nutrientFields)
+        if (f != PersonalFoodField.alcohol) f: text(label.values[f]),
+      if (label.perServing)
+        PersonalFoodField.servingSize: text(label.servingSize),
+    };
+    state = AsyncData(
+      _duplicate(
+        current.copyWith(
+          fields: {...current.fields, ...fields},
+          touched: {...current.touched, ...fields.keys},
+          mode: label.perServing
+              ? PersonalFoodMode.perServing
+              : PersonalFoodMode.per100,
+          basis: label.basis,
+          servingUnit: label.perServing ? 'serving' : null,
+          configurationTouched: true,
+          clearTypedServing: true,
+          newCreatedFrom: current.newCreatedFrom == 'form'
+              ? labelCreatedFrom
+              : null,
+          uncertain: {
+            for (final f in label.uncertain)
+              if (f != PersonalFoodField.name || nameEmpty) f,
+          },
+          labelOthers: label.others,
+          readLabelOnOpen: false,
+        ),
+        ref.read(personalFoodsProvider).value ?? [],
+      ),
+    );
+  }
+
+  /// Reads the label in [photo] (base64 JPEG) and fills the form from it;
+  /// `null` when it did, else why not (nothing changes then).
+  Future<LabelFailure?> readLabel(String photo) async {
+    final outcome = await ref.read(labelApiProvider).read(photo);
+    if (!ref.mounted) return null;
+    switch (outcome) {
+      case LabelRead(:final reading):
+        applyLabel(reading);
+        return null;
+      case LabelNotRead(:final failure):
+        return failure;
+    }
+  }
+
+  /// The label read asked for at open was started.
+  void labelStarted() {
+    final current = state.value;
+    if (current == null || !current.readLabelOnOpen) return;
+    state = AsyncData(current.copyWith(readLabelOnOpen: false));
+  }
+
+  static String _capped(String name) {
+    final runes = name.runes.toList();
+    return runes.length <= PersonalFoodBounds.name
+        ? name
+        : String.fromCharCodes(runes.take(PersonalFoodBounds.name));
   }
 
   /// Interpretation changes preserve every typed buffer.

@@ -53,6 +53,10 @@ dependencies:
   # Exact pin like the other auth-sensitive plugin; used only in
   # lib/core/account/google_plugin_id_token_source.dart.
   google_sign_in: 7.2.0
+  # A69 D6: meal and label photos (camera or gallery), BSD-3, flutter.dev,
+  # Android + iOS. Exact pin; resizes natively (maxWidth/maxHeight 1024,
+  # quality 80). Used only in lib/core/photos/photo_picker.dart.
+  image_picker: 1.2.4
   intl: ^0.20.2
   material_ui: 1.6.0
   # A28a D13: barcode scanner (CameraX + bundled ML Kit barcode model, so the

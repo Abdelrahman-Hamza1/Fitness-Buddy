@@ -5,6 +5,8 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/account/account_providers.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/photos/photo_picker.dart';
+import 'package:fb_mobile/core/photos/photo_source_sheet.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/presentation/composer.dart';
 import 'package:fb_mobile/features/buddy/presentation/message_list.dart';
@@ -76,6 +78,9 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _restore();
+      // Leftover picker files of an earlier run go (A69 review), off the
+      // startup path.
+      unawaited(ref.read(photoPickerProvider).sweepOnce());
       // Opening Buddy tries waiting messages again (A66 D12).
       unawaited(_thread.wake(buddyReplyTexts(context.l10n)));
     });
@@ -103,15 +108,32 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
     super.dispose();
   }
 
+  /// The meal photo for the next message (memory only, A69 D6).
+  String? _photo;
+
   void _send() {
-    final text = _text.text;
-    if (text.trim().isEmpty) return;
+    final photo = _photo;
+    var text = _text.text;
+    if (text.trim().isEmpty) {
+      if (photo == null) return;
+      text = context.l10n.buddyPhotoOnlyMessage;
+    }
     _text.clear();
+    setState(() => _photo = null);
     unawaited(
       ref
           .read(buddyThreadControllerProvider.notifier)
-          .send(text, buddyReplyTexts(context.l10n)),
+          .send(text, buddyReplyTexts(context.l10n), image: photo),
     );
+  }
+
+  Future<void> _pickPhoto() async {
+    final photo = await pickPhoto(
+      context,
+      ref,
+      title: context.l10n.buddyAddPhoto,
+    );
+    if (photo != null && mounted) setState(() => _photo = photo);
   }
 
   /// The sheet is at full height (from its size notifications, so the
@@ -236,6 +258,11 @@ class _BuddySheetState extends ConsumerState<BuddySheet> {
                     focusNode: _focus,
                     onSend: sending || accountBusy ? null : _send,
                     onSearch: _search,
+                    onPhoto: sending || accountBusy
+                        ? null
+                        : () => unawaited(_pickPhoto()),
+                    photoAttached: _photo != null,
+                    onRemovePhoto: () => setState(() => _photo = null),
                   ),
                 ),
               ],

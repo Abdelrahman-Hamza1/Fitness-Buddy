@@ -369,6 +369,23 @@ class _BuddyMessageListState extends ConsumerState<BuddyMessageList> {
           semanticLabel: l10n.buddyBubbleYou(userText),
         ),
       ),
+      // The photo went with the message (it is never kept, A69 D6).
+      if (turn.photo)
+        (
+          'photo:${turn.userMessageId}',
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(end: FbSpace.s3),
+              child: Text(
+                l10n.buddyPhotoSent,
+                style: FbType.bodySmall.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+        ),
       // A card's holder row (it has a budget) is never a bubble (A66 D5);
       // nor is the plain "here's your meal" line above its cards.
       if (reply != null &&

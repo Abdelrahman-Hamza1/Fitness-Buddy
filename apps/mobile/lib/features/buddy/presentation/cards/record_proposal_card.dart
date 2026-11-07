@@ -11,6 +11,7 @@ import 'package:fb_mobile/core/undo/undo_stack.dart';
 import 'package:fb_mobile/features/body/body.dart' show weightText;
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
 import 'package:fb_mobile/features/buddy/presentation/cards/proposal_labels.dart';
+import 'package:fb_mobile/features/buddy/presentation/cards/record_body_details.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
 import 'package:flutter/services.dart';
@@ -103,6 +104,9 @@ class RecordProposalCard extends ConsumerWidget {
         RecordKind.memoryChange =>
           forget ? l10n.recordKindForget : l10n.recordKindRemember,
         RecordKind.weighIn => l10n.recordKindWeighIn,
+        RecordKind.workout => l10n.recordKindWorkout,
+        RecordKind.measurement => l10n.recordKindMeasurement,
+        RecordKind.importRows => l10n.recordKindImport,
       },
       if (view != null && view.choices.isEmpty)
         if (where(view.date, view.slotId) case final w when w.isNotEmpty) w,
@@ -258,6 +262,34 @@ class RecordProposalCard extends ConsumerWidget {
           ),
       ]);
     }
+    if (view?.workout case final w?) {
+      details.addAll(
+        workoutDetails(
+          context,
+          card: card,
+          view: w,
+          thread: thread,
+          enabled: !confirming,
+        ),
+      );
+    }
+    if (view?.measurement case final m?) {
+      details.addAll(
+        measurementDetails(context, view: m, referenceDate: referenceDate),
+      );
+    }
+    if (view?.imports case final i?) {
+      details.addAll(
+        importDetails(
+          context,
+          card: card,
+          view: i,
+          referenceDate: referenceDate,
+          thread: thread,
+          enabled: !confirming,
+        ),
+      );
+    }
     for (final note in view?.notes ?? const <RecordNote>{}) {
       details.add(Text(_noteText(l10n, note, system), style: muted));
     }
@@ -319,7 +351,12 @@ class RecordProposalCard extends ConsumerWidget {
           RecordKind.batchPortion => l10n.proposalLogIt,
           RecordKind.savedMealCreate ||
           RecordKind.batch ||
-          RecordKind.weighIn => l10n.recordConfirmSave,
+          RecordKind.weighIn ||
+          RecordKind.workout ||
+          RecordKind.measurement => l10n.recordConfirmSave,
+          RecordKind.importRows => l10n.recordConfirmImport(
+            view?.imports?.includedCount ?? 0,
+          ),
           RecordKind.batchClose => l10n.recordConfirmClose,
           RecordKind.personalFoodCreate => l10n.recordConfirmReview,
           RecordKind.memoryChange =>

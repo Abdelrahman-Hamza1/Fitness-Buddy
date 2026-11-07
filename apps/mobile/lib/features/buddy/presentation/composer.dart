@@ -14,8 +14,20 @@ class BuddyComposer extends StatelessWidget {
     required this.focusNode,
     required this.onSend,
     required this.onSearch,
+    this.onPhoto,
+    this.photoAttached = false,
+    this.onRemovePhoto,
     super.key,
   });
+
+  /// Attaches a meal photo (AI-011); null hides the button.
+  final VoidCallback? onPhoto;
+
+  /// A photo is attached to the next message.
+  final bool photoAttached;
+
+  /// Removes the attached photo.
+  final VoidCallback? onRemovePhoto;
 
   /// The text.
   final TextEditingController controller;
@@ -40,10 +52,31 @@ class BuddyComposer extends StatelessWidget {
       sendTooltip: l10n.buddySend,
       onSend: onSend,
       inputFormatters: [Utf16LengthLimitingFormatter(ChatText.composerLimit)],
-      leading: FbIconButton(
-        icon: FbIcons.search,
-        tooltip: l10n.buddySearchFoods,
-        onPressed: onSearch,
+      sendWithoutText: photoAttached,
+      attachment: photoAttached
+          ? FbTargetChip(
+              key: const ValueKey('buddy-photo-attached'),
+              label: l10n.buddyPhotoAttached,
+              clearTooltip: l10n.buddyPhotoRemove,
+              onClear: onRemovePhoto ?? () {},
+            )
+          : null,
+      leading: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FbIconButton(
+            icon: FbIcons.search,
+            tooltip: l10n.buddySearchFoods,
+            onPressed: onSearch,
+          ),
+          if (onPhoto != null)
+            FbIconButton(
+              key: const ValueKey('buddy-photo'),
+              icon: FbIcons.camera,
+              tooltip: l10n.buddyAddPhoto,
+              onPressed: onPhoto,
+            ),
+        ],
       ),
     );
   }

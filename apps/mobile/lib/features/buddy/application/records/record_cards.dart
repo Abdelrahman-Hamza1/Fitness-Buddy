@@ -83,6 +83,7 @@ final class RecordCards {
     EntryTime time, {
     String? choice,
     BatchPath? path,
+    RecordAdjust adjust = RecordAdjust.none,
     Set<String>? cardEntryIds,
   }) async {
     final ids = GeneratorProposalIds(_ids);
@@ -99,6 +100,7 @@ final class RecordCards {
       ids,
       choice: choice,
       path: path,
+      adjust: adjust,
     );
   }
 
@@ -253,7 +255,7 @@ final class RecordCards {
       _resolve(
         card,
         ProposalStatus.confirmed,
-        card.path == null
+        card.path == null && card.adjust.isEmpty
             ? ProposalOutcome.unchanged
             : ProposalOutcome.adjusted,
       ),
@@ -361,6 +363,7 @@ final class RecordCards {
       card.referenceTime,
       choice: card.choice,
       path: card.path,
+      adjust: card.adjust,
       cardEntryIds: cardEntryIds,
     );
     if (plan == null || plan.view == null) return null;

@@ -198,7 +198,11 @@ final class BuddyTurnRunner {
     required this._api,
     required this._tools,
     required this._today,
+    this._image,
   });
+
+  /// The meal photo of round 0 (base64 JPEG), in memory only (A69 D6).
+  final String? _image;
 
   final TurnHost _host;
   final BuddyTurnApi _api;
@@ -233,6 +237,9 @@ final class BuddyTurnRunner {
       final body = {
         ...cp.body,
         'priorAttempt': cp.attempt > 1 ? _prior(cp) : null,
+        if (cp.body['message'] case final Map<String, Object?> message
+            when _image != null && cp.kind == TurnRoundKind.start)
+          'message': {...message, 'image': _image},
       };
       final post = await switch (cp.kind) {
         TurnRoundKind.start => _api.start(body, cancel: cancel),

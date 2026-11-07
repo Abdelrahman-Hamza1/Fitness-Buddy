@@ -15,8 +15,10 @@ import 'package:fb_domain/src/nutrition/nutrients.dart';
 import 'package:fb_domain/src/proposals/day_hint.dart';
 import 'package:fb_domain/src/proposals/proposal_input.dart'
     show ProposalIdSource;
+import 'package:fb_domain/src/records/body_plan.dart';
 import 'package:fb_domain/src/records/record_plan.dart';
 import 'package:fb_domain/src/records/record_request.dart';
+import 'package:fb_domain/src/records/workout_plan.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/units/food_measures.dart';
 import 'package:fb_domain/src/units/units.dart';
@@ -75,6 +77,7 @@ abstract final class RecordPlanner {
     ProposalIdSource ids, {
     String? choice,
     BatchPath? path,
+    RecordAdjust adjust = RecordAdjust.none,
   }) {
     try {
       return switch (request) {
@@ -90,6 +93,9 @@ abstract final class RecordPlanner {
         PersonalFoodRecord() => _personalFood(request, facts),
         MemoryRecord() => _memory(request, facts),
         WeighInRecord() => _weighIn(request, facts, ids),
+        WorkoutRecord() => planWorkout(request, facts, ids, adjust),
+        MeasurementRecord() => planMeasurement(request, facts, ids),
+        ImportRowsRecord() => planImport(request, facts, ids, adjust),
       };
       // A value outside an op's rules (a bound, an ID) is a request this
       // version can't plan; its content never leaves here.

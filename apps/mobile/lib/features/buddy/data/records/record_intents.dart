@@ -244,6 +244,67 @@ RecordIntent? decodeRecordIntent(Map<String, Object?> raw) {
           when: RecordDayHint(dateHint: dateHint, timeHint: timeHint),
         ),
       ),
+    BuddyIntentWorkout(:final name, :final dateHint, :final timeHint) =>
+      RecordIntent(
+        WorkoutRecord(
+          name: name,
+          when: RecordDayHint(dateHint: dateHint, timeHint: timeHint),
+          exercises: [
+            for (final e in intent.exercises)
+              WorkoutExerciseInput(
+                mention: e.mention,
+                exerciseRef: e.exerciseRef,
+                assumptions: e.assumptions,
+                sets: [
+                  for (final s in e.sets)
+                    WorkoutSetInput(
+                      reps: s.reps,
+                      weight: s.weight,
+                      unit: s.unit?.json,
+                      perDumbbell: s.perDumbbell,
+                      durationSeconds: s.durationSeconds,
+                      distanceMeters: s.distanceMeters,
+                    ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    BuddyIntentMeasurement(
+      :final measurementKind,
+      :final customTypeId,
+      :final value,
+      :final unit,
+      :final dateHint,
+      :final timeHint,
+    ) =>
+      RecordIntent(
+        MeasurementRecord(
+          kindCode: measurementKind.json ?? '',
+          customTypeId: customTypeId,
+          value: value,
+          unit: unit.json ?? '',
+          when: RecordDayHint(dateHint: dateHint, timeHint: timeHint),
+        ),
+      ),
+    BuddyIntentImportRows(:final metric, :final measurementKind) =>
+      RecordIntent(
+        ImportRowsRecord(
+          // A measurement import without a kind can't be planned ('').
+          measurementKind: metric == BuddyImportMetric.weight
+              ? null
+              : measurementKind?.json ?? '',
+          rows: [
+            for (final r in intent.rows)
+              ImportRowInput(
+                original: r.original,
+                date: r.date,
+                value: r.value,
+                unit: r.unit,
+              ),
+          ],
+        ),
+      ),
     _ => null,
   };
 }
@@ -269,6 +330,15 @@ String recordLabel(RecordView view) {
       '${view.memory?.forget ?? false ? 'Forget' : 'Remember'}: '
           '${view.memory?.subject ?? ''}',
     RecordKind.weighIn => 'Weigh-in',
+    RecordKind.workout => 'Workout: ${view.title ?? _exerciseNames(view)}',
+    RecordKind.measurement =>
+      'Measurement: ${view.measurement?.draft.type.kind.code ?? ''}',
+    RecordKind.importRows => 'Import: ${view.imports?.rows.length ?? 0} rows',
   };
   return text.length <= 120 ? text : '${text.substring(0, 117)}...';
 }
+
+String _exerciseNames(RecordView view) => [
+  for (final e in view.workout?.exercises ?? const <WorkoutExerciseView>[])
+    e.exercise?.name ?? e.mention,
+].take(4).join(', ');

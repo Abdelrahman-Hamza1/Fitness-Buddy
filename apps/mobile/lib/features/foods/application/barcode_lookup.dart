@@ -147,6 +147,7 @@ final class ScanPrefill {
     this.fiber,
     this.servingQuantity,
     this.halal,
+    this.readLabel = false,
   });
 
   /// The prefill for an unknown code.
@@ -167,6 +168,9 @@ final class ScanPrefill {
 
   /// The normalized barcode.
   final String code;
+
+  /// "Scan the label" (A69 D8): the form starts a label read at once.
+  final bool readLabel;
 
   /// Set when the prefill comes from Open Food Facts: the halal flags from
   /// its ingredients and tags, kept with the saved food (review fix 2).

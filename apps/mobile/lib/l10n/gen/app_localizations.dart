@@ -12052,6 +12052,336 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weighing tip for {food}, {date}'**
   String buddyMemoryTip(String food, String date);
+
+  /// Record card header: a workout session (AI-053).
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get recordKindWorkout;
+
+  /// Record card header: a body measurement (WB-040).
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement'**
+  String get recordKindMeasurement;
+
+  /// Record card header: pasted rows to import (AI-057).
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get recordKindImport;
+
+  /// Primary action of an import card.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Import} =1{Import 1 row} other{Import {count} rows}}'**
+  String recordConfirmImport(int count);
+
+  /// Workout card: an exercise's sets, joined by the app.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets}'**
+  String recordWorkoutSets(String sets);
+
+  /// Workout card: an exercise without numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'No sets yet'**
+  String get recordWorkoutNoSets;
+
+  /// Workout card: a set beats your earlier best (WO-042).
+  ///
+  /// In en, this message translates to:
+  /// **'PR'**
+  String get recordWorkoutPr;
+
+  /// Workout card: a dumbbell total was halved per dumbbell (WO-005).
+  ///
+  /// In en, this message translates to:
+  /// **'Total split per dumbbell'**
+  String get recordWorkoutSplit;
+
+  /// Workout card: an unmatched exercise asks (WO-033).
+  ///
+  /// In en, this message translates to:
+  /// **'Not in your exercises: “{mention}”. Which is it?'**
+  String recordWorkoutWhich(String mention);
+
+  /// Workout card: create a custom exercise named after the mention.
+  ///
+  /// In en, this message translates to:
+  /// **'New exercise “{name}”'**
+  String recordWorkoutNew(String name);
+
+  /// Workout card: drop an unmatched exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave it out'**
+  String get recordWorkoutLeaveOut;
+
+  /// Workout card: this exercise will be created as your own.
+  ///
+  /// In en, this message translates to:
+  /// **'New exercise'**
+  String get recordWorkoutCreated;
+
+  /// Workout card: this exercise won't be saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Left out'**
+  String get recordWorkoutLeftOut;
+
+  /// Workout card: change the pick for an exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get recordWorkoutChange;
+
+  /// Workout card: where sets are edited.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit sets in the workout after saving.'**
+  String get recordWorkoutEditLater;
+
+  /// Measurement card: change against the previous value.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} since last time'**
+  String recordMeasurementChange(String change);
+
+  /// Import card: how many rows go in.
+  ///
+  /// In en, this message translates to:
+  /// **'{included} of {total} rows will be imported'**
+  String recordImportSummary(int included, int total);
+
+  /// Import card: one row's date and value.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {value}'**
+  String recordImportRow(String date, String value);
+
+  /// Import card: a row without a readable date.
+  ///
+  /// In en, this message translates to:
+  /// **'No date'**
+  String get recordImportNoDate;
+
+  /// Import card: rows without flags not listed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 more row is fine} other{{count} more rows are fine}}'**
+  String recordImportOthers(int count);
+
+  /// Import card: include a flagged row anyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Include'**
+  String get recordImportInclude;
+
+  /// Import card: leave an accepted row out again.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave out'**
+  String get recordImportExclude;
+
+  /// Import row flag (WB-031).
+  ///
+  /// In en, this message translates to:
+  /// **'Date unclear'**
+  String get recordImportFlagUnclearDate;
+
+  /// Import row flag.
+  ///
+  /// In en, this message translates to:
+  /// **'No number'**
+  String get recordImportFlagNoValue;
+
+  /// Import row flag.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit not recognised'**
+  String get recordImportFlagUnknownUnit;
+
+  /// Import row flag.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of range'**
+  String get recordImportFlagOutOfRange;
+
+  /// Import row flag.
+  ///
+  /// In en, this message translates to:
+  /// **'Date in the future'**
+  String get recordImportFlagFuture;
+
+  /// Import row flag: "110k" read as kg.
+  ///
+  /// In en, this message translates to:
+  /// **'Read as {unit}'**
+  String recordImportFlagUnitInferred(String unit);
+
+  /// Import row flag: the profile's unit was used.
+  ///
+  /// In en, this message translates to:
+  /// **'No unit, read as {unit}'**
+  String recordImportFlagUnitMissing(String unit);
+
+  /// Import row flag: same value that day.
+  ///
+  /// In en, this message translates to:
+  /// **'Already logged'**
+  String get recordImportFlagDuplicate;
+
+  /// Import row flag: an implausible change.
+  ///
+  /// In en, this message translates to:
+  /// **'Big jump, check it'**
+  String get recordImportFlagImplausible;
+
+  /// Import row note.
+  ///
+  /// In en, this message translates to:
+  /// **'Another value that day'**
+  String get recordImportFlagSameDay;
+
+  /// Photo source: the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get photoTake;
+
+  /// Photo source: the gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get photoChoose;
+
+  /// A picked picture isn't a JPEG the app can send (e.g. a transparent PNG).
+  ///
+  /// In en, this message translates to:
+  /// **'That picture can\'t be used. Take a photo instead.'**
+  String get photoUnusable;
+
+  /// Picking a photo failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera or gallery couldn\'t open. Check the app\'s permissions.'**
+  String get photoUnavailable;
+
+  /// Composer button: attach a meal photo (AI-011).
+  ///
+  /// In en, this message translates to:
+  /// **'Add a meal photo'**
+  String get buddyAddPhoto;
+
+  /// Composer chip: a photo goes with the next message.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo attached'**
+  String get buddyPhotoAttached;
+
+  /// Tooltip of the photo chip's ✕.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the photo'**
+  String get buddyPhotoRemove;
+
+  /// The message text sent when the user sends only a photo (shown as their bubble).
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s in this photo?'**
+  String get buddyPhotoOnlyMessage;
+
+  /// Under a user message that had a photo (the photo itself isn't kept).
+  ///
+  /// In en, this message translates to:
+  /// **'Photo sent'**
+  String get buddyPhotoSent;
+
+  /// New-food form: fill the food from a label photo (AI-012, FD-040).
+  ///
+  /// In en, this message translates to:
+  /// **'Read a nutrition label'**
+  String get labelRead;
+
+  /// New-food form: a label read is in flight.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the label…'**
+  String get labelReadingNow;
+
+  /// Photo source sheet title for a label photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo of the nutrition label'**
+  String get labelReadTitle;
+
+  /// New-food form after a label read (FD-041).
+  ///
+  /// In en, this message translates to:
+  /// **'Filled from the label. Check the highlighted values before you save.'**
+  String get labelFilled;
+
+  /// New-food form after a label read with other nutrients listed.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled from the label. Check the highlighted values before you save. Also on the label (not saved): {others}'**
+  String labelFilledOthers(String others);
+
+  /// Under a field the label read wasn't sure of.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this against the label'**
+  String get labelCheckValue;
+
+  /// A label read found no panel.
+  ///
+  /// In en, this message translates to:
+  /// **'No nutrition panel found. Try again closer, or type the values.'**
+  String get labelNotFound;
+
+  /// A label read was refused by the daily limit (429).
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Buddy limit is reached. Type the values instead.'**
+  String get labelLimited;
+
+  /// A label read had no connection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading a label needs a connection.'**
+  String get labelOffline;
+
+  /// A label read failed on the server.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels can\'t be read right now. Try again later.'**
+  String get labelUnavailable;
+
+  /// Barcode not found: read the nutrition label into a new food (FD-042).
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the label'**
+  String get barcodeScanLabel;
+
+  /// Import card: list every row before importing.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all {count} rows'**
+  String recordImportShowAll(int count);
+
+  /// Import card: collapse the full row list.
+  ///
+  /// In en, this message translates to:
+  /// **'Show fewer'**
+  String get recordImportShowFewer;
+
+  /// Import card: the full list is open.
+  ///
+  /// In en, this message translates to:
+  /// **'All rows are listed'**
+  String get recordImportAllShown;
 }
 
 class _AppLocalizationsDelegate

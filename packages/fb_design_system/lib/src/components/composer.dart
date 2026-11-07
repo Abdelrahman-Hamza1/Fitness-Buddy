@@ -23,6 +23,8 @@ class FbComposer extends StatelessWidget {
     this.autofocus = false,
     this.inputFormatters = const [],
     this.leading,
+    this.attachment,
+    this.sendWithoutText = false,
     super.key,
   });
 
@@ -50,13 +52,22 @@ class FbComposer extends StatelessWidget {
   /// An action before the field (an `FbIconButton`).
   final Widget? leading;
 
+  /// Something attached to the message (a photo chip), shown above the
+  /// field.
+  final Widget? attachment;
+
+  /// Send works with an empty field (something is [attachment]ed).
+  final bool sendWithoutText;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: controller,
       builder: (context, value, _) {
-        final send = value.text.trim().isEmpty ? null : onSend;
+        final send = value.text.trim().isEmpty && !sendWithoutText
+            ? null
+            : onSend;
         return Material(
           color: scheme.surfaceContainerHigh,
           shape: RoundedRectangleBorder(
@@ -66,54 +77,76 @@ class FbComposer extends StatelessWidget {
           // As tall as the Today input bar it replaces in the sheet.
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: FbInputBar.minHeight),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                ?leading,
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsetsDirectional.only(
-                      start: leading == null ? FbSpace.s4 : 0,
-                    ),
-                    child: TextField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      autofocus: autofocus,
-                      minLines: 1,
-                      maxLines: 4,
-                      inputFormatters: inputFormatters,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.send,
-                      textCapitalization: TextCapitalization.sentences,
-                      style: FbType.body.copyWith(color: scheme.onSurface),
-                      // Providing onEditingComplete keeps the focus after the
-                      // keyboard's send key (UX-023).
-                      onEditingComplete: () => send?.call(),
-                      decoration:
-                          InputDecoration.collapsed(
-                            hintText: hint,
-                            hintStyle: FbType.body.copyWith(
-                              color: scheme.onSurfaceVariant,
+            child: _withAttachment(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  ?leading,
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsetsDirectional.only(
+                        start: leading == null ? FbSpace.s4 : 0,
+                      ),
+                      child: TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+                        autofocus: autofocus,
+                        minLines: 1,
+                        maxLines: 4,
+                        inputFormatters: inputFormatters,
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.send,
+                        textCapitalization: TextCapitalization.sentences,
+                        style: FbType.body.copyWith(color: scheme.onSurface),
+                        // Providing onEditingComplete keeps the focus after the
+                        // keyboard's send key (UX-023).
+                        onEditingComplete: () => send?.call(),
+                        decoration:
+                            InputDecoration.collapsed(
+                              hintText: hint,
+                              hintStyle: FbType.body.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ).copyWith(
+                              contentPadding:
+                                  const EdgeInsetsDirectional.symmetric(
+                                    vertical: FbSpace.s3,
+                                  ),
                             ),
-                          ).copyWith(
-                            contentPadding:
-                                const EdgeInsetsDirectional.symmetric(
-                                  vertical: FbSpace.s3,
-                                ),
-                          ),
+                      ),
                     ),
                   ),
-                ),
-                FbIconButton(
-                  icon: FbIcons.send,
-                  tooltip: sendTooltip,
-                  onPressed: send,
-                ),
-              ],
+                  FbIconButton(
+                    icon: FbIcons.send,
+                    tooltip: sendTooltip,
+                    onPressed: send,
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
   }
+
+  Widget _withAttachment(Widget row) => switch (attachment) {
+    null => row,
+    final a => Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            FbSpace.s3,
+            FbSpace.s2,
+            FbSpace.s3,
+            0,
+          ),
+          child: Align(alignment: AlignmentDirectional.centerStart, child: a),
+        ),
+        row,
+      ],
+    ),
+  };
 }

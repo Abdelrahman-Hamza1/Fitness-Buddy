@@ -15,6 +15,8 @@ const Set<String> ioPackages = {
   'flutter_local_notifications',
   'flutter_secure_storage',
   'http',
+  // A69: the photo picker stays in core/photos.
+  'image_picker*',
   'package_info_plus',
   'path_provider',
   'sentry*',

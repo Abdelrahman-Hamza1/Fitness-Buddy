@@ -5,12 +5,14 @@ import 'package:fb_domain/fb_domain.dart';
 import 'package:fb_mobile/core/l10n/domain_labels.dart';
 import 'package:fb_mobile/core/l10n/l10n.dart';
 import 'package:fb_mobile/core/navigation/navigation.dart';
+import 'package:fb_mobile/core/photos/photo_source_sheet.dart';
 import 'package:fb_mobile/core/ui/discard_changes_sheet.dart';
 import 'package:fb_mobile/core/undo/undo_snack_bar.dart';
 import 'package:fb_mobile/features/foods/application/barcode_providers.dart';
 import 'package:fb_mobile/features/foods/application/food_choice.dart';
 import 'package:fb_mobile/features/foods/application/food_search_row.dart';
 import 'package:fb_mobile/features/foods/application/foods_providers.dart';
+import 'package:fb_mobile/features/foods/application/label_reading.dart';
 import 'package:fb_mobile/features/foods/application/personal_food_actions.dart';
 import 'package:fb_mobile/features/foods/application/personal_food_form.dart';
 import 'package:fb_mobile/features/foods/presentation/food_sheet_entry.dart';
@@ -93,6 +95,53 @@ class _PersonalFoodFormScreenState
   /// does nothing.
   bool _saving = false;
   PersonalFoodFailure? _refusal;
+
+  /// A label read is in flight (A69 D8).
+  bool _readingLabel = false;
+
+  /// Reads a nutrition label into a new food (FD-040–042): a photo, the
+  /// read, then the filled form with the values to check highlighted.
+  Future<void> _readLabel() async {
+    _controller.labelStarted();
+    final l10n = context.l10n;
+    final photo = await pickPhoto(context, ref, title: l10n.labelReadTitle);
+    if (photo == null || !mounted) return;
+    setState(() => _readingLabel = true);
+    final failure = await _controller.readLabel(photo);
+    if (!mounted) return;
+    final form = ref.read(_provider).value;
+    setState(() {
+      _readingLabel = false;
+      if (failure == null && form != null) {
+        _inputs.resync(form);
+        // The optional nutrients the label gave show at once.
+        _moreOpen =
+            _moreOpen ||
+            form.fields.entries.any(
+              (e) =>
+                  e.value.isNotEmpty &&
+                  nutrientFields.contains(e.key) &&
+                  !_coreFields.contains(e.key),
+            );
+      }
+    });
+    if (failure != null) {
+      showFbSnackBar(context, switch (failure) {
+        LabelFailure.notFound => l10n.labelNotFound,
+        LabelFailure.limited => l10n.labelLimited,
+        LabelFailure.offline => l10n.labelOffline,
+        LabelFailure.unavailable => l10n.labelUnavailable,
+      });
+    }
+  }
+
+  static const Set<PersonalFoodField> _coreFields = {
+    PersonalFoodField.kcal,
+    PersonalFoodField.protein,
+    PersonalFoodField.carbs,
+    PersonalFoodField.fat,
+    PersonalFoodField.fiber,
+  };
 
   PersonalFoodFormControllerProvider get _provider =>
       personalFoodFormControllerProvider(_key);
@@ -477,6 +526,12 @@ class _PersonalFoodFormScreenState
       );
     }
     _inputs.ensureServings(form);
+    if (form.readLabelOnOpen && !_readingLabel) {
+      // "Scan the label" on the scanner: the camera opens with the form.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_readLabel());
+      });
+    }
     // Decided once, on the first data: an edited food with details shows
     // them; a name from a search sends the keyboard to Calories.
     final detailsOpen = _detailsOpen ??= form.hasDetails;
@@ -504,6 +559,33 @@ class _PersonalFoodFormScreenState
               children: [
                 if (form.staleness != PersonalFoodStaleness.current)
                   formPad(_staleBanner(l10n, form)),
+                if (widget.id == null)
+                  formPad(
+                    FbButton.secondary(
+                      key: const ValueKey('personal-food-read-label'),
+                      label: _readingLabel
+                          ? l10n.labelReadingNow
+                          : l10n.labelRead,
+                      onPressed: _readingLabel
+                          ? null
+                          : () => unawaited(_readLabel()),
+                      expand: true,
+                    ),
+                  ),
+                if (form.fromLabel)
+                  formPad(
+                    FbInlineBanner(
+                      kind: FbInlineBannerKind.info,
+                      message: form.labelOthers.isEmpty
+                          ? l10n.labelFilled
+                          : l10n.labelFilledOthers(
+                              [
+                                for (final o in form.labelOthers)
+                                  '${o.name} ${o.value} ${o.unit}',
+                              ].join(', '),
+                            ),
+                    ),
+                  ),
                 NameSection(
                   binding: binding,
                   autofocus: widget.id == null && !focusKcal,

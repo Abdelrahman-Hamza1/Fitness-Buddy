@@ -349,6 +349,7 @@ final class BuddyTurn {
     this.notices = const [],
     this.links = const [],
     this.suggestion,
+    this.photo = false,
   });
 
   /// The turn's record cards (A67): edits, copies, saved meals, batches,
@@ -409,6 +410,10 @@ final class BuddyTurn {
   /// a food card (AI-121).
   final BuddySuggestion? suggestion;
 
+  /// The message came with a meal photo (AI-011; the photo itself is
+  /// never kept).
+  final bool photo;
+
   /// The user row's ID (the turn ID).
   String get userMessageId => message.id;
 
@@ -446,6 +451,7 @@ final class BuddyTurn {
     List<BuddyNotice>? notices,
     List<QueryLink>? links,
     BuddySuggestion? suggestion,
+    bool? photo,
   }) => BuddyTurn(
     message: message,
     phase: phase ?? this.phase,
@@ -464,6 +470,7 @@ final class BuddyTurn {
     notices: notices ?? this.notices,
     links: links ?? this.links,
     suggestion: suggestion ?? this.suggestion,
+    photo: photo ?? this.photo,
   );
 
   @override
@@ -539,6 +546,7 @@ final class RecordCard {
     this.resolution = CardResolution.open,
     this.choice,
     this.path,
+    this.adjust = RecordAdjust.none,
     this.undoEntryId,
     this.appliedAt,
     this.changedMeanwhile = false,
@@ -576,6 +584,9 @@ final class RecordCard {
   /// The batch path the user picked.
   final BatchPath? path;
 
+  /// Exercise picks and accepted import rows (A69 D2).
+  final RecordAdjust adjust;
+
   /// The confirm's or discard's undo entry.
   final String? undoEntryId;
 
@@ -604,6 +615,7 @@ final class RecordCard {
     CardResolution? resolution,
     String? choice,
     BatchPath? path,
+    RecordAdjust? adjust,
     String? undoEntryId,
     DateTime? appliedAt,
     bool? changedMeanwhile,
@@ -621,6 +633,7 @@ final class RecordCard {
     resolution: resolution ?? this.resolution,
     choice: choice ?? this.choice,
     path: path ?? this.path,
+    adjust: adjust ?? this.adjust,
     undoEntryId: undoEntryId ?? this.undoEntryId,
     appliedAt: appliedAt ?? this.appliedAt,
     changedMeanwhile: changedMeanwhile ?? this.changedMeanwhile,

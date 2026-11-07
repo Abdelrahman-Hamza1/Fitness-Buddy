@@ -19,7 +19,8 @@ import 'package:fb_mobile/core/navigation/navigation.dart';
 import 'package:fb_mobile/core/settings/settings_op_handler.dart';
 import 'package:fb_mobile/core/time/clock_provider.dart';
 import 'package:fb_mobile/core/undo/undo_stack.dart';
-import 'package:fb_mobile/features/body/body.dart' show WeighInOpHandler;
+import 'package:fb_mobile/features/body/body.dart'
+    show MeasurementOpHandler, WeighInOpHandler;
 import 'package:fb_mobile/features/buddy/application/buddy_issues.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_reply_texts.dart';
 import 'package:fb_mobile/features/buddy/application/buddy_thread_controller.dart';
@@ -39,6 +40,8 @@ import 'package:fb_mobile/features/buddy/data/records/record_facts_loader.dart';
 import 'package:fb_mobile/features/diary/diary.dart';
 import 'package:fb_mobile/features/foods/foods.dart';
 import 'package:fb_mobile/features/settings/settings.dart';
+import 'package:fb_mobile/features/workouts/workouts.dart'
+    show WorkoutOpHandler;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -156,6 +159,8 @@ final class BuddyHarness {
         SettingsOpHandler(db.settingsKv),
         MemoryItemOpHandler(db),
         WeighInOpHandler(db),
+        WorkoutOpHandler(db),
+        MeasurementOpHandler(db),
         const ScriptHandler(),
       ],
       clock: clock,

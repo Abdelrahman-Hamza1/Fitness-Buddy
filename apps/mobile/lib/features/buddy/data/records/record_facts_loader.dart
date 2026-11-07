@@ -1,7 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:fb_domain/fb_domain.dart';
+import 'package:fb_mobile/core/catalog/catalog.dart';
 import 'package:fb_mobile/core/db/app_database.dart';
 import 'package:fb_mobile/core/db/db_providers.dart';
+import 'package:fb_mobile/core/settings/settings_store.dart';
+import 'package:fb_mobile/features/body/body.dart'
+    show MeasurementMappingError, WeighInMappingError, measurementOf, weighInOf;
 import 'package:fb_mobile/features/buddy/data/buddy_phone_reads.dart';
 import 'package:fb_mobile/features/buddy/data/memory_repository.dart';
 import 'package:fb_mobile/features/buddy/data/proposal_input_loader.dart';
@@ -10,6 +14,13 @@ import 'package:fb_mobile/features/diary/diary.dart'
     show DiaryReads, diaryEntryOf;
 import 'package:fb_mobile/features/foods/foods.dart'
     show PersonalFoodMappingError, personalFoodOf;
+import 'package:fb_mobile/features/settings/settings.dart' show AppSettings;
+import 'package:fb_mobile/features/workouts/workouts.dart'
+    show
+        ExerciseLibrary,
+        LibraryExercise,
+        WorkoutRepository,
+        readExerciseLibrary;
 import 'package:fb_text/fb_text.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,11 +30,25 @@ part 'record_facts_loader.g.dart';
 /// snapshot, and builds its foods (ingredients, components, a swap) with
 /// the food engine. Never writes. User content: never logged.
 final class RecordFactsLoader {
-  /// Over [_db], building foods with [_loader].
-  const new(this._db, this._loader);
+  /// Over [_db], building foods with [_loader]; workout cards read the
+  /// exercise library from [catalog] (built-ins) and the custom exercises,
+  /// body cards the [units] setting (metric when not given).
+  const new(this._db, this._loader, {this.catalog, this.units});
 
   final AppDatabase _db;
   final ProposalInputLoader _loader;
+
+  /// The offline catalog (built-in exercises), when there is one.
+  final OfflineCatalog? catalog;
+
+  /// The unit setting.
+  final Future<UnitSystem> Function()? units;
+
+  /// The most library matches an unmatched exercise offers (WO-033).
+  static const _candidates = 3;
+
+  /// Days around imported dates whose stored weigh-ins the checks read.
+  static const _importMargin = 8;
 
   /// The most entries a swap is built for (a day's worth).
   static const _swaps = 30;
@@ -38,6 +63,12 @@ final class RecordFactsLoader {
   }) async {
     try {
       final r = intent.request;
+      final library = r is WorkoutRecord
+          ? await readExerciseLibrary(catalog, WorkoutRepository(_db))
+          : null;
+      final system = r is MeasurementRecord || r is ImportRowsRecord
+          ? await units?.call() ?? UnitSystem.metric
+          : UnitSystem.metric;
       final facts = await _db.readSnapshot(() async {
         final reads = DiaryReads(_db);
         final slots = await reads.slots();
@@ -80,10 +111,26 @@ final class RecordFactsLoader {
             trend = smoothDaily(weights, TrendWeightConfig.standard).last;
           }
         }
+        final body = await _bodyFacts(r, today);
+        final workout = library == null || r is! WorkoutRecord
+            ? null
+            : await _workoutFacts(r, library);
         return RecordFacts(
           now: now,
           slots: slots,
           normalize: normalizeKey,
+          exercises: workout?.exercises ?? const {},
+          exerciseCandidates: workout?.candidates ?? const {},
+          liftedSets: workout?.lifted ?? const {},
+          massUnit: system == UnitSystem.imperial
+              ? MassUnit.pound
+              : MassUnit.kilogram,
+          lengthUnit: system == UnitSystem.imperial
+              ? MeasurementUnit.inch
+              : MeasurementUnit.cm,
+          weighIns: body.weighIns,
+          measurements: body.measurements,
+          customMeasurementTypes: body.customTypes,
           entries: {for (final e in entries) e.id: e},
           dayEntries: lookupDay == null
               ? const []
@@ -144,6 +191,14 @@ final class RecordFactsLoader {
         memory: facts.memory,
         trendKg: facts.trendKg,
         cardEntries: facts.cardEntries,
+        exercises: facts.exercises,
+        exerciseCandidates: facts.exerciseCandidates,
+        liftedSets: facts.liftedSets,
+        massUnit: facts.massUnit,
+        lengthUnit: facts.lengthUnit,
+        weighIns: facts.weighIns,
+        measurements: facts.measurements,
+        customMeasurementTypes: facts.customMeasurementTypes,
         replacements: replacements,
         foodLines: lines,
       );
@@ -151,6 +206,160 @@ final class RecordFactsLoader {
       // leaves here).
       // ignore: avoid_catches_without_on_clauses
     } catch (_) {
+      return null;
+    }
+  }
+
+  /// A workout's exercises (named and picked from), each unmatched one's
+  /// closest library matches, and the earlier weighted sets of the named
+  /// ones.
+  Future<
+    ({
+      Map<String, ExerciseFacts> exercises,
+      Map<int, List<ExerciseFacts>> candidates,
+      Map<String, List<LiftedSet>> lifted,
+    })
+  >
+  _workoutFacts(WorkoutRecord r, ExerciseLibrary library) async {
+    ExerciseFacts facts(LibraryExercise e) => ExerciseFacts(
+      id: e.id,
+      name: e.name,
+      type: e.type,
+      equipment: e.equipment,
+    );
+    final exercises = <String, ExerciseFacts>{};
+    final candidates = <int, List<ExerciseFacts>>{};
+    for (final (i, e) in r.exercises.indexed) {
+      final known = library.byId[e.exerciseRef];
+      if (known != null) {
+        exercises[known.id] = facts(known);
+        continue;
+      }
+      final hits = [
+        for (final hit in library.search(e.mention).take(_candidates))
+          facts(hit),
+      ];
+      candidates[i] = hits;
+      for (final h in hits) {
+        exercises[h.id] = h;
+      }
+    }
+    final lifted = <String, List<LiftedSet>>{};
+    if (exercises.isNotEmpty) {
+      final sets = _db.workoutSets;
+      final links = _db.sessionExercises;
+      final sessions = _db.workoutSessions;
+      final rows =
+          await (_db.select(sets).join([
+                innerJoin(links, links.id.equalsExp(sets.sessionExerciseId)),
+                innerJoin(sessions, sessions.id.equalsExp(links.sessionId)),
+              ])..where(
+                links.exerciseId.isIn(exercises.keys) &
+                    links.deletedAt.isNull() &
+                    sets.deletedAt.isNull() &
+                    sessions.deletedAt.isNull() &
+                    sets.kg.isNotNull() &
+                    sets.reps.isNotNull(),
+              ))
+              .get();
+      for (final row in rows) {
+        final set = row.readTable(sets);
+        final kg = set.kg!;
+        final reps = set.reps!;
+        if (!kg.isFinite || kg < 0 || reps < 1) continue;
+        (lifted[row.readTable(links).exerciseId] ??= []).add((
+          kg: kg,
+          reps: reps,
+        ));
+      }
+    }
+    return (exercises: exercises, candidates: candidates, lifted: lifted);
+  }
+
+  /// The stored body rows a measurement or import card checks against.
+  Future<
+    ({
+      List<WeighIn> weighIns,
+      List<Measurement> measurements,
+      Set<String> customTypes,
+    })
+  >
+  _bodyFacts(RecordRequest r, LocalDate today) async {
+    const none = (
+      weighIns: <WeighIn>[],
+      measurements: <Measurement>[],
+      customTypes: <String>{},
+    );
+    switch (r) {
+      case MeasurementRecord(:final kindCode, :final customTypeId):
+        final types = await (_db.select(
+          _db.measurementTypes,
+        )..where((t) => t.deletedAt.isNull())).get();
+        return (
+          weighIns: const <WeighIn>[],
+          measurements: await _measurementsOf(kindCode, customTypeId),
+          customTypes: {for (final t in types) t.id},
+        );
+      case ImportRowsRecord(:final rows, :final measurementKind):
+        if (measurementKind != null) {
+          return (
+            weighIns: const <WeighIn>[],
+            measurements: await _measurementsOf(measurementKind, null),
+            customTypes: const <String>{},
+          );
+        }
+        final dates = [
+          for (final row in rows) ?LocalDate.tryParse(row.date ?? ''),
+        ]..sort();
+        if (dates.isEmpty) return none;
+        final from = dates.first.plusDays(-_importMargin).toString();
+        final to = dates.last.plusDays(_importMargin).toString();
+        final stored =
+            await (_db.select(_db.weighIns)..where(
+                  (t) =>
+                      t.deletedAt.isNull() &
+                      t.localDate.isBetweenValues(from, to),
+                ))
+                .get();
+        return (
+          weighIns: [for (final row in stored) ?_weighIn(row)],
+          measurements: const <Measurement>[],
+          customTypes: const <String>{},
+        );
+      default:
+        return none;
+    }
+  }
+
+  static WeighIn? _weighIn(WeighInRow row) {
+    try {
+      return weighInOf(row);
+    } on WeighInMappingError {
+      return null;
+    }
+  }
+
+  Future<List<Measurement>> _measurementsOf(
+    String kind,
+    String? customTypeId,
+  ) async {
+    final rows =
+        await (_db.select(_db.measurements)..where(
+              (t) =>
+                  t.deletedAt.isNull() &
+                  t.kind.equals(kind) &
+                  (customTypeId == null
+                      ? t.customTypeId.isNull()
+                      : t.customTypeId.equals(customTypeId)),
+            ))
+            .get();
+    return [for (final row in rows) ?_measurement(row)];
+  }
+
+  static Measurement? _measurement(MeasurementRow row) {
+    try {
+      return measurementOf(row);
+    } on MeasurementMappingError {
       return null;
     }
   }
@@ -286,4 +495,6 @@ final class RecordFactsLoader {
 RecordFactsLoader recordFactsLoader(Ref ref) => RecordFactsLoader(
   ref.watch(appDatabaseProvider),
   ref.watch(proposalInputLoaderProvider),
+  catalog: ref.watch(offlineCatalogProvider),
+  units: () => ref.read(settingsStoreProvider).read(AppSettings.unitSystem),
 );

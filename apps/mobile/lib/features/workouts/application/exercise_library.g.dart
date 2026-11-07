@@ -52,7 +52,7 @@ final class BuiltInExercisesProvider
   }
 }
 
-String _$builtInExercisesHash() => r'c99e707e961e7ced9bc4ceb72b5bde262857fcdb';
+String _$builtInExercisesHash() => r'1869f588d25d988540ad18d9c4ea66baec3c681a';
 
 /// The live custom exercises.
 
@@ -142,4 +142,4 @@ final class ExerciseLibraryProvider
   }
 }
 
-String _$exerciseLibraryHash() => r'5061ddbd673baaf94db33889a1e8770a314623a7';
+String _$exerciseLibraryHash() => r'da4eb22aecfe222f4e81a198c94122d8dd088cc7';

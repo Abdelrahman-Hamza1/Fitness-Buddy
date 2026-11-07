@@ -154,33 +154,53 @@ final class ExerciseLibrary {
       SessionNaming.titleOf(session.name, namingOf(session.exercises));
 }
 
+/// The pack's exercises of [catalog] with their names.
+Future<List<LibraryExercise>> _builtIns(OfflineCatalog catalog) async {
+  final exercises = await catalog.exercises();
+  final names = await catalog.exerciseNames();
+  return [
+    for (final e in exercises)
+      LibraryExercise(
+        id: e.id,
+        name: e.nameEn,
+        aliases: (names[e.id] ?? const <String>[]).where((n) => n != e.nameEn),
+        type: e.type,
+        equipment: e.equipment,
+        primary: e.primary,
+        secondaries: e.secondaries,
+        popularity: e.popularity,
+      ),
+  ];
+}
+
+LibraryExercise _custom(Stored<CustomExerciseDraft> c) => LibraryExercise(
+  id: c.ref.id,
+  name: c.draft.name,
+  aliases: c.draft.aliases,
+  type: c.draft.type,
+  equipment: c.draft.equipment,
+  primary: c.draft.primaryMuscle,
+  secondaries: c.draft.secondaryMuscles,
+  custom: c,
+);
+
+/// The library read once (Buddy's workout cards, A69): [catalog]'s
+/// built-ins (none without one) and [repository]'s live custom exercises.
+Future<ExerciseLibrary> readExerciseLibrary(
+  OfflineCatalog? catalog,
+  WorkoutRepository repository,
+) async => ExerciseLibrary([
+  if (catalog != null) ...await _builtIns(catalog),
+  for (final c in await repository.watchCustomExercises().first) _custom(c),
+]);
+
 /// The pack's exercises with their names, re-read on every pack swap.
 @riverpod
 Stream<List<LibraryExercise>> builtInExercises(Ref ref) async* {
   final catalog = ref.watch(offlineCatalogProvider);
-  Future<List<LibraryExercise>> read() async {
-    final exercises = await catalog.exercises();
-    final names = await catalog.exerciseNames();
-    return [
-      for (final e in exercises)
-        LibraryExercise(
-          id: e.id,
-          name: e.nameEn,
-          aliases: (names[e.id] ?? const <String>[]).where(
-            (n) => n != e.nameEn,
-          ),
-          type: e.type,
-          equipment: e.equipment,
-          primary: e.primary,
-          secondaries: e.secondaries,
-          popularity: e.popularity,
-        ),
-    ];
-  }
-
-  yield await read();
+  yield await _builtIns(catalog);
   await for (final _ in catalog.packChanges) {
-    yield await read();
+    yield await _builtIns(catalog);
   }
 }
 
@@ -196,20 +216,7 @@ Future<ExerciseLibrary> exerciseLibrary(Ref ref) async {
   final customsFuture = ref.watch(customExercisesProvider.future);
   final builtIns = await builtInsFuture;
   final customs = await customsFuture;
-  return ExerciseLibrary([
-    ...builtIns,
-    for (final c in customs)
-      LibraryExercise(
-        id: c.ref.id,
-        name: c.draft.name,
-        aliases: c.draft.aliases,
-        type: c.draft.type,
-        equipment: c.draft.equipment,
-        primary: c.draft.primaryMuscle,
-        secondaries: c.draft.secondaryMuscles,
-        custom: c,
-      ),
-  ]);
+  return ExerciseLibrary([...builtIns, for (final c in customs) _custom(c)]);
 }
 
 /// What "Try again" on the exercise list refreshes (UX-052, A63 review):

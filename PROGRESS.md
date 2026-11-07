@@ -1,8 +1,8 @@
 # Fitness Buddy: progress
 
-**85 of 111 steps done** · `▓▓▓▓▓▓▓░░░` 76%
+**86 of 111 steps done** · `▓▓▓▓▓▓▓░░░` 77%
 
-App 64/83 · Backend 21/28 · Foundation 7/7
+App 65/83 · Backend 21/28 · Foundation 7/7
 
 ## Now
 
@@ -16,9 +16,9 @@ App 64/83 · Backend 21/28 · Foundation 7/7
 | ✅ | **M2** Targets & weight | `▓▓▓▓▓` 9/9 | — |
 | ✅ | **M5** Accounts & sync | `▓▓▓▓▓` 20/20 | — |
 | 🟨 | **M2b** Solid app (no AI) | `▓▓▓░░` 22/30 | A25 A26 A27 A28b A29 A37b +2 |
-| 🟨 | **M3** Buddy agent on the… | `▓▓░░░` 18/33 | A23b A39b A41b A58 A59 A60 +9 |
+| 🟨 | **M3** Buddy agent on the… | `▓▓░░░` 19/33 | A23b A39b A41b A58 A59 A60 +8 |
 | ✅ | **M4** Dogfood 2 | `▓▓▓▓▓` 2/2 | — |
-| ⬜ | **M6** Workouts, body &… | `░░░░░` 0/0 | A69 |
+| ✅ | **M6** Workouts, body &… | `░░░░░` 0/0 | — |
 | ⬜ | **M7** Production | `░░░░░` 0/1 | A43 B14 |
 | ⬜ | **R1** done | `░░░░░` 0/2 | A31 A32 A43 B16 |
 
@@ -28,7 +28,6 @@ App 64/83 · Backend 21/28 · Foundation 7/7
 
 Not started, every dependency done; earliest milestone first:
 
-- [A69](technical-planning/steps/A69-buddy-workouts-body-photos.md) Buddy workouts, measurements, paste import, meal photos & label scan (was A28b, A29, A37b) · M3
 - [B13](technical-planning/steps/B13-staging-infrastructure.md) Staging on Hetzner & deploy pipeline · M3
 
 ## Waiting on you

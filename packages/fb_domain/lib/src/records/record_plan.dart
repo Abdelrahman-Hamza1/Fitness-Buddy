@@ -1,3 +1,4 @@
+import 'package:fb_domain/src/body/measurement.dart';
 import 'package:fb_domain/src/body/weigh_in.dart';
 import 'package:fb_domain/src/changes/change_op.dart';
 import 'package:fb_domain/src/chat/memory_item_ops.dart';
@@ -7,10 +8,14 @@ import 'package:fb_domain/src/diary/meal_slot.dart';
 import 'package:fb_domain/src/diary/saved_meal.dart';
 import 'package:fb_domain/src/food/personal_food.dart';
 import 'package:fb_domain/src/nutrition/nutrients.dart';
+import 'package:fb_domain/src/records/body_plan.dart';
 import 'package:fb_domain/src/records/record_request.dart';
+import 'package:fb_domain/src/records/workout_plan.dart';
 import 'package:fb_domain/src/time/local_date.dart';
 import 'package:fb_domain/src/time/local_time.dart';
 import 'package:fb_domain/src/units/food_measures.dart';
+import 'package:fb_domain/src/units/units.dart';
+import 'package:fb_domain/src/workouts/personal_records.dart';
 
 /// Why a record request can't be a card (codes only, never values).
 enum RecordIssue {
@@ -302,7 +307,19 @@ final class RecordView {
     this.memory,
     this.weighIn,
     this.savedMeal,
+    this.workout,
+    this.measurement,
+    this.imports,
   });
+
+  /// Workout figures (A69).
+  final WorkoutView? workout;
+
+  /// Measurement figures (A69).
+  final MeasurementView? measurement;
+
+  /// The import review table (A69).
+  final ImportView? imports;
 
   /// The kind.
   final RecordKind kind;
@@ -382,6 +399,47 @@ final class RecordPlan {
 
   @override
   String toString() => 'RecordPlan(${issue?.name ?? 'ok'})';
+}
+
+/// What the user changed on a card before confirming (A69 D2): picks for
+/// unmatched workout exercises and the import rows accepted. In memory
+/// only; any adjustment makes the confirm `adjusted`.
+final class RecordAdjust {
+  /// The adjustments.
+  const new({this.exercisePicks = const {}, this.accepted = const {}});
+
+  /// Nothing adjusted.
+  static const none = RecordAdjust();
+
+  /// A pick that makes the exercise a new custom one.
+  static const newExercise = 'new';
+
+  /// A pick that leaves the exercise out.
+  static const leaveOut = 'skip';
+
+  /// Workout exercise index → a library ID, [newExercise] or [leaveOut].
+  final Map<int, String> exercisePicks;
+
+  /// Import row indices the user accepted despite their flags.
+  final Set<int> accepted;
+
+  /// Whether nothing was adjusted.
+  bool get isEmpty => exercisePicks.isEmpty && accepted.isEmpty;
+
+  /// With exercise [index] picked as [pick].
+  RecordAdjust pick(int index, String pick) => RecordAdjust(
+    exercisePicks: {...exercisePicks, index: pick},
+    accepted: accepted,
+  );
+
+  /// With import row [index] accepted (or not).
+  RecordAdjust accept(int index, {required bool on}) => RecordAdjust(
+    exercisePicks: exercisePicks,
+    accepted: on ? {...accepted, index} : ({...accepted}..remove(index)),
+  );
+
+  @override
+  String toString() => 'RecordAdjust';
 }
 
 /// A batch on the phone: a personal food with `createdFrom` [openCode]
@@ -495,7 +553,40 @@ final class RecordFacts {
     this.memory = const [],
     this.trendKg,
     this.cardEntries,
+    this.exercises = const {},
+    this.exerciseCandidates = const {},
+    this.liftedSets = const {},
+    this.massUnit = MassUnit.kilogram,
+    this.lengthUnit = MeasurementUnit.cm,
+    this.weighIns = const [],
+    this.measurements = const [],
+    this.customMeasurementTypes = const {},
   }) : slots = List.unmodifiable(slots);
+
+  /// The library exercises a workout names (built-in and custom), by ID.
+  final Map<String, ExerciseFacts> exercises;
+
+  /// The closest library exercises of each unmatched workout exercise, by
+  /// its index (WO-033), best first.
+  final Map<int, List<ExerciseFacts>> exerciseCandidates;
+
+  /// The live earlier weighted sets of each named exercise (PR hints).
+  final Map<String, List<LiftedSet>> liftedSets;
+
+  /// The profile's body mass unit (an import row without a unit).
+  final MassUnit massUnit;
+
+  /// The profile's length unit (a measurement row without a unit).
+  final MeasurementUnit lengthUnit;
+
+  /// Stored weigh-ins near the imported dates.
+  final List<WeighIn> weighIns;
+
+  /// Stored measurements of the type a card names.
+  final List<Measurement> measurements;
+
+  /// Live custom measurement type IDs.
+  final Set<String> customMeasurementTypes;
 
   static String _plain(String s) => s
       .toLowerCase()

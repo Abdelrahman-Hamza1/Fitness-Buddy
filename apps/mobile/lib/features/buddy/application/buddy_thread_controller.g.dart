@@ -63,7 +63,7 @@ final class BuddyThreadControllerProvider
 }
 
 String _$buddyThreadControllerHash() =>
-    r'051d8218c4f70f5630c61af393371f370492b5fa';
+    r'771960c8cb67f2f650e894ae6c3cc8f7579635ea';
 
 /// Buddy's thread for this app process (D11): dismissing the sheet keeps it;
 /// pending cards and waiting messages come back after a restart (A23, A66).

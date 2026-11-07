@@ -328,6 +328,8 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
                 body: l10n.barcodeNotFoundBody,
                 action: l10n.barcodeAddYourself,
                 onAction: () => _addYourself(ScanPrefill(code: code)),
+                onLabel: () =>
+                    _addYourself(ScanPrefill(code: code, readLabel: true)),
                 onAnother: _scanAnother,
               ),
               BarcodeWaiting(:final code) => _Panel(
@@ -335,6 +337,8 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
                 body: l10n.barcodeWaitingBody,
                 action: l10n.barcodeAddYourself,
                 onAction: () => _addYourself(ScanPrefill(code: code)),
+                onLabel: () =>
+                    _addYourself(ScanPrefill(code: code, readLabel: true)),
                 onAnother: _scanAnother,
               ),
               BarcodeIncomplete(:final off, :final prefill, :final product) =>
@@ -478,7 +482,11 @@ class _Panel extends StatelessWidget {
     required this.onAction,
     required this.onAnother,
     this.attribution = false,
+    this.onLabel,
   });
+
+  /// "Scan the label" (A69 D8), when offered.
+  final VoidCallback? onLabel;
 
   final String title;
   final String body;
@@ -504,7 +512,21 @@ class _Panel extends StatelessWidget {
               l10n.offAttribution,
               style: FbType.bodySmall.copyWith(color: scheme.onSurfaceVariant),
             ),
-          FbButton.primary(label: action, onPressed: onAction, expand: true),
+          if (onLabel case final label?)
+            FbButton.primary(
+              key: const ValueKey('barcode-scan-label'),
+              label: l10n.barcodeScanLabel,
+              onPressed: label,
+              expand: true,
+            ),
+          if (onLabel == null)
+            FbButton.primary(label: action, onPressed: onAction, expand: true)
+          else
+            FbButton.secondary(
+              label: action,
+              onPressed: onAction,
+              expand: true,
+            ),
           FbButton.text(label: l10n.barcodeScanAnother, onPressed: onAnother),
         ],
       ),

@@ -102,6 +102,7 @@ final class TurnCheckpoint {
     this.bytes = 0,
     this.cards = const [],
     this.createdAtMs = 0,
+    this.photo = false,
   });
 
   /// The first round of turn [turnId] with start [body].
@@ -109,6 +110,7 @@ final class TurnCheckpoint {
     String turnId,
     Map<String, Object?> body, {
     required int createdAtMs,
+    bool photo = false,
   }) => TurnCheckpoint(
     turnId: turnId,
     kind: TurnRoundKind.start,
@@ -116,6 +118,7 @@ final class TurnCheckpoint {
     attempt: 1,
     body: body,
     createdAtMs: createdAtMs,
+    photo: photo,
   );
 
   /// Reads [text], or `null` when it isn't a checkpoint of [turnId].
@@ -156,6 +159,7 @@ final class TurnCheckpoint {
         bytes: bytes,
         cards: [for (final c in cards) ?CheckpointCard.fromJson(c)],
         createdAtMs: createdAtMs,
+        photo: json['photo'] == true,
       );
     }
     return null;
@@ -194,6 +198,10 @@ final class TurnCheckpoint {
   /// When the turn was first prepared (UTC ms): auto-replay stops 23 h on.
   final int createdAtMs;
 
+  /// The message had a meal photo (A69 D6): kept so its cards stay
+  /// estimates after a restart; the photo itself is never stored.
+  final bool photo;
+
   /// The card for server or local ID [proposalId].
   CheckpointCard? card(String proposalId) {
     for (final c in cards) {
@@ -225,6 +233,7 @@ final class TurnCheckpoint {
     bytes: bytes ?? this.bytes,
     cards: cards ?? this.cards,
     createdAtMs: createdAtMs,
+    photo: photo,
   );
 
   /// With [card] added or replaced (by card ID).
@@ -249,6 +258,7 @@ final class TurnCheckpoint {
     'bytes': bytes,
     'cards': [for (final c in cards) c.toJson()],
     'createdAtMs': createdAtMs,
+    if (photo) 'photo': true,
   });
 
   @override

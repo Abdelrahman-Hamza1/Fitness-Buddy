@@ -55,6 +55,18 @@ Future<String> _rows(BuddyHarness h) async {
   final memory = await (db.select(
     db.memoryItems,
   )..where((t) => t.deletedAt.isNull())).get();
+  final sessions = await (db.select(
+    db.workoutSessions,
+  )..where((t) => t.deletedAt.isNull())).get();
+  final sets = await (db.select(
+    db.workoutSets,
+  )..where((t) => t.deletedAt.isNull())).get();
+  final exercises = await (db.select(
+    db.customExercises,
+  )..where((t) => t.deletedAt.isNull())).get();
+  final measurements = await (db.select(
+    db.measurements,
+  )..where((t) => t.deletedAt.isNull())).get();
   final foods =
       await (db.select(db.personalFoods)
             ..where((t) => t.deletedAt.isNull())
@@ -69,6 +81,10 @@ Future<String> _rows(BuddyHarness h) async {
       'memory:${m.memoryKey}:${m.memoryValue}:${m.deletedAt != null}',
     for (final f in foods)
       'food:${f.id}:${f.createdFrom}:${f.deletedAt != null}',
+    for (final w in sessions) 'session:${w.id}:${w.localDate}',
+    for (final w in sets) 'set:${w.reps}:${w.kg}',
+    for (final e in exercises) 'exercise:${e.id}',
+    for (final m in measurements) 'measure:${m.kind}:${m.value}',
   ].join('\n');
 }
 
@@ -78,6 +94,7 @@ void main() {
   late String mealId;
   late String batchId;
   late String foodId;
+  late String exerciseId;
 
   setUp(() async {
     h = BuddyHarness();
@@ -130,6 +147,22 @@ void main() {
       ], origin: Origin.direct),
     );
     expect(seeded, isA<Applied>());
+    exerciseId = h.ids.next();
+    expect(
+      await h.applier.apply(
+        ChangeSet([
+          CreateCustomExercise(
+            exerciseId,
+            CustomExerciseDraft(
+              name: 'Bench press',
+              type: ExerciseType.weightReps,
+              equipment: Equipment.barbell,
+            ),
+          ),
+        ], origin: Origin.direct),
+      ),
+      isA<Applied>(),
+    );
     final saved = await h.applier.apply(
       ChangeSet([
         SaveMeal(
@@ -229,6 +262,61 @@ void main() {
       'value': 'whey shake',
       'amount': null,
       'food': null,
+    },
+    'workout': () => {
+      'kind': 'workout',
+      ..._lang,
+      'name': 'Push',
+      'timeHint': null,
+      'dateHint': null,
+      'exercises': [
+        {
+          'mention': 'bench',
+          'exerciseRef': exerciseId,
+          'sets': [
+            for (var i = 0; i < 3; i++)
+              {
+                'reps': 8,
+                'weight': 80,
+                'unit': 'kg',
+                'perDumbbell': false,
+                'durationSeconds': null,
+                'distanceMeters': null,
+              },
+          ],
+          'assumptions': <String>[],
+        },
+      ],
+    },
+    'measurement': () => {
+      'kind': 'measurement',
+      ..._lang,
+      'measurementKind': 'waist',
+      'customTypeId': null,
+      'value': 90,
+      'unit': 'cm',
+      'timeHint': null,
+      'dateHint': null,
+    },
+    'importRows': () => {
+      'kind': 'importRows',
+      ..._lang,
+      'metric': 'weight',
+      'measurementKind': null,
+      'rows': [
+        {
+          'date': '2026-10-01',
+          'value': 98,
+          'unit': 'kg',
+          'original': 'oct 1: 98kg',
+        },
+        {
+          'date': '2026-10-05',
+          'value': 97.6,
+          'unit': 'kg',
+          'original': 'oct 5: 97.6kg',
+        },
+      ],
     },
     'weighIn': () => {
       'kind': 'weighIn',
@@ -629,4 +717,52 @@ void main() {
       CardResolution.discarded,
     ]);
   });
+
+  test('AQ-01 WO-033 an unmatched exercise confirms nothing until it is '
+      'picked; the pick confirms as adjusted', () async {
+    final intent = cases['workout']!();
+    final exercises = intent['exercises']! as List<Object?>;
+    intent['exercises'] = [
+      {...exercises.single! as Map<String, Object?>, 'exerciseRef': null},
+    ];
+    h.answer({
+      'intents': [intent],
+    });
+    await h.thread.send('bench 3x8 80', texts);
+    final card = h.state.turns.single.records.single;
+    expect(card.plan.view!.workout!.needsPick, isTrue);
+    expect(card.plan.canConfirm, isFalse);
+    await h.thread.confirmRecord(card.id);
+    expect(h.applied.where((s) => s.origin is OriginProposal), isEmpty);
+    await h.thread.pickExercise(card.id, 0, exerciseId);
+    await h.thread.confirmRecord(card.id);
+    final confirm = h.applied.last;
+    final session = confirm.ops.whereType<LogWorkoutSession>().single;
+    expect(session.draft.exercises.single.exerciseId, exerciseId);
+    expect(
+      confirm.ops.whereType<ResolveProposal>().single.outcome,
+      ProposalOutcome.adjusted,
+    );
+  });
+
+  test(
+    'AQ-01 WB-031 a flagged import row is left out until included',
+    () async {
+      final intent = cases['importRows']!();
+      final rows = intent['rows']! as List<Object?>;
+      intent['rows'] = [
+        {...rows.first! as Map<String, Object?>, 'unit': 'k'},
+        rows.last,
+      ];
+      h.answer({
+        'intents': [intent],
+      });
+      await h.thread.send('oct 1: 98k, oct 5: 97.6kg', texts);
+      final card = h.state.turns.single.records.single;
+      expect(card.plan.ops.whereType<CreateWeighIn>(), hasLength(1));
+      await h.thread.acceptImportRow(card.id, 0, on: true);
+      await h.thread.confirmRecord(card.id);
+      expect(h.applied.last.ops.whereType<CreateWeighIn>(), hasLength(2));
+    },
+  );
 }
